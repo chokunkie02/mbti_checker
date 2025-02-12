@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 Flask 
+=======
+Flask==2.0.1
+Jinja2==3.1.2
+Werkzeug==2.2.2
+gunicorn==20.1.0
+>>>>>>> bf289e4 (Updated quiz.html to navigate to results page and store MBTI result)
