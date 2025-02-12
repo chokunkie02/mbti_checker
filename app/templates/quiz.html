@@ -125,7 +125,6 @@
             </div>
 
             <button type="submit">ดูผลการทดสอบ</button>
-            <button type="button" id="nextButton" style="display:none;">ดูผลลัพธ์</button>
         </form>
 
         <div id="result" style="display:none;"></div>
@@ -227,10 +226,6 @@
 
             localStorage.setItem('mbtiResult', result);
 
-            document.getElementById('nextButton').style.display = 'block';
-        });
-
-        document.getElementById('nextButton').addEventListener('click', function() {
             window.location.href = '/result';
         });
 
