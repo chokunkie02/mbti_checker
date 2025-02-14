@@ -6,6 +6,50 @@
     <title>MBTI Checker</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        header {
+            background-color: #6c5ce7;
+            padding: 1rem 0;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            margin: 0 1rem;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #a363d9;
+        }
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+        footer {
+            background-color: #6c5ce7;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,7 +63,6 @@
                 <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
                 <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
                 <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
-                <!-- ลบการอ้างอิงถึงเส้นทาง main.login -->
             </ul>
         </nav>
     </header>
