@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user, login_required
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from flask_login import login_user, logout_user, login_required, current_user
 from app.models.user import User
 from app import db
 
@@ -59,14 +59,14 @@ def contact():
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
+        username = request.form["username"]
         password = request.form["password"]
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user)
             return redirect(url_for("main.home"))
         else:
-            flash("อีเมลหรือรหัสผ่านไม่ถูกต้อง")
+            flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
     return render_template("login.html")
 
 
@@ -75,3 +75,17 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("main.home"))
+
+
+@bp.route("/save_mbti", methods=["POST"])
+def save_mbti():
+    if current_user.is_authenticated:
+        # Save MBTI result to the database for logged-in users
+        mbti_result = request.form["mbti_result"]
+        # Save the result to the user's profile or another table
+        # Example: current_user.mbti_result = mbti_result
+        db.session.commit()
+    else:
+        # Save MBTI result to the session for temporary storage
+        session["mbti_result"] = request.form["mbti_result"]
+    return redirect(url_for("main.result"))

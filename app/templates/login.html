@@ -119,13 +119,13 @@
         </div>
         
         <div class="error-message" id="errorMessage">
-            อีเมลหรือรหัสผ่านไม่ถูกต้อง
+            ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้องกต้อง
         </div>
 
         <form id="loginForm" action="/login" method="POST">
             <div class="form-group">
-                <label for="email">อีเมล</label>
-                <input type="email" id="email" name="email" required>
+                <label for="username">ชื่อผู้ใช้</label></label>
+                <input type="text" id="username" name="username" required>ired>
             </div>
 
             <div class="form-group">
@@ -147,7 +147,7 @@
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;value;
             const password = document.getElementById('password').value;
             
             try {
@@ -156,7 +156,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ username, password }) })
                 });
                 
                 if (response.ok) {
