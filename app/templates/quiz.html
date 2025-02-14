@@ -12,10 +12,17 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --mbti-yellow: #FFD700;
+            --mbti-purple: #9B59B6;
+            --mbti-green: #2ECC71;
+            --mbti-blue: #3498DB;
+        }
+
         body {
             font-family: 'Kanit', sans-serif;
             line-height: 1.6;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4d9ff 100%);
             min-height: 100vh;
             color: #2c3e50;
             padding: 20px;
@@ -27,7 +34,24 @@
             padding: 2.5rem;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                var(--mbti-yellow) 0%,
+                var(--mbti-green) 33%,
+                var(--mbti-blue) 66%,
+                var(--mbti-purple) 100%
+            );
         }
 
         h1 {
@@ -48,31 +72,43 @@
             transform: translateX(-50%);
             width: 100px;
             height: 4px;
-            background: linear-gradient(90deg, #6c5ce7, #a363d9);
+            background: linear-gradient(90deg, var(--mbti-yellow), var(--mbti-purple));
             border-radius: 2px;
         }
 
         .instructions {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 20px;
+            border-radius: 15px;
             margin-bottom: 30px;
-            text-align: left;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(108, 92, 231, 0.1);
         }
 
         .instructions h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #2c3e50;
+            font-weight: 600;
         }
 
         .instructions ul {
-            list-style-type: disc;
-            padding-left: 20px;
+            list-style-type: none;
+            padding-left: 0;
         }
 
         .instructions ul li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
             color: #34495e;
+        }
+
+        .instructions ul li::before {
+            content: '•';
+            color: var(--mbti-purple);
+            position: absolute;
+            left: 8px;
+            font-weight: bold;
         }
 
         .question-section {
@@ -81,48 +117,99 @@
 
         .question-section h2 {
             color: #34495e;
-            border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             margin-bottom: 20px;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--mbti-purple), transparent);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .question-section:nth-of-type(1) h2 {
+            background: linear-gradient(to right, var(--mbti-yellow), transparent);
+        }
+
+        .question-section:nth-of-type(2) h2 {
+            background: linear-gradient(to right, var(--mbti-green), transparent);
+        }
+
+        .question-section:nth-of-type(3) h2 {
+            background: linear-gradient(to right, var(--mbti-blue), transparent);
         }
 
         .question-container {
             margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
         .options {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
+            gap: 30px;
+            margin-top: 15px;
         }
 
         .radio-option {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
         }
 
-        button {
+        .radio-option:hover {
+            background: #e9ecef;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        button[type="submit"] {
             display: block;
-            width: 200px;
-            margin: 30px auto;
-            padding: 15px;
-            background-color: #3498db;
+            width: max-content;
+            margin: 40px auto;
+            padding: 15px 40px;
+            background: linear-gradient(45deg,
+                var(--mbti-yellow),
+                var(--mbti-green),
+                var(--mbti-blue),
+                var(--mbti-purple)
+            );
+            background-size: 300% 300%;
+            animation: gradient-shift 5s ease infinite;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        button:hover {
-            background-color: #2980b9;
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
         }
 
         #result {
@@ -130,8 +217,9 @@
             font-size: 24px;
             margin-top: 20px;
             padding: 20px;
-            border-radius: 5px;
-            display: none;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         @media (max-width: 768px) {
@@ -151,10 +239,19 @@
                 font-size: 1rem;
             }
 
-            button {
-                padding: 0.8rem 2rem;
-                font-size: 1.1rem;
+            .options {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .radio-option {
                 width: 100%;
+                justify-content: center;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+                padding: 15px 20px;
             }
         }
     </style>
