@@ -13,12 +13,12 @@
         }
 
         :root {
-            --mbti-yellow: #FFD700;
-            --mbti-purple: #9B59B6;
-            --mbti-green: #2ECC71;
-            --mbti-blue: #3498DB;
-            --mbti-bg: #f5f5f5;
-            --mbti-text: #333333;
+            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
+            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
+            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
+            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
+            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
+            --mbti-text: #333333;   /* สีข้อความหลัก */
         }
 
         body {
@@ -147,6 +147,49 @@
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
+            background: linear-gradient(45deg, var(--mbti-color-light), var(--mbti-color-lighter));
+            background-size: 300% 300%;
+            animation: gradient-shift 5s ease infinite;
+            color: var(--mbti-text);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .characteristics:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .characteristics h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--mbti-text);
+        }
+
+        .characteristics ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .characteristics li {
+            padding: 10px;
+            margin: 8px 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            color: var(--mbti-text);
+        }
+
+        .characteristics li:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         ul {
@@ -175,12 +218,6 @@
             text-align: center;
             text-decoration: none;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         .back-button:hover {
@@ -252,7 +289,7 @@
                     'ชอบความท้าทายทางปัญญา',
                     'มีมาตรฐานสูงในการทำงาน'
                 ],
-                color: '#64B5F6' /* Blue */
+                color: '#BA68C8' /* Purple */
             },
             'INTP': {
                 name: 'นักคิด (The Logician)',
@@ -265,7 +302,7 @@
                     'ชอบเรียนรู้สิ่งใหม่',
                     'มีความเป็นอิสระทางความคิด'
                 ],
-                color: '#81C784' /* Green */
+                color: '#BA68C8' /* Purple */
             },
             'ENTJ': {
                 name: 'ผู้บริหาร (The Commander)',
@@ -278,7 +315,7 @@
                     'มุ่งมั่นสู่ความสำเร็จ',
                     'มีความมั่นใจในตนเอง'
                 ],
-                color: '#FFEB3B' /* Yellow */
+                color: '#BA68C8' /* Purple */
             },
             'ENTP': {
                 name: 'นักโต้แย้ง (The Debater)',
@@ -304,7 +341,7 @@
                     'ชอบช่วยเหลือผู้อื่น',
                     'มีความมุ่งมั่นในการพัฒนา'
                 ],
-                color: '#64B5F6' /* Blue */
+                color: '#81C784' /* Green */
             },
             'INFP': {
                 name: 'นักอุดมคติ (The Mediator)',
@@ -330,7 +367,7 @@
                     'สร้างแรงบันดาลใจให้ผู้อื่น',
                     'ทำงานเพื่อส่วนรวม'
                 ],
-                color: '#FFEB3B' /* Yellow */
+                color: '#81C784' /* Green */
             },
             'ENFP': {
                 name: 'นักสำรวจ (The Campaigner)',
@@ -343,7 +380,7 @@
                     'เข้ากับผู้อื่นได้ดี',
                     'ชอบการเรียนรู้สิ่งใหม่'
                 ],
-                color: '#BA68C8' /* Purple */
+                color: '#81C784' /* Green */
             },
             'ISTJ': {
                 name: 'ผู้ตรวจสอบ (The Logistician)',
@@ -369,7 +406,7 @@
                     'ให้ความสำคัญกับความสัมพันธ์',
                     'ทำงานหนักและทุ่มเท'
                 ],
-                color: '#81C784' /* Green */
+                color: '#64B5F6' /* Blue */
             },
             'ESTJ': {
                 name: 'ผู้บริหาร (The Executive)',
@@ -382,7 +419,7 @@
                     'เชื่อถือได้และตรงไปตรงมา',
                     'ชอบทำงานเป็นทีม'
                 ],
-                color: '#FFEB3B' /* Yellow */
+                color: '#64B5F6' /* Blue */
             },
             'ESFJ': {
                 name: 'ผู้ให้การสนับสนุน (The Consul)',
@@ -395,7 +432,7 @@
                     'มองโลกในแง่ดี',
                     'ชอบทำงานเป็นทีม'
                 ],
-                color: '#BA68C8' /* Purple */
+                color: '#64B5F6' /* Blue */
             },
             'ISTP': {
                 name: 'ผู้ชำนาญการ (The Virtuoso)',
@@ -408,7 +445,7 @@
                     'เป็นอิสระและไม่ชอบถูกควบคุม',
                     'มีทักษะทางเทคนิคสูง'
                 ],
-                color: '#64B5F6' /* Blue */
+                color: '#FFEB3B' /* Yellow */
             },
             'ISFP': {
                 name: 'นักสร้างสรรค์ (The Adventurer)',
@@ -421,7 +458,7 @@
                     'ชอบสัมผัสประสบการณ์ใหม่ๆ',
                     'มีความอ่อนไหวทางอารมณ์'
                 ],
-                color: '#81C784' /* Green */
+                color: '#FFEB3B' /* Yellow */
             },
             'ESTP': {
                 name: 'ผู้ประกอบการ (The Entrepreneur)',
@@ -447,7 +484,7 @@
                     'ชอบใช้ชีวิตในปัจจุบัน',
                     'มีความยืดหยุ่นสูง'
                 ],
-                color: '#BA68C8' /* Purple */
+                color: '#FFEB3B' /* Yellow */
             }
         };
 
@@ -457,10 +494,43 @@
 
             if (mbtiResult && typeDescriptions[mbtiResult]) {
                 const typeInfo = typeDescriptions[mbtiResult];
-                document.body.style.backgroundColor = typeInfo.color;
+                document.body.style.backgroundColor = '#ffffff'; // พื้นหลังสีขาว
+
+                // Set colors for each MBTI type
+                let colorLight, colorLighter;
+                switch (mbtiResult) {
+                    case 'INTJ':
+                    case 'INTP':
+                    case 'ENTJ':
+                    case 'ENTP':
+                        colorLight = '#BA68C8'; // Purple
+                        colorLighter = '#E1BEE7'; // Light Purple
+                        break;
+                    case 'INFJ':
+                    case 'INFP':
+                    case 'ENFJ':
+                    case 'ENFP':
+                        colorLight = '#81C784'; // Green
+                        colorLighter = '#C8E6C9'; // Light Green
+                        break;
+                    case 'ISTJ':
+                    case 'ISFJ':
+                    case 'ESTJ':
+                    case 'ESFJ':
+                        colorLight = '#64B5F6'; // Blue
+                        colorLighter = '#BBDEFB'; // Light Blue
+                        break;
+                    case 'ISTP':
+                    case 'ISFP':
+                    case 'ESTP':
+                    case 'ESFP':
+                        colorLight = '#FFEB3B'; // Yellow
+                        colorLighter = '#FFF9C4'; // Light Yellow
+                        break;
+                }
 
                 resultContent.innerHTML = `
-                    <div class="result-header" style="background-color: ${typeInfo.color}20;">
+                    <div class="result-header" style="background-color: ${colorLight}20;">
                         <div>บุคลิกภาพของคุณคือ</div>
                         <div class="type">${mbtiResult}: ${typeInfo.name}</div>
                     </div>
@@ -468,7 +538,7 @@
                         ${typeInfo.traits.map(trait => `<div class="trait-card">${trait}</div>`).join('')}
                     </div>
                     <div class="description">${typeInfo.description}</div>
-                    <div class="characteristics">
+                    <div class="characteristics" style="--mbti-color-light: ${colorLight}; --mbti-color-lighter: ${colorLighter};">
                         <h3>ลักษณะเด่น</h3>
                         <ul>
                             ${typeInfo.characteristics.map(characteristic => `<li>${characteristic}</li>`).join('')}
