@@ -70,6 +70,28 @@ def login():
     return render_template("login.html")
 
 
+@bp.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+            flash("รหัสผ่านไม่ตรงกัน")
+            return redirect(url_for("main.register"))
+
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        flash("สมัครสมาชิกสำเร็จแล้ว กรุณาเข้าสู่ระบบ")
+        return redirect(url_for("main.login"))
+
+    return render_template("register.html")
+
+
 @bp.route("/logout")
 @login_required
 def logout():
