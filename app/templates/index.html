@@ -13,18 +13,22 @@
         }
 
         :root {
-            --mbti-yellow: #FFD700;
-            --mbti-purple: #9B59B6;
-            --mbti-green: #2ECC71;
-            --mbti-blue: #3498DB;
+            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
+            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
+            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
+            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
+            --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow), var(--mbti-green), var(--mbti-blue), var(--mbti-purple));
+            --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
+            --mbti-text: #333333;   /* สีข้อความหลัก */
         }
 
         body {
             font-family: 'Kanit', sans-serif;
             line-height: 1.6;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4d9ff 100%);
+            background: var(--mbti-bg);
             min-height: 100vh;
-            color: #2c3e50;
+            color: var(--mbti-text);
             padding: 20px;
         }
 
@@ -32,9 +36,9 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2.5rem;
-            background-color: rgba(255, 255, 255, 0.95);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+            box-shadow: var(--mbti-shadow);
             position: relative;
             overflow: hidden;
         }
@@ -46,17 +50,13 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, 
-                var(--mbti-yellow) 0%,
-                var(--mbti-green) 33%,
-                var(--mbti-blue) 66%,
-                var(--mbti-purple) 100%
-            );
+            background: var(--mbti-gradient);
+            border-radius: 2px;
         }
 
         h1 {
             text-align: center;
-            color: #2c3e50;
+            color: var(--mbti-text);
             font-size: 2.5rem;
             margin-bottom: 2rem;
             font-weight: 700;
@@ -72,10 +72,7 @@
             transform: translateX(-50%);
             width: 100px;
             height: 4px;
-            background: linear-gradient(90deg, 
-                var(--mbti-yellow),
-                var(--mbti-purple)
-            );
+            background: var(--mbti-gradient);
             border-radius: 2px;
         }
 
@@ -83,7 +80,7 @@
             font-size: 1.1rem;
             margin: 2rem 0;
             text-align: justify;
-            color: #34495e;
+            color: var(--mbti-text);
             font-weight: 300;
             line-height: 1.8;
         }
@@ -134,12 +131,7 @@
             width: max-content;
             margin: 3rem auto 1rem;
             padding: 1rem 3rem;
-            background: linear-gradient(45deg,
-                var(--mbti-yellow),
-                var(--mbti-green),
-                var(--mbti-blue),
-                var(--mbti-purple)
-            );
+            background: var(--mbti-gradient);
             background-size: 300% 300%;
             animation: gradient-shift 5s ease infinite;
             color: white;
