@@ -4,26 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ผลการทดสอบ MBTI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --mbti-yellow: #FFD700;
+            --mbti-purple: #9B59B6;
+            --mbti-green: #2ECC71;
+            --mbti-blue: #3498DB;
+        }
+
         body {
             font-family: 'Kanit', sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
             line-height: 1.6;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4d9ff 100%);
+            min-height: 100vh;
             color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+            padding: 20px;
+            display: flex;
         }
+
+        .sidebar {
+            width: 250px;
+            background-color: #6c5ce7;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+            margin-right: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #a363d9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                var(--mbti-yellow) 0%,
+                var(--mbti-green) 33%,
+                var(--mbti-blue) 66%,
+                var(--mbti-purple) 100%
+            );
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--mbti-yellow), var(--mbti-purple));
+            border-radius: 2px;
+        }
+
         .result-header {
             text-align: center;
             padding: 20px;
@@ -31,29 +117,34 @@
             background-color: #e3f2fd;
             border-radius: 10px;
         }
+
         .type {
             font-size: 2.5em;
             font-weight: bold;
             color: #1976d2;
             margin: 10px 0;
         }
+
         .trait-breakdown {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin: 30px 0;
         }
+
         .trait-card {
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
             text-align: center;
         }
+
         .trait-title {
             font-weight: bold;
             color: #34495e;
             margin-bottom: 10px;
         }
+
         .description {
             background-color: #fff;
             padding: 20px;
@@ -61,62 +152,107 @@
             margin: 20px 0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+
         .characteristics {
             background-color: #f1f8e9;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
         }
+
         ul {
             padding-left: 20px;
         }
+
         li {
             margin: 8px 0;
         }
+
         .back-button {
             display: block;
-            width: 200px;
+            width: max-content;
             margin: 30px auto;
-            padding: 15px;
-            background-color: #3498db;
+            padding: 15px 40px;
+            background: linear-gradient(45deg,
+                var(--mbti-yellow),
+                var(--mbti-green),
+                var(--mbti-blue),
+                var(--mbti-purple)
+            );
+            background-size: 300% 300%;
+            animation: gradient-shift 5s ease infinite;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
             text-align: center;
             text-decoration: none;
-            transition: background-color 0.3s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .back-button:hover {
-            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .trait-breakdown {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .back-button {
+                width: 100%;
+                padding: 15px 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
+            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
+            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
+            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
+            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
+            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
+            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
+            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
+        </ul>
+    </div>
     <div class="container">
         <h1>ผลการทดสอบบุคลิกภาพ MBTI</h1>
-        <div class="result-header">
-            <div>บุคลิกภาพของคุณคือ</div>
-            <div class="type" id="mbtiType">XXXX</div>
+        <div id="resultContent">
+            <!-- Result content will be inserted here -->
         </div>
-
-        <div class="trait-breakdown" id="traitBreakdown">
-            <!-- Trait breakdown will be inserted here -->
-        </div>
-
-        <div class="description" id="typeDescription">
-            <!-- Type description will be inserted here -->
-        </div>
-
-        <div class="characteristics">
-            <h3>ลักษณะเด่น</h3>
-            <ul id="characteristics">
-                <!-- Characteristics will be inserted here -->
-            </ul>
-        </div>
-
-        <a href="/" class="back-button">ทำแบบทดสอบอีกครั้ง</a>
+        <a href="{{ url_for('main.quiz') }}" class="back-button">ทำแบบทดสอบอีกครั้ง</a>
     </div>
 
     <script>
@@ -317,25 +453,32 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const mbtiResult = localStorage.getItem('mbtiResult');
+            const resultContent = document.getElementById('resultContent');
+
             if (mbtiResult && typeDescriptions[mbtiResult]) {
                 const typeInfo = typeDescriptions[mbtiResult];
-                document.getElementById('mbtiType').textContent = `${mbtiResult}: ${typeInfo.name}`;
-                document.getElementById('typeDescription').textContent = typeInfo.description;
-
-                const traitBreakdown = document.getElementById('traitBreakdown');
-                typeInfo.traits.forEach(trait => {
-                    const traitCard = document.createElement('div');
-                    traitCard.className = 'trait-card';
-                    traitCard.textContent = trait;
-                    traitBreakdown.appendChild(traitCard);
-                });
-
-                const characteristicsList = document.getElementById('characteristics');
-                typeInfo.characteristics.forEach(characteristic => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = characteristic;
-                    characteristicsList.appendChild(listItem);
-                });
+                resultContent.innerHTML = `
+                    <div class="result-header">
+                        <div>บุคลิกภาพของคุณคือ</div>
+                        <div class="type">${mbtiResult}: ${typeInfo.name}</div>
+                    </div>
+                    <div class="trait-breakdown">
+                        ${typeInfo.traits.map(trait => `<div class="trait-card">${trait}</div>`).join('')}
+                    </div>
+                    <div class="description">${typeInfo.description}</div>
+                    <div class="characteristics">
+                        <h3>ลักษณะเด่น</h3>
+                        <ul>
+                            ${typeInfo.characteristics.map(characteristic => `<li>${characteristic}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                resultContent.innerHTML = `
+                    <div class="result-header">
+                        <div>ท่านยังไม่เคยทำแบบทดสอบ</div>
+                    </div>
+                `;
             }
         });
     </script>
