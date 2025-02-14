@@ -149,6 +149,11 @@
     </style>
 </head>
 <body>
+    {% extends "base.html" %}
+
+    {% block title %}MBTI Checker | ค้นหาบุคลิกภาพของคุณ{% endblock %}
+
+    {% block content %}
     <div class="container">
         <h1>MBTI Checker</h1>
         
@@ -185,5 +190,6 @@
             © 2025 MBTI Checker. สงวนลิขสิทธิ์
         </p>
     </div>
+    {% endblock %}
 </body>
 </html>
