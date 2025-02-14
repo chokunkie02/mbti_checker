@@ -30,6 +30,7 @@
             min-height: 100vh;
             color: var(--mbti-text);
             padding: 20px;
+            display: flex;
         }
 
         .container {
@@ -41,6 +42,7 @@
             box-shadow: var(--mbti-shadow);
             position: relative;
             overflow: hidden;
+            flex-grow: 1;
         }
 
         .container::before {
@@ -166,6 +168,7 @@
         @media (max-width: 768px) {
             body {
                 padding: 10px;
+                flex-direction: column;
             }
 
             .container {
@@ -189,35 +192,51 @@
 
         .sidebar {
             width: 250px;
-            background: white; /* เปลี่ยนจาก background-color: #6c5ce7; เป็น background: white; */
+            background: white;
             padding: 20px;
             border-radius: 20px;
-            box-shadow: var(--mbti-shadow); /* เปลี่ยนจาก box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2); เป็น box-shadow: var(--mbti-shadow); */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             margin-right: 20px;
         }
 
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
         .sidebar ul li a {
-            color: var(--mbti-text); /* เปลี่ยนจาก color: white; เป็น color: var(--mbti-text); */
+            color: var(--mbti-text);
             text-decoration: none;
             font-weight: 500;
             display: block;
             padding: 10px;
             border-radius: 10px;
-            transition: background 0.3s ease, color 0.3s ease; /* เพิ่ม transition: color 0.3s ease; */
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .sidebar ul li a:hover {
-            background: rgba(0, 0, 0, 0.05); /* เปลี่ยนจาก background-color: #a363d9; เป็น background: rgba(0, 0, 0, 0.05); */
-            color: var(--mbti-purple); /* เพิ่ม color: var(--mbti-purple); */
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--mbti-purple);
         }
     </style>
 </head>
 <body>
-    {% extends "base.html" %}
-
-    {% block title %}MBTI Checker | ค้นหาบุคลิกภาพของคุณ{% endblock %}
-
-    {% block content %}
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
+            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
+            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
+            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
+            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
+            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
+            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
+            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
+        </ul>
+    </div>
     <div class="container">
         <h1>MBTI Checker</h1>
         
@@ -254,6 +273,5 @@
             © 2025 MBTI Checker. สงวนลิขสิทธิ์
         </p>
     </div>
-    {% endblock %}
 </body>
 </html>
