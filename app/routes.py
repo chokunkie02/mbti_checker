@@ -37,19 +37,9 @@ def history():
     return render_template("history.html")
 
 
-@bp.route("/mbti/<type>")
-def mbti_type(type):
-    return render_template("mbti_type.html", type=type)
-
-
 @bp.route("/about")
 def about():
     return render_template("about.html")
-
-
-@bp.route("/careers")
-def careers():
-    return render_template("careers.html")
 
 
 @bp.route("/contact")
