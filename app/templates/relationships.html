@@ -4,93 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MBTI Relationship Checker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .type-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 400px;
-            margin: auto;
-        }
-        .type-button {
-            background-color: #008CBA;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .type-button:hover {
-            background-color: #005f73;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>MBTI Relationship Checker</h1>
-    <div class="type-grid" id="type-grid"></div>
-    <div id="result"></div>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">MBTI Compatibility Checker</h1>
+            <p class="text-gray-600">เลือก MBTI Type ของคุณเพื่อดูความเข้ากันได้กับ Type อื่นๆ</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4 mb-8" id="type-grid">
+            <!-- Buttons will be generated here -->
+        </div>
+
+        <div id="result" class="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 opacity-0">
+            <!-- Results will be shown here -->
+        </div>
+    </div>
 
     <script>
         const jsonUrl = "https://raw.githubusercontent.com/chokunkie02/mbti_checker/refs/heads/main/app/templates/data.json";
-        let data = {};
+        let mbtiData = {};
 
         async function fetchData() {
             try {
                 const response = await fetch(jsonUrl);
-                data = await response.json();
+                mbtiData = await response.json();
                 generateButtons();
             } catch (error) {
                 console.error("Error fetching data:", error);
-                document.getElementById('result').innerHTML = `<p style="color:red;">ไม่สามารถโหลดข้อมูลได้</p>`;
+                document.getElementById('result').innerHTML = `
+                    <div class="text-red-500 text-center">
+                        <p class="text-xl font-bold">ไม่สามารถโหลดข้อมูลได้</p>
+                        <p class="mt-2">กรุณาลองใหม่อีกครั้ง</p>
+                    </div>`;
+                document.getElementById('result').style.opacity = '1';
             }
         }
 
-        const types = ["INFJ", "ENFP", "ENTP", "INTJ", "INFP", "ENFJ", "INTP", "ISTJ", "ISFJ", "ESTP", "ESFP", "ESTJ", "ESFJ", "ISTP", "ISFP", "ENTJ"];
+        const types = ["INFJ", "ENFP", "ENTP", "INTJ", "INFP", "ENFJ", "INTP", "ISTJ", 
+                      "ISFJ", "ESTP", "ESFP", "ESTJ", "ESFJ", "ISTP", "ISFP", "ENTJ"];
 
         function generateButtons() {
             const typeGrid = document.getElementById('type-grid');
-            typeGrid.innerHTML = '';
             types.forEach(type => {
-                const button = document.createElement('div');
-                button.className = 'type-button';
+                const button = document.createElement('button');
+                button.className = 'bg-white hover:bg-blue-500 hover:text-white text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow transition-all duration-300';
                 button.textContent = type;
-                button.addEventListener('click', () => showRelationships(type));
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('#type-grid button').forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-800');
+                    });
+                    button.classList.remove('bg-white', 'text-gray-800');
+                    button.classList.add('bg-blue-500', 'text-white');
+                    showRelationships(type);
+                });
                 typeGrid.appendChild(button);
             });
         }
 
         function showRelationships(selectedType) {
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<h2>ความสัมพันธ์ของ ${selectedType}</h2>`;
-            if (data[selectedType]) {
-                Object.entries(data[selectedType]).forEach(([type, info]) => {
-                    resultDiv.innerHTML += `
-                        <p><strong>${type}:</strong> ${info.compatibility}</p>
-                        <p>${info.description}</p>
-                    `;
-                });
-            } else {
-                resultDiv.innerHTML += `<p>ไม่พบข้อมูลสำหรับ ${selectedType}</p>`;
-            }
+            resultDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                let content = `
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">ความเข้ากันได้ของ ${selectedType}</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                `;
+
+                if (mbtiData[selectedType]) {
+                    Object.entries(mbtiData[selectedType])
+                        .sort((a, b) => parseInt(b[1].compatibility) - parseInt(a[1].compatibility))
+                        .forEach(([type, info]) => {
+                            const compatibilityNum = parseInt(info.compatibility);
+                            let colorClass;
+                            if (compatibilityNum >= 90) colorClass = 'bg-green-100 border-green-500';
+                            else if (compatibilityNum >= 80) colorClass = 'bg-blue-100 border-blue-500';
+                            else if (compatibilityNum >= 70) colorClass = 'bg-yellow-100 border-yellow-500';
+                            else colorClass = 'bg-red-100 border-red-500';
+
+                            content += `
+                                <div class="p-4 rounded-lg border-l-4 ${colorClass}">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="text-xl font-semibold">${type}</h3>
+                                        <span class="text-lg font-bold">${info.compatibility}</span>
+                                    </div>
+                                    <p class="text-gray-700">${info.description}</p>
+                                </div>
+                            `;
+                        });
+                } else {
+                    content += `<p class="text-red-500">ไม่พบข้อมูลสำหรับ ${selectedType}</p>`;
+                }
+
+                content += '</div>';
+                resultDiv.innerHTML = content;
+                resultDiv.style.opacity = '1';
+            }, 300);
         }
 
+        // Fetch data when page loads
         fetchData();
     </script>
 </body>
