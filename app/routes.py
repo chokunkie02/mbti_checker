@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from flask import (
+    Blueprint,
+    render_template,
+    redirect,
+    url_for,
+    request,
+    flash,
+    session,
+    send_from_directory,
+)
 from app import db, mail
 from flask_mail import Message
 import logging
@@ -51,3 +60,8 @@ def save_mbti():
     mbti_result = request.form["mbti_result"]
     session["mbti_result"] = mbti_result
     return redirect(url_for("main.result"))
+
+
+@bp.route("/favicon.ico")
+def favicon():
+    return send_from_directory("static/mbti", "ISFP.ico")
