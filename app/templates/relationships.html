@@ -175,14 +175,18 @@
             transition: all 0.3s ease;
         }
 
+        .user-type-box, .selected-type-box {
+            animation: fadeIn 0.5s ease;
+        }
+
         .compatibility-box {
             flex: 1;
             text-align: center;
             padding: 1.5rem;
-            background: white;
             border-radius: 12px;
             max-width: 400px;
             box-shadow: var(--mbti-shadow);
+            transition: all 0.3s ease;
         }
 
         .change-type-btn {
@@ -307,7 +311,7 @@
         <div class="grid" id="type-grid"></div>
 
         <div class="comparison">
-            <div class="type-box">
+            <div class="type-box user-type-box">
                 <button id="change-type-btn" class="change-type-btn">เปลี่ยน Type</button>
                 <div class="type-label">MBTI Type ของคุณ</div>
                 <div id="user-type-value" class="type-value">-</div>
@@ -317,7 +321,7 @@
                 <div id="compatibility-value">-</div>
             </div>
 
-            <div class="type-box">
+            <div class="type-box selected-type-box">
                 <div class="type-label">MBTI Type ที่เลือก</div>
                 <div id="selected-type-value" class="type-value">-</div>
             </div>
@@ -400,25 +404,32 @@
 
         function renderUserType() {
             const userTypeValue = document.getElementById('user-type-value');
+            const userTypeBox = document.querySelector('.user-type-box');
             userTypeValue.textContent = userType || "-";
+            userTypeBox.className = `type-box user-type-box ${getTypeHouseClass(userType)}`;
         }
 
         function renderSelectedType() {
             const selectedTypeValue = document.getElementById('selected-type-value');
+            const selectedTypeBox = document.querySelector('.selected-type-box');
             selectedTypeValue.textContent = selectedType || "-";
+            selectedTypeBox.className = `type-box selected-type-box ${getTypeHouseClass(selectedType)}`;
         }
 
         function renderCompatibility() {
             const compatibilityValue = document.getElementById('compatibility-value');
+            const compatibilityBox = document.querySelector('.compatibility-box');
             if (userType && selectedType && mbtiData[userType] && mbtiData[userType][selectedType]) {
                 const { compatibility, description } = mbtiData[userType][selectedType];
                 const statusClass = getCompatibilityClass(compatibility);
+                compatibilityBox.className = `compatibility-box ${statusClass}`;
                 compatibilityValue.innerHTML = `
-                    <div class="compatibility-status ${statusClass}">${compatibility}</div>
+                    <div class="compatibility-status">${compatibility}</div>
                     <div>${description}</div>
                 `;
             } else {
                 compatibilityValue.textContent = "-";
+                compatibilityBox.className = 'compatibility-box';
             }
         }
 
