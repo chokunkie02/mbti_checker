@@ -4,7 +4,385 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MBTI Relationship Checker</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
+            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
+            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
+            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
+            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
+            --mbti-text: #333333;   /* สีข้อความหลัก */
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            line-height: 1.6;
+            background: var(--mbti-bg);
+            min-height: 100vh;
+            color: var(--mbti-text);
+            padding: 20px;
+            display: flex;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='none'/%3E%3Cpath d='M50 0a50 50 0 1 1 0 100 50 50 0 0 1 0-100z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: var(--mbti-text);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--mbti-purple);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--mbti-text);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--mbti-yellow), var(--mbti-purple));
+            border-radius: 2px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-10 {
+            margin-bottom: 2.5rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-gray-800 {
+            color: #2d3748;
+        }
+
+        .text-gray-600 {
+            color: #718096;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+
+        .duration-300 {
+            transition-duration: 0.3s;
+        }
+
+        .opacity-0 {
+            opacity: 0;
+        }
+
+        .opacity-1 {
+            opacity: 1;
+        }
+
+        .bg-gradient-to-br {
+            background: linear-gradient(to bottom right, var(--mbti-yellow), var(--mbti-purple));
+        }
+
+        .from-blue-50 {
+            background-color: #ebf8ff;
+        }
+
+        .to-purple-50 {
+            background-color: #faf5ff;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .max-w-4xl {
+            max-width: 64rem;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .flex-grow {
+            flex-grow: 1;
+        }
+
+        .block {
+            display: block;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .hover\:bg-gray-200:hover {
+            background-color: #edf2f7;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .border {
+            border-width: 1px;
+        }
+
+        .border-gray-400 {
+            border-color: #cbd5e0;
+        }
+
+        .hover\:bg-blue-500:hover {
+            background-color: #4299e1;
+        }
+
+        .hover\:text-white:hover {
+            color: white;
+        }
+
+        .text-gray-800 {
+            color: #2d3748;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+
+        .duration-300 {
+            transition-duration: 0.3s;
+        }
+
+        .bg-blue-500 {
+            background-color: #4299e1;
+        }
+
+        .text-white {
+            color: white;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .border-l-4 {
+            border-left-width: 4px;
+        }
+
+        .bg-green-100 {
+            background-color: #f0fff4;
+        }
+
+        .border-green-500 {
+            border-color: #48bb78;
+        }
+
+        .bg-blue-100 {
+            background-color: #ebf8ff;
+        }
+
+        .border-blue-500 {
+            border-color: #4299e1;
+        }
+
+        .bg-yellow-100 {
+            background-color: #fffff0;
+        }
+
+        .border-yellow-500 {
+            border-color: #ecc94b;
+        }
+
+        .bg-red-100 {
+            background-color: #fff5f5;
+        }
+
+        .border-red-500 {
+            border-color: #f56565;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-gray-700 {
+            color: #4a5568;
+        }
+
+        .text-red-500 {
+            color: #f56565;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .md\:grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen p-8 flex">
     <div class="sidebar bg-white p-6 rounded-lg shadow-lg mr-8">
@@ -19,7 +397,7 @@
             <li><a href="{{ url_for('main.contact') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ติดต่อเรา</a></li>
         </ul>
     </div>
-    <div class="max-w-4xl mx-auto flex-grow">
+    <div class="container">
         <div class="text-center mb-10">
             <h1 class="text-4xl font-bold text-gray-800 mb-4">MBTI Compatibility Checker</h1>
             <p class="text-gray-600">เลือก MBTI Type ของคุณเพื่อดูความเข้ากันได้กับ Type อื่นๆ</p>
