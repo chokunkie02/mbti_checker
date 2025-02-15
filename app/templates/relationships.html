@@ -31,6 +31,7 @@
             color: var(--mbti-text);
             line-height: 1.6;
             padding: 20px;
+            display: flex;
         }
 
         .container {
@@ -42,6 +43,7 @@
             box-shadow: var(--mbti-shadow);
             position: relative;
             overflow: hidden;
+            flex-grow: 1;
         }
 
         .container::before {
@@ -173,10 +175,27 @@
             background: white;
             box-shadow: var(--mbti-shadow);
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
         .user-type-box, .selected-type-box {
             animation: fadeIn 0.5s ease;
+        }
+
+        .user-type-box.analyst, .selected-type-box.analyst {
+            border-color: var(--analyst-color);
+        }
+
+        .user-type-box.diplomat, .selected-type-box.diplomat {
+            border-color: var(--diplomat-color);
+        }
+
+        .user-type-box.guardian, .selected-type-box.guardian {
+            border-color: var(--guardian-color);
+        }
+
+        .user-type-box.explorer, .selected-type-box.explorer {
+            border-color: var(--explorer-color);
         }
 
         .compatibility-box {
@@ -187,6 +206,7 @@
             max-width: 400px;
             box-shadow: var(--mbti-shadow);
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
         .change-type-btn {
@@ -227,21 +247,25 @@
         .status-high {
             background: #dcfce7;
             color: #166534;
+            border-color: #166534;
         }
 
         .status-medium {
             background: #bfdbfe;
             color: #1e40af;
+            border-color: #1e40af;
         }
 
         .status-low {
             background: #fef9c3;
             color: #854d0e;
+            border-color: #854d0e;
         }
 
         .status-very-low {
             background: #fee2e2;
             color: #991b1b;
+            border-color: #991b1b;
         }
 
         .popup, .overlay {
@@ -301,9 +325,54 @@
                 padding: 1rem;
             }
         }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: var(--mbti-text);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--analyst-color);
+        }
     </style>
 </head>
 <body>
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
+            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
+            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
+            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
+            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
+            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
+            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
+            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
+        </ul>
+    </div>
     <div class="container">
         <h1>MBTI Compatibility Checker</h1>
         <div class="subtitle">เลือก MBTI Type ที่ต้องการเปรียบเทียบ</div>
@@ -339,6 +408,15 @@
         let mbtiData = {};
         let userType = localStorage.getItem('mbtiType') || null;
         let selectedType = null;
+
+        // ตรวจสอบสถานะการทำแบบทดสอบ
+        const hasTakenQuiz = localStorage.getItem('hasTakenQuiz') === 'true';
+
+        // ถ้ายังไม่ทำแบบทดสอบ ให้รีเซ็ตไทป์
+        if (!hasTakenQuiz) {
+            userType = null;
+            localStorage.removeItem('mbtiType');
+        }
 
         // กำหนดประเภทและสีของแต่ละบ้าน
         const typeHouses = {
@@ -443,6 +521,7 @@
                 button.addEventListener('click', () => {
                     userType = button.getAttribute('data-type');
                     localStorage.setItem('mbtiType', userType);
+                    localStorage.setItem('hasTakenQuiz', 'true'); // บันทึกสถานะการทำแบบทดสอบ
                     document.getElementById('overlay').style.display = 'none';
                     document.getElementById('popup').style.display = 'none';
                     renderApp();
@@ -451,6 +530,7 @@
         }
 
         function checkAndShowPopup() {
+            userType = localStorage.getItem('mbtiType') || null;
             if (!userType) {
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('popup').style.display = 'block';
@@ -468,6 +548,11 @@
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('popup').style.display = 'none';
             }
+        });
+
+        window.addEventListener('load', () => {
+            userType = localStorage.getItem('mbtiType') || null;
+            renderApp();
         });
 
         fetchData();
