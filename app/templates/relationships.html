@@ -6,8 +6,20 @@
     <title>MBTI Relationship Checker</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen p-8">
-    <div class="max-w-4xl mx-auto">
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen p-8 flex">
+    <div class="sidebar bg-white p-6 rounded-lg shadow-lg mr-8">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}" class="block py-2 px-4 rounded hover:bg-gray-200">หน้าแรก</a></li>
+            <li><a href="{{ url_for('main.quiz') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ทำแบบทดสอบ</a></li>
+            <li><a href="{{ url_for('main.result') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ผลลัพธ์</a></li>
+            <li><a href="{{ url_for('main.characters') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ตัวละคร</a></li>
+            <li><a href="{{ url_for('main.relationships') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ความสัมพันธ์</a></li>
+            <li><a href="{{ url_for('main.history') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ประวัติ</a></li>
+            <li><a href="{{ url_for('main.about') }}" class="block py-2 px-4 rounded hover:bg-gray-200">เกี่ยวกับเรา</a></li>
+            <li><a href="{{ url_for('main.contact') }}" class="block py-2 px-4 rounded hover:bg-gray-200">ติดต่อเรา</a></li>
+        </ul>
+    </div>
+    <div class="max-w-4xl mx-auto flex-grow">
         <div class="text-center mb-10">
             <h1 class="text-4xl font-bold text-gray-800 mb-4">MBTI Compatibility Checker</h1>
             <p class="text-gray-600">เลือก MBTI Type ของคุณเพื่อดูความเข้ากันได้กับ Type อื่นๆ</p>
