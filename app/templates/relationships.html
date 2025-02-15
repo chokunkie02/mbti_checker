@@ -1,131 +1,97 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ความสัมพันธ์ของบุคลิกภาพทั้ง 16 ประเภท</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #444;
-    }
-    .type-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .type-button {
-      padding: 15px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-align: center;
-      font-size: 16px;
-    }
-    .type-button:hover {
-      background-color: #0056b3;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      background-color: white;
-      border-radius: 5px;
-    }
-    .result h2 {
-      margin-top: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Relationship Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+        .type-button {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .type-button:hover {
+            background-color: #005f73;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-  <h1>ความสัมพันธ์ของบุคลิกภาพทั้ง 16 ประเภท</h1>
-  <div class="type-grid" id="type-grid">
-    <!-- ปุ่มจะถูกสร้างโดย JavaScript -->
-  </div>
-  <div class="result" id="result">
-    <!-- ผลลัพธ์จะแสดงที่นี่ -->
-  </div>
+    <h1>MBTI Relationship Checker</h1>
+    <div class="type-grid" id="type-grid"></div>
+    <div id="result"></div>
 
-  <script>
-    // ข้อมูล JSON ที่เก็บข้อมูลความสัมพันธ์
-    const data = {
-      "INFJ": {
-        "INFJ": { "compatibility": "90%", "description": "INFJ สองคนมักเข้าใจกันเป็นอย่างดีเพราะมีค่านิยมและความคิดคล้ายกัน ทั้งคู่ชอบความลึกซึ้งและความหมายในชีวิต แต่ปัญหาอาจเกิดขึ้นเมื่อทั้งคู่หลีกเลี่ยงความขัดแย้งและไม่กล้าแสดงความต้องการของตัวเอง" },
-        "ENFP": { "compatibility": "95%", "description": "INFJ และ ENFP มักถูกดึงดูดกันเพราะทั้งคู่มีความคิดสร้างสรรค์และชอบการสนทนาเชิงลึก ENFP ช่วยให้ INFJ รู้สึกมีชีวิตชีวา ในขณะที่ INFJ ให้ความเข้าใจและความมั่นคงทางอารมณ์แก่ ENFP" },
-        "ENTP": { "compatibility": "85%", "description": "INFJ และ ENTP มักสนุกกับการแลกเปลี่ยนความคิดเห็นเพราะทั้งคู่ชอบความคิดเชิงลึก อย่างไรก็ตาม ENTP อาจดูชอบโต้แย้งเกินไปสำหรับ INFJ ที่ต้องการความกลมเกลียว" },
-        "INTJ": { "compatibility": "90%", "description": "INFJ และ INTJ มักเข้ากันได้ดีเพราะทั้งคู่ชอบความคิดเชิงกลยุทธ์และวิสัยทัศน์ แต่ INTJ อาจดูเย็นชาเกินไปสำหรับ INFJ ที่ต้องการความอบอุ่นทางอารมณ์" },
-        "INFP": { "compatibility": "92%", "description": "INFJ และ INFP มักเข้าใจกันดีเพราะทั้งคู่มีความอ่อนไหวและเห็นอกเห็นใจ แต่บางครั้งอาจมีปัญหาเพราะทั้งคู่ชอบหลีกเลี่ยงความขัดแย้ง" },
-        "ENFJ": { "compatibility": "94%", "description": "INFJ และ ENFJ มักเข้ากันได้ดีเพราะทั้งคู่มีค่านิยมคล้ายกันและใส่ใจคนอื่น ENFJ ชอบเป็นผู้นำ ในขณะที่ INFJ ชอบสนับสนุน ซึ่งทำให้เป็นคู่ที่สมดุล" },
-        "INTP": { "compatibility": "80%", "description": "INFJ และ INTP มักดึงดูดกันเพราะทั้งคู่ชอบความคิดเชิงลึก แต่ INTP อาจดูใช้เหตุผลเกินไปสำหรับ INFJ ที่เน้นความรู้สึก" },
-        "ISTJ": { "compatibility": "70%", "description": "INFJ และ ISTJ อาจเข้ากันได้ยากเพราะ ISTJ ชอบความเป็นระเบียบและโครงสร้าง ในขณะที่ INFJ ชอบความยืดหยุ่น แต่หากเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ISFJ": { "compatibility": "88%", "description": "INFJ และ ISFJ มักเข้ากันได้ดีเพราะทั้งคู่มีความอ่อนไหวและใส่ใจคนอื่น แต่ ISFJ อาจดูอนุรักษ์นิยมเกินไปสำหรับ INFJ ที่ชอบความคิดสร้างสรรค์" },
-        "ESTP": { "compatibility": "60%", "description": "INFJ และ ESTP อาจเข้ากันได้ยากเพราะ ESTP ชอบการกระทำและความตื่นเต้น ในขณะที่ INFJ ชอบความสงบและความคิดเชิงลึก แต่หากเรียนรู้ที่จะเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ESFP": { "compatibility": "65%", "description": "INFJ และ ESFP อาจมีปัญหาการสื่อสารเพราะ ESFP ชอบความสนุกสนานและสังคม ในขณะที่ INFJ ชอบความสงบและความลึกซึ้ง แต่ ESFP สามารถช่วยให้ INFJ ผ่อนคลายได้" },
-        "ESTJ": { "compatibility": "55%", "description": "INFJ และ ESTJ อาจขัดแย้งกันเพราะ ESTJ ชอบความเป็นระเบียบและโครงสร้าง ในขณะที่ INFJ ชอบความยืดหยุ่นและความคิดสร้างสรรค์ แต่หากเข้าใจกันก็สามารถทำงานร่วมกันได้ดี" },
-        "ESFJ": { "compatibility": "75%", "description": "INFJ และ ESFJ มักเข้ากันได้ดีเพราะทั้งคู่ใส่ใจคนอื่น แต่ ESFJ อาจดูเน้นสังคมเกินไปสำหรับ INFJ ที่ชอบความเป็นส่วนตัว" },
-        "ISTP": { "compatibility": "68%", "description": "INFJ และ ISTP อาจเข้ากันได้ยากเพราะ ISTP ชอบความเป็นอิสระและการกระทำ ในขณะที่ INFJ ชอบความลึกซึ้งและความสัมพันธ์ แต่หากเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ISFP": { "compatibility": "85%", "description": "INFJ และ ISFP มักเข้ากันได้ดีเพราะทั้งคู่มีความอ่อนไหวและเห็นอกเห็นใจ แต่ ISFP อาจดูไม่ชอบวางแผนสำหรับ INFJ ที่ชอบการเตรียมการล่วงหน้า" },
-        "ENTJ": { "compatibility": "75%", "description": "INFJ และ ENTJ มักดึงดูดกันเพราะทั้งคู่มีวิสัยทัศน์และความทะเยอทะยาน แต่ ENTJ อาจดูก้าวร้าวเกินไปสำหรับ INFJ ที่ต้องการความอ่อนโยน" }
-      },
-      "INFP": {
-        "INFP": { "compatibility": "90%", "description": "INFP สองคนมักเข้าใจกันเป็นอย่างดีเพราะมีค่านิยมและความคิดคล้ายกัน ทั้งคู่ชอบความลึกซึ้งและความหมายในชีวิต แต่ปัญหาอาจเกิดขึ้นเมื่อทั้งคู่หลีกเลี่ยงความขัดแย้งและไม่กล้าแสดงความต้องการของตัวเอง" },
-        "ENFJ": { "compatibility": "95%", "description": "INFP และ ENFJ มักถูกดึงดูดกันอย่างมาก เพราะ INFP ให้ความลึกซึ้งทางอารมณ์ที่ ENFJ ต้องการ ในขณะที่ ENFJ ให้การสนับสนุนและแรงบันดาลใจที่ INFP ต้องการ ทั้งคู่มีค่านิยมที่คล้ายกันและเข้าใจความรู้สึกของกันและกัน" },
-        "ENFP": { "compatibility": "92%", "description": "INFP และ ENFP มักสนุกกับการแลกเปลี่ยนความคิดเห็นเพราะทั้งคู่ชอบความคิดเชิงลึก อย่างไรก็ตาม ENFP อาจดูชอบโต้แย้งเกินไปสำหรับ INFP ที่ต้องการความกลมเกลียว" },
-        "INFJ": { "compatibility": "94%", "description": "INFP และ INFJ มักเข้ากันได้ดีเพราะทั้งคู่ชอบความคิดเชิงกลยุทธ์และวิสัยทัศน์ แต่ INFJ อาจดูเย็นชาเกินไปสำหรับ INFP ที่ต้องการความอบอุ่นทางอารมณ์" },
-        "ISFP": { "compatibility": "88%", "description": "INFP และ ISFP มักเข้าใจกันดีเพราะทั้งคู่มีความอ่อนไหวและเห็นอกเห็นใจ แต่บางครั้งอาจมีปัญหาเพราะทั้งคู่ชอบหลีกเลี่ยงความขัดแย้ง" },
-        "ENTP": { "compatibility": "85%", "description": "INFP และ ENTP มักเข้ากันได้ดีเพราะทั้งคู่มีค่านิยมคล้ายกันและใส่ใจคนอื่น ENTP ชอบเป็นผู้นำ ในขณะที่ INFP ชอบสนับสนุน ซึ่งทำให้เป็นคู่ที่สมดุล" },
-        "INTP": { "compatibility": "80%", "description": "INFP และ INTP มักดึงดูดกันเพราะทั้งคู่ชอบความคิดเชิงลึก แต่ INTP อาจดูใช้เหตุผลเกินไปสำหรับ INFP ที่เน้นความรู้สึก" },
-        "ISTJ": { "compatibility": "70%", "description": "INFP และ ISTJ อาจเข้ากันได้ยากเพราะ ISTJ ชอบความเป็นระเบียบและโครงสร้าง ในขณะที่ INFP ชอบความยืดหยุ่น แต่หากเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ISFJ": { "compatibility": "75%", "description": "INFP และ ISFJ มักเข้ากันได้ดีเพราะทั้งคู่มีความอ่อนไหวและใส่ใจคนอื่น แต่ ISFJ อาจดูอนุรักษ์นิยมเกินไปสำหรับ INFP ที่ชอบความคิดสร้างสรรค์" },
-        "ESTP": { "compatibility": "60%", "description": "INFP และ ESTP อาจเข้ากันได้ยากเพราะ ESTP ชอบการกระทำและความตื่นเต้น ในขณะที่ INFP ชอบความสงบและความคิดเชิงลึก แต่หากเรียนรู้ที่จะเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ESFP": { "compatibility": "65%", "description": "INFP และ ESFP อาจมีปัญหาการสื่อสารเพราะ ESFP ชอบความสนุกสนานและสังคม ในขณะที่ INFP ชอบความสงบและความลึกซึ้ง แต่ ESFP สามารถช่วยให้ INFP ผ่อนคลายได้" },
-        "ESTJ": { "compatibility": "55%", "description": "INFP และ ESTJ อาจขัดแย้งกันเพราะ ESTJ ชอบความเป็นระเบียบและโครงสร้าง ในขณะที่ INFP ชอบความยืดหยุ่นและความคิดสร้างสรรค์ แต่หากเข้าใจกันก็สามารถทำงานร่วมกันได้ดี" },
-        "ESFJ": { "compatibility": "75%", "description": "INFP และ ESFJ มักเข้ากันได้ดีเพราะทั้งคู่ใส่ใจคนอื่น แต่ ESFJ อาจดูเน้นสังคมเกินไปสำหรับ INFP ที่ชอบความเป็นส่วนตัว" },
-        "ISTP": { "compatibility": "68%", "description": "INFP และ ISTP อาจเข้ากันได้ยากเพราะ ISTP ชอบความเป็นอิสระและการกระทำ ในขณะที่ INFP ชอบความลึกซึ้งและความสัมพันธ์ แต่หากเข้าใจกันก็สามารถเติมเต็มซึ่งกันและกันได้" },
-        "ENTJ": { "compatibility": "70%", "description": "INFP และ ENTJ มักดึงดูดกันเพราะทั้งคู่มีวิสัยทัศน์และความทะเยอทะยาน แต่ ENTJ อาจดูก้าวร้าวเกินไปสำหรับ INFP ที่ต้องการความอ่อนโยน" },
-        "INTJ": { "compatibility": "85%", "description": "INFP และ INTJ มักเข้ากันได้ดีเพราะทั้งคู่ชอบความคิดเชิงลึกและมีวิสัยทัศน์ แต่ INTJ อาจดูเย็นชาเกินไปสำหรับ INFP ที่ต้องการความอบอุ่นทางอารมณ์" }
-      }
-    };
+    <script>
+        const jsonUrl = "https://raw.githubusercontent.com/chokunkie02/mbti_checker/refs/heads/main/app/templates/data.json";
+        let data = {};
 
-    // รายชื่อประเภทบุคลิกภาพทั้ง 16 ประเภท
-    const types = ["INFJ", "ENFP", "ENTP", "INTJ", "INFP", "ENFJ", "INTP", "ISTJ", "ISFJ", "ESTP", "ESFP", "ESTJ", "ESFJ", "ISTP", "ISFP", "ENTJ"];
+        async function fetchData() {
+            try {
+                const response = await fetch(jsonUrl);
+                data = await response.json();
+                generateButtons();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('result').innerHTML = `<p style="color:red;">ไม่สามารถโหลดข้อมูลได้</p>`;
+            }
+        }
 
-    // สร้างปุ่มสำหรับแต่ละประเภท
-    const typeGrid = document.getElementById('type-grid');
-    types.forEach(type => {
-      const button = document.createElement('div');
-      button.className = 'type-button';
-      button.textContent = type;
-      button.addEventListener('click', () => showRelationships(type));
-      typeGrid.appendChild(button);
-    });
+        const types = ["INFJ", "ENFP", "ENTP", "INTJ", "INFP", "ENFJ", "INTP", "ISTJ", "ISFJ", "ESTP", "ESFP", "ESTJ", "ESFJ", "ISTP", "ISFP", "ENTJ"];
 
-    // ฟังก์ชันแสดงความสัมพันธ์
-    function showRelationships(selectedType) {
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `<h2>ความสัมพันธ์ของ ${selectedType}</h2>`;
+        function generateButtons() {
+            const typeGrid = document.getElementById('type-grid');
+            typeGrid.innerHTML = '';
+            types.forEach(type => {
+                const button = document.createElement('div');
+                button.className = 'type-button';
+                button.textContent = type;
+                button.addEventListener('click', () => showRelationships(type));
+                typeGrid.appendChild(button);
+            });
+        }
 
-      if (data[selectedType]) {
-        Object.entries(data[selectedType]).forEach(([type, info]) => {
-          resultDiv.innerHTML += `
-            <p><strong>${type}:</strong> ${info.compatibility}</p>
-            <p>${info.description}</p>
-          `;
-        });
-      } else {
-        resultDiv.innerHTML += `<p>ไม่พบข้อมูลสำหรับ ${selectedType}</p>`;
-      }
-    }
-  </script>
+        function showRelationships(selectedType) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<h2>ความสัมพันธ์ของ ${selectedType}</h2>`;
+            if (data[selectedType]) {
+                Object.entries(data[selectedType]).forEach(([type, info]) => {
+                    resultDiv.innerHTML += `
+                        <p><strong>${type}:</strong> ${info.compatibility}</p>
+                        <p>${info.description}</p>
+                    `;
+                });
+            } else {
+                resultDiv.innerHTML += `<p>ไม่พบข้อมูลสำหรับ ${selectedType}</p>`;
+            }
+        }
+
+        fetchData();
+    </script>
 </body>
 </html>
