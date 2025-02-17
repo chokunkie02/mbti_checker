@@ -1,17 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="POST" action="{{ url_for('main.login') }}">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+<div class="auth-container">
+    <h2>Login</h2>
+    <form method="POST" action="{{ url_for('main.login') }}">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+            {% for error in form.username.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <div class="auth-links">
+        <p>ยังไม่มีบัญชี? <a href="{{ url_for('main.register') }}" class="register-link">ลงทะเบียนที่นี่</a></p>
+    </div>
+</div>
 {% endblock %}

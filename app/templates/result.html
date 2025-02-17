@@ -14,12 +14,12 @@
         }
 
         :root {
-            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
-            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
-            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
-            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
-            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
-            --mbti-text: #333333;   /* สีข้อความหลัก */
+            --mbti-yellow: #FFEB3B;
+            --mbti-green: #81C784;
+            --mbti-blue: #64B5F6;
+            --mbti-purple: #BA68C8;
+            --mbti-bg: #f5f5f5;
+            --mbti-text: #333333;
         }
 
         body {
@@ -254,6 +254,31 @@
                 padding: 15px 20px;
             }
         }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* Initially hidden */
+            z-index: 100; /* Ensure it's on top */
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none; /* Initially hidden */
+            z-index: 101; /* Ensure it's on top of the overlay */
+            width: 300px; /* Adjust width as needed */
+        }
     </style>
 </head>
 <body>
@@ -272,268 +297,284 @@
     <div class="container">
         <h1>ผลการทดสอบบุคลิกภาพ MBTI</h1>
         <div id="resultContent">
-            <!-- Result content will be inserted here -->
+            <!-- แสดงข้อความแจ้งเตือนถ้ายังไม่ได้ทำแบบทดสอบ -->
+            <div id="warningMessage" style="display: none; text-align: center; margin: 2rem 0;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">คุณยังไม่ได้ทำแบบทดสอบ MBTI</p>
+                <a href="{{ url_for('main.quiz') }}" class="back-button" style="display: inline-block;">
+                    ไปทำแบบทดสอบ
+                </a>
+            </div>
+
+            <!-- แสดงผลลัพธ์ MBTI -->
+            <div id="mbtiResult" style="display: none;">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.mbti_type %}
+                        <div class="result-header">
+                            <div>บุคลิกภาพของคุณคือ</div>
+                            <div class="type">{{ current_user.mbti_type }}</div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
-        <a href="{{ url_for('main.quiz') }}" class="back-button">ทำแบบทดสอบอีกครั้ง</a>
+
+        <!-- แสดงปุ่มทำแบบทดสอบอีกครั้งเฉพาะเมื่อมีผลการทดสอบแล้ว -->
+        <div id="retakeButtons" style="text-align: center; margin-top: 2rem;">
+            <a href="{{ url_for('main.quiz') }}" class="back-button" style="margin: 0 10px;">ทำแบบทดสอบครั้งแรก</a>
+            <a href="{{ url_for('main.quiz') }}" class="back-button" style="margin: 0 10px;">ทำแบบทดสอบอีกครั้ง</a>
+        </div>
     </div>
 
     <script>
         const typeDescriptions = {
             'INTJ': {
                 name: 'นักวางกลยุทธ์ (The Architect)',
-                description: 'เป็นนักคิดเชิงกลยุทธ์ที่มีความเป็นตรรกะสูง ชอบวางแผนและพัฒนาระบบ มีความมุ่งมั่นในการบรรลุเป้าหมาย มักมีวิสัยทัศน์ที่ชัดเจนและทำงานอย่างเป็นระบบ',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'N: มองภาพรวมและอนาคต', 'T: ตัดสินใจด้วยเหตุผล', 'J: ชอบวางแผนและจัดระเบียบ'],
+                traits: ['Introverted', 'Intuitive', 'Thinking', 'Judging'],
+                description: 'คนที่มีความเป็นผู้นำทางความคิด มีวิสัยทัศน์ที่ชัดเจน และมีความสามารถในการวางแผนระยะยาว',
                 characteristics: [
-                    'มีความสามารถในการวางแผนระยะยาว',
-                    'มีความคิดสร้างสรรค์และนวัตกรรม',
-                    'มีความมุ่งมั่นสูง',
-                    'ชอบความท้าทายทางปัญญา',
-                    'มีมาตรฐานสูงในการทำงาน'
-                ],
-                color: '#BA68C8' /* Purple */
+                    'มีความคิดเชิงกลยุทธ์',
+                    'ชอบวางแผนและจัดระบบ',
+                    'มีความเป็นตรรกะสูง',
+                    'ชอบความท้าทายทางปัญญา'
+                ]
             },
             'INTP': {
                 name: 'นักคิด (The Logician)',
-                description: 'เป็นนักคิดวิเคราะห์ที่มีความเป็นนวัตกร ชอบค้นคว้าหาความรู้และทฤษฎีใหม่ๆ มีความสามารถในการแก้ปัญหาที่ซับซ้อน',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'N: มองภาพรวมและอนาคต', 'T: ตัดสินใจด้วยเหตุผล', 'P: ยืดหยุ่นและปรับตัวได้'],
+                traits: ['Introverted', 'Intuitive', 'Thinking', 'Perceiving'],
+                description: 'นักคิดที่มีความเป็นนวัตกร ชอบวิเคราะห์ปัญหาที่ซับซ้อน และมองหาวิธีแก้ปัญหาที่สร้างสรรค์',
                 characteristics: [
                     'มีความคิดสร้างสรรค์สูง',
-                    'ชอบวิเคราะห์และแก้ปัญหา',
-                    'มีความอยากรู้อยากเห็น',
-                    'ชอบเรียนรู้สิ่งใหม่',
-                    'มีความเป็นอิสระทางความคิด'
-                ],
-                color: '#BA68C8' /* Purple */
+                    'ชอบการวิเคราะห์',
+                    'มีความเป็นตรรกะ',
+                    'สนใจในทฤษฎีและแนวคิด'
+                ]
             },
             'ENTJ': {
-                name: 'ผู้บริหาร (The Commander)',
-                description: 'เป็นผู้นำที่มีความมั่นใจ กล้าตัดสินใจ และมีวิสัยทัศน์ชัดเจน ชอบวางแผนและจัดการให้เกิดผลสำเร็จ',
-                traits: ['E: ชอบเข้าสังคม', 'N: มองภาพรวมและอนาคต', 'T: ตัดสินใจด้วยเหตุผล', 'J: ชอบวางแผนและจัดระเบียบ'],
-                characteristics: [
-                    'มีภาวะผู้นำสูง',
-                    'กล้าตัดสินใจ',
-                    'มีความสามารถในการวางแผน',
-                    'มุ่งมั่นสู่ความสำเร็จ',
-                    'มีความมั่นใจในตนเอง'
-                ],
-                color: '#BA68C8' /* Purple */
-            },
-            'ENTP': {
-                name: 'นักโต้แย้ง (The Debater)',
-                description: 'เป็นนักคิดที่มีความคิดสร้างสรรค์ ชอบโต้แย้งและแลกเปลี่ยนความคิดเห็น มองเห็นโอกาสและความเป็นไปได้ใหม่ๆ',
-                traits: ['E: ชอบเข้าสังคม', 'N: มองภาพรวมและอนาคต', 'T: ตัดสินใจด้วยเหตุผล', 'P: ยืดหยุ่นและปรับตัวได้'],
-                characteristics: [
-                    'มีความคิดสร้างสรรค์',
-                    'ชอบการโต้แย้งเชิงสร้างสรรค์',
-                    'มีความกระตือรือร้น',
-                    'ปรับตัวเก่ง',
-                    'มีความเป็นผู้นำทางความคิด'
-                ],
-                color: '#BA68C8' /* Purple */
-            },
-            'INFJ': {
-                name: 'ผู้ให้คำปรึกษา (The Advocate)',
-                description: 'เป็นผู้มีอุดมการณ์ มีความเข้าใจผู้อื่นลึกซึ้ง ชอบช่วยเหลือและพัฒนาผู้อื่น มีความคิดสร้างสรรค์และมุ่งมั่น',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'N: มองภาพรวมและอนาคต', 'F: ตัดสินใจด้วยความรู้สึก', 'J: ชอบวางแผนและจัดระเบียบ'],
-                characteristics: [
-                    'เข้าใจความรู้สึกผู้อื่น',
-                    'มีความคิดสร้างสรรค์',
-                    'มีอุดมการณ์สูง',
-                    'ชอบช่วยเหลือผู้อื่น',
-                    'มีความมุ่งมั่นในการพัฒนา'
-                ],
-                color: '#81C784' /* Green */
-            },
-            'INFP': {
-                name: 'นักอุดมคติ (The Mediator)',
-                description: 'เป็นผู้มีจินตนาการสูง มีความเห็นอกเห็นใจผู้อื่น ยึดมั่นในค่านิยมส่วนตัว ชอบสร้างสรรค์และแสวงหาความหมายในชีวิต',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'N: มองภาพรวมและอนาคต', 'F: ตัดสินใจด้วยความรู้สึก', 'P: ยืดหยุ่นและปรับตัวได้'],
-                characteristics: [
-                    'มีจินตนาการสูง',
-                    'มีความเห็นอกเห็นใจ',
-                    'มีความคิดสร้างสรรค์',
-                    'ยึดมั่นในค่านิยม',
-                    'ชอบค้นหาความหมายในชีวิต'
-                ],
-                color: '#81C784' /* Green */
-            },
-            'ENFJ': {
-                name: 'ผู้สร้างแรงบันดาลใจ (The Protagonist)',
-                description: 'เป็นผู้นำที่มีความเข้าใจผู้อื่น ชอบสร้างแรงบันดาลใจและพัฒนาผู้อื่น มีความรับผิดชอบและมุ่งมั่นในการทำงานเพื่อส่วนรวม',
-                traits: ['E: ชอบเข้าสังคม', 'N: มองภาพรวมและอนาคต', 'F: ตัดสินใจด้วยความรู้สึก', 'J: ชอบวางแผนและจัดระเบียบ'],
+                name: 'ผู้บริหาร (The Executive)',
+                traits: ['Extroverted', 'Intuitive', 'Thinking', 'Judging'],
+                description: 'ผู้นำที่เด็ดขาด มีความมั่นใจในตัวเองสูง และมีความสามารถในการตัดสินใจอย่างรวดเร็ว',
                 characteristics: [
                     'มีความเป็นผู้นำ',
-                    'เข้าใจและใส่ใจผู้อื่น',
-                    'มีความรับผิดชอบสูง',
-                    'สร้างแรงบันดาลใจให้ผู้อื่น',
-                    'ทำงานเพื่อส่วนรวม'
-                ],
-                color: '#81C784' /* Green */
+                    'มีความมั่นใจในตัวเอง',
+                    'มีความสามารถในการตัดสินใจ',
+                    'ชอบการควบคุมสถานการณ์'
+                ]
+            },
+            'ENTP': {
+                name: 'นักคิดนอกกรอบ (The Debater)',
+                traits: ['Extroverted', 'Intuitive', 'Thinking', 'Perceiving'],
+                description: 'คนที่มีความคิดสร้างสรรค์ ชอบการถกเถียง และมองโลกในแง่ดี',
+                characteristics: [
+                    'มีความคิดสร้างสรรค์',
+                    'ชอบการถกเถียง',
+                    'มองโลกในแง่ดี',
+                    'มีความคิดริเริ่มสร้างสรรค์'
+                ]
+            },
+            'INFJ': {
+                name: 'ที่ปรึกษา (The Advocate)',
+                traits: ['Introverted', 'Intuitive', 'Feeling', 'Judging'],
+                description: 'คนที่มีความเข้าใจอารมณ์คนอื่นได้ดี มีความเห็นอกเห็นใจ และมีความสามารถในการสร้างแรงบันดาลใจ',
+                characteristics: [
+                    'มีความเห็นอกเห็นใจ',
+                    'เข้าใจอารมณ์คนอื่นได้ดี',
+                    'มีความสามารถในการสร้างแรงบันดาลใจ',
+                    'ชอบความสงบสุข'
+                ]
+            },
+            'INFP': {
+                name: 'นักเขียน (The Mediator)',
+                traits: ['Introverted', 'Intuitive', 'Feeling', 'Perceiving'],
+                description: 'คนที่มีความคิดสร้างสรรค์ ชอบความเป็นอิสระ และมีความอ่อนโยน',
+                characteristics: [
+                    'มีความคิดสร้างสรรค์',
+                    'ชอบความเป็นอิสระ',
+                    'มีความอ่อนโยน',
+                    'ชอบความคิดสร้างสรรค์'
+                ]
+            },
+            'ENFJ': {
+                name: 'ผู้ให้การสนับสนุน (The Protagonist)',
+                traits: ['Extroverted', 'Intuitive', 'Feeling', 'Judging'],
+                description: 'คนที่มีความเป็นผู้นำ มีความเห็นอกเห็นใจ และมีความสามารถในการสร้างแรงบันดาลใจ',
+                characteristics: [
+                    'มีความเป็นผู้นำ',
+                    'มีความเห็นอกเห็นใจ',
+                    'มีความสามารถในการสร้างแรงบันดาลใจ',
+                    'ชอบช่วยเหลือผู้อื่น'
+                ]
             },
             'ENFP': {
-                name: 'นักสำรวจ (The Campaigner)',
-                description: 'เป็นผู้มีความกระตือรือร้น มองโลกในแง่ดี มีความคิดสร้างสรรค์ ชอบค้นหาสิ่งใหม่ๆ และสร้างความสัมพันธ์กับผู้อื่น',
-                traits: ['E: ชอบเข้าสังคม', 'N: มองภาพรวมและอนาคต', 'F: ตัดสินใจด้วยความรู้สึก', 'P: ยืดหยุ่นและปรับตัวได้'],
+                name: 'นักคิดสร้างสรรค์ (The Campaigner)',
+                traits: ['Extroverted', 'Intuitive', 'Feeling', 'Perceiving'],
+                description: 'คนที่มีความคิดสร้างสรรค์ ชอบการผจญภัย และมีความกระตือรือร้น',
                 characteristics: [
-                    'มีความกระตือรือร้น',
-                    'มองโลกในแง่ดี',
                     'มีความคิดสร้างสรรค์',
-                    'เข้ากับผู้อื่นได้ดี',
-                    'ชอบการเรียนรู้สิ่งใหม่'
-                ],
-                color: '#81C784' /* Green */
+                    'ชอบการผจญภัย',
+                    'มีความกระตือรือร้น',
+                    'ชอบความตื่นเต้นเร้าใจ'
+                ]
             },
             'ISTJ': {
-                name: 'ผู้ตรวจสอบ (The Logistician)',
-                description: 'เป็นคนที่มีความรับผิดชอบสูง เป็นระเบียบ ให้ความสำคัญกับกฎเกณฑ์และข้อเท็จจริง ชอบทำงานอย่างมีระบบและวางแผนล่วงหน้า',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'S: มองรายละเอียดและปัจจุบัน', 'T: ตัดสินใจด้วยเหตุผล', 'J: ชอบวางแผนและจัดระเบียบ'],
+                name: 'ผู้จัดการ (The Logistician)',
+                traits: ['Introverted', 'Sensing', 'Thinking', 'Judging'],
+                description: 'คนที่มีความรับผิดชอบสูง มีความละเอียดรอบคอบ และมีความสามารถในการจัดการ',
                 characteristics: [
                     'มีความรับผิดชอบสูง',
-                    'เป็นระเบียบและมีระบบ',
-                    'ให้ความสำคัญกับรายละเอียด',
-                    'เชื่อถือได้และตรงเวลา',
-                    'ยึดมั่นในกฎเกณฑ์'
-                ],
-                color: '#64B5F6' /* Blue */
+                    'มีความละเอียดรอบคอบ',
+                    'มีความสามารถในการจัดการ',
+                    'ชอบความเป็นระเบียบเรียบร้อย'
+                ]
             },
             'ISFJ': {
                 name: 'ผู้พิทักษ์ (The Defender)',
-                description: 'เป็นคนที่อ่อนโยน มีความเอาใจใส่ และมีความรับผิดชอบสูง ชอบช่วยเหลือผู้อื่นและสร้างความสงบสุขในสภาพแวดล้อม',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'S: มองรายละเอียดและปัจจุบัน', 'F: ตัดสินใจด้วยความรู้สึก', 'J: ชอบวางแผนและจัดระเบียบ'],
+                traits: ['Introverted', 'Sensing', 'Feeling', 'Judging'],
+                description: 'คนที่มีความเห็นอกเห็นใจ มีความอ่อนโยน และมีความรับผิดชอบ',
                 characteristics: [
-                    'เอาใจใส่และเห็นอกเห็นใจผู้อื่น',
-                    'มีความรับผิดชอบและเชื่อถือได้',
-                    'ชอบสร้างความสงบสุข',
-                    'ให้ความสำคัญกับความสัมพันธ์',
-                    'ทำงานหนักและทุ่มเท'
-                ],
-                color: '#64B5F6' /* Blue */
+                    'มีความเห็นอกเห็นใจ',
+                    'มีความอ่อนโยน',
+                    'มีความรับผิดชอบ',
+                    'ชอบดูแลผู้อื่น'
+                ]
             },
             'ESTJ': {
                 name: 'ผู้บริหาร (The Executive)',
-                description: 'เป็นผู้นำที่มีความเป็นระเบียบ ชอบจัดการและควบคุมสถานการณ์ ให้ความสำคัญกับประสิทธิภาพและผลลัพธ์',
-                traits: ['E: ชอบเข้าสังคม', 'S: มองรายละเอียดและปัจจุบัน', 'T: ตัดสินใจด้วยเหตุผล', 'J: ชอบวางแผนและจัดระเบียบ'],
+                traits: ['Extroverted', 'Sensing', 'Thinking', 'Judging'],
+                description: 'ผู้นำที่เข้มแข็ง มีความเป็นระเบียบ และมีความสามารถในการจัดการ',
                 characteristics: [
                     'มีความเป็นผู้นำ',
-                    'เป็นระเบียบและมีระบบ',
-                    'มุ่งเน้นผลลัพธ์',
-                    'เชื่อถือได้และตรงไปตรงมา',
-                    'ชอบทำงานเป็นทีม'
-                ],
-                color: '#64B5F6' /* Blue */
+                    'มีความเป็นระเบียบ',
+                    'มีความสามารถในการจัดการ',
+                    'ชอบความเป็นระเบียบเรียบร้อย'
+                ]
             },
             'ESFJ': {
-                name: 'ผู้ให้การสนับสนุน (The Consul)',
-                description: 'เป็นคนที่อบอุ่น มีน้ำใจ และชอบช่วยเหลือผู้อื่น ชอบสร้างความสัมพันธ์ที่ดีและดูแลคนรอบข้าง',
-                traits: ['E: ชอบเข้าสังคม', 'S: มองรายละเอียดและปัจจุบัน', 'F: ตัดสินใจด้วยความรู้สึก', 'J: ชอบวางแผนและจัดระเบียบ'],
+                name: 'ผู้ดูแล (The Consul)',
+                traits: ['Extroverted', 'Sensing', 'Feeling', 'Judging'],
+                description: 'คนที่มีความเห็นอกเห็นใจ มีความเอาใจใส่ และมีความรับผิดชอบ',
                 characteristics: [
-                    'มีน้ำใจและเอาใจใส่ผู้อื่น',
-                    'ชอบสร้างความสัมพันธ์',
-                    'มีความรับผิดชอบสูง',
-                    'มองโลกในแง่ดี',
-                    'ชอบทำงานเป็นทีม'
-                ],
-                color: '#64B5F6' /* Blue */
+                    'มีความเห็นอกเห็นใจ',
+                    'มีความเอาใจใส่',
+                    'มีความรับผิดชอบ',
+                    'ชอบดูแลผู้อื่น'
+                ]
             },
             'ISTP': {
-                name: 'ผู้ชำนาญการ (The Virtuoso)',
-                description: 'เป็นคนที่ชอบแก้ปัญหาเชิงปฏิบัติ มีความคล่องตัวและปรับตัวได้ดี ชอบทดลองและเรียนรู้สิ่งใหม่ๆ',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'S: มองรายละเอียดและปัจจุบัน', 'T: ตัดสินใจด้วยเหตุผล', 'P: ยืดหยุ่นและปรับตัวได้'],
-                characteristics: [
-                    'ชอบแก้ปัญหาเชิงปฏิบัติ',
-                    'มีความคล่องตัวและปรับตัวได้ดี',
-                    'ชอบทดลองและเรียนรู้',
-                    'เป็นอิสระและไม่ชอบถูกควบคุม',
-                    'มีทักษะทางเทคนิคสูง'
-                ],
-                color: '#FFEB3B' /* Yellow */
-            },
-            'ISFP': {
-                name: 'นักสร้างสรรค์ (The Adventurer)',
-                description: 'เป็นคนที่อ่อนโยน มีความคิดสร้างสรรค์ และชอบใช้ชีวิตอย่างอิสระ ชอบสัมผัสประสบการณ์ใหม่ๆ และแสดงออกผ่านศิลปะ',
-                traits: ['I: ชอบใช้เวลาอยู่กับตัวเอง', 'S: มองรายละเอียดและปัจจุบัน', 'F: ตัดสินใจด้วยความรู้สึก', 'P: ยืดหยุ่นและปรับตัวได้'],
+                name: 'ช่างประดิษฐ์ (The Virtuoso)',
+                traits: ['Introverted', 'Sensing', 'Thinking', 'Perceiving'],
+                description: 'คนที่มีความคิดสร้างสรรค์ ชอบการแก้ปัญหา และมีความเป็นอิสระ',
                 characteristics: [
                     'มีความคิดสร้างสรรค์',
-                    'อ่อนโยนและเห็นอกเห็นใจผู้อื่น',
-                    'ชอบใช้ชีวิตอย่างอิสระ',
-                    'ชอบสัมผัสประสบการณ์ใหม่ๆ',
-                    'มีความอ่อนไหวทางอารมณ์'
-                ],
-                color: '#FFEB3B' /* Yellow */
+                    'ชอบการแก้ปัญหา',
+                    'มีความเป็นอิสระ',
+                    'ชอบความท้าทาย'
+                ]
+            },
+            'ISFP': {
+                name: 'ศิลปิน (The Adventurer)',
+                traits: ['Introverted', 'Sensing', 'Feeling', 'Perceiving'],
+                description: 'คนที่มีความคิดสร้างสรรค์ ชอบความงาม และมีความอ่อนโยน',
+                characteristics: [
+                    'มีความคิดสร้างสรรค์',
+                    'ชอบความงาม',
+                    'มีความอ่อนโยน',
+                    'ชอบความสงบสุข'
+                ]
             },
             'ESTP': {
                 name: 'ผู้ประกอบการ (The Entrepreneur)',
-                description: 'เป็นคนที่กระตือรือร้น ชอบความท้าทาย และชอบใช้ชีวิตอย่างเต็มที่ ชอบแก้ปัญหาในสถานการณ์จริง',
-                traits: ['E: ชอบเข้าสังคม', 'S: มองรายละเอียดและปัจจุบัน', 'T: ตัดสินใจด้วยเหตุผล', 'P: ยืดหยุ่นและปรับตัวได้'],
+                traits: ['Extroverted', 'Sensing', 'Thinking', 'Perceiving'],
+                description: 'คนที่มีความกระตือรือร้น ชอบการผจญภัย และมีความเป็นอิสระ',
                 characteristics: [
-                    'กระตือรือร้นและชอบความท้าทาย',
-                    'ชอบใช้ชีวิตอย่างเต็มที่',
-                    'มีทักษะการแก้ปัญหาในสถานการณ์จริง',
-                    'ชอบเข้าสังคม',
-                    'มีความมั่นใจในตนเอง'
-                ],
-                color: '#FFEB3B' /* Yellow */
+                    'มีความกระตือรือร้น',
+                    'ชอบการผจญภัย',
+                    'มีความเป็นอิสระ',
+                    'ชอบความตื่นเต้น'
+                ]
             },
             'ESFP': {
-                name: 'ผู้แสดง (The Entertainer)',
-                description: 'เป็นคนที่ร่าเริง ชอบเข้าสังคม และชอบสร้างความสนุกสนานให้กับคนรอบข้าง ชอบใช้ชีวิตในปัจจุบัน',
-                traits: ['E: ชอบเข้าสังคม', 'S: มองรายละเอียดและปัจจุบัน', 'F: ตัดสินใจด้วยความรู้สึก', 'P: ยืดหยุ่นและปรับตัวได้'],
+                name: 'นักแสดง (The Entertainer)',
+                traits: ['Extroverted', 'Sensing', 'Feeling', 'Perceiving'],
+                description: 'คนที่มีความสนุกสนาน ชอบการเข้าสังคม และมีความเป็นมิตร',
                 characteristics: [
-                    'ร่าเริงและชอบเข้าสังคม',
-                    'ชอบสร้างความสนุกสนาน',
-                    'มีความกระตือรือร้น',
-                    'ชอบใช้ชีวิตในปัจจุบัน',
-                    'มีความยืดหยุ่นสูง'
-                ],
-                color: '#FFEB3B' /* Yellow */
+                    'มีความสนุกสนาน',
+                    'ชอบการเข้าสังคม',
+                    'มีความเป็นมิตร',
+                    'ชอบความตื่นเต้น'
+                ]
             }
         };
 
         document.addEventListener('DOMContentLoaded', function() {
-            const mbtiResult = localStorage.getItem('mbtiResult');
-            const resultContent = document.getElementById('resultContent');
+            const hasTakenQuiz = localStorage.getItem('hasTakenQuiz') === 'true';
+            const warningMessage = document.getElementById('warningMessage');
+            const mbtiResult = document.getElementById('mbtiResult');
+            const retakeButtons = document.getElementById('retakeButtons');
+            const overlay = document.getElementById('overlay');
+            const popup = document.getElementById('popup');
 
-            if (mbtiResult && typeDescriptions[mbtiResult]) {
-                const typeInfo = typeDescriptions[mbtiResult];
-                document.body.style.backgroundColor = '#ffffff'; // พื้นหลังสีขาว
+            if (!hasTakenQuiz && !{{ 'true' if current_user.is_authenticated and current_user.mbti_type else 'false' }}) {
+                warningMessage.style.display = 'none';
+                mbtiResult.style.display = 'none';
+                retakeButtons.style.display = 'none';
 
-                // Set colors for each MBTI type
+                // Show popup with styled content
+                overlay.style.display = 'block';
+                popup.style.display = 'block';
+                popup.innerHTML = `
+                    <div style="text-align: center; padding: 30px;">
+                        <h2 style="margin-bottom: 20px; color: var(--mbti-text); font-size: 1.8rem;">
+                            แจ้งเตือน
+                        </h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 25px; color: var(--mbti-text); line-height: 1.6;">
+                            คุณยังไม่ได้ทำแบบทดสอบ กรุณาทำแบบทดสอบเพื่อดูผลลัพธ์
+                        </p>
+                        <a href="{{ url_for('main.quiz') }}" class="back-button" 
+                           style="display: inline-block; margin-top: 15px; padding: 12px 30px; font-size: 1.1rem;">
+                            เริ่มทำแบบทดสอบ
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            warningMessage.style.display = 'none';
+            mbtiResult.style.display = 'block';
+            retakeButtons.style.display = 'block';
+
+            let mbtiType;
+            {% if current_user.is_authenticated %}
+                {% if current_user.mbti_type %}
+                    mbtiType = '{{ current_user.mbti_type }}';
+                {% endif %}
+            {% else %}
+                mbtiType = localStorage.getItem('mbtiType');
+            {% endif %}
+
+            if (mbtiType && typeDescriptions[mbtiType]) {
+                const typeInfo = typeDescriptions[mbtiType];
+                document.body.style.backgroundColor = '#ffffff';
+
+                // Set colors based on MBTI group
                 let colorLight, colorLighter;
-                switch (mbtiResult) {
-                    case 'INTJ':
-                    case 'INTP':
-                    case 'ENTJ':
-                    case 'ENTP':
-                        colorLight = '#BA68C8'; // Purple
-                        colorLighter = '#E1BEE7'; // Light Purple
-                        break;
-                    case 'INFJ':
-                    case 'INFP':
-                    case 'ENFJ':
-                    case 'ENFP':
-                        colorLight = '#81C784'; // Green
-                        colorLighter = '#C8E6C9'; // Light Green
-                        break;
-                    case 'ISTJ':
-                    case 'ISFJ':
-                    case 'ESTJ':
-                    case 'ESFJ':
-                        colorLight = '#64B5F6'; // Blue
-                        colorLighter = '#BBDEFB'; // Light Blue
-                        break;
-                    case 'ISTP':
-                    case 'ISFP':
-                    case 'ESTP':
-                    case 'ESFP':
-                        colorLight = '#FFEB3B'; // Yellow
-                        colorLighter = '#FFF9C4'; // Light Yellow
-                        break;
+                if (['INTJ', 'ENTJ', 'INTP', 'ENTP'].includes(mbtiType)) {
+                    colorLight = '#BA68C8'; // ม่วง
+                    colorLighter = '#E1BEE7';
+                } else if (['INFJ', 'ENFJ', 'INFP', 'ENFP'].includes(mbtiType)) {
+                    colorLight = '#81C784'; // เขียว
+                    colorLighter = '#C8E6C9';
+                } else if (['ISTJ', 'ESTJ', 'ISFJ', 'ESFJ'].includes(mbtiType)) {
+                    colorLight = '#64B5F6'; // ฟ้า
+                    colorLighter = '#BBDEFB';
+                } else if (['ISTP', 'ESTP', 'ISFP', 'ESFP'].includes(mbtiType)) {
+                    colorLight = '#FFEB3B'; // เหลือง
+                    colorLighter = '#FFF9C4';
                 }
 
-                resultContent.innerHTML = `
+                mbtiResult.innerHTML = `
                     <div class="result-header" style="background-color: ${colorLight}20;">
                         <div>บุคลิกภาพของคุณคือ</div>
-                        <div class="type">${mbtiResult}: ${typeInfo.name}</div>
+                        <div class="type">${mbtiType}: ${typeInfo.name}</div>
                     </div>
                     <div class="trait-breakdown">
                         ${typeInfo.traits.map(trait => `<div class="trait-card">${trait}</div>`).join('')}
@@ -542,18 +583,27 @@
                     <div class="characteristics" style="--mbti-color-light: ${colorLight}; --mbti-color-lighter: ${colorLighter};">
                         <h3>ลักษณะเด่น</h3>
                         <ul>
-                            ${typeInfo.characteristics.map(characteristic => `<li>${characteristic}</li>`).join('')}
+                            ${typeInfo.characteristics.map(char => `<li>${char}</li>`).join('')}
                         </ul>
                     </div>
                 `;
-            } else {
-                resultContent.innerHTML = `
-                    <div class="result-header">
-                        <div>ท่านยังไม่เคยทำแบบทดสอบ</div>
-                    </div>
+
+                // แสดงเฉพาะปุ่มทำแบบทดสอบอีกครั้ง
+                retakeButtons.innerHTML = `
+                    <a href="{{ url_for('main.quiz') }}" class="back-button">ทำแบบทดสอบอีกครั้ง</a>
                 `;
             }
         });
+
+        // Add event listener for overlay click to close popup
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        });
     </script>
+
+    <!-- Add overlay and popup divs -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup"></div>
 </body>
 </html>

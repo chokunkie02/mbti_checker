@@ -14,14 +14,14 @@
         }
 
         :root {
-            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
-            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
-            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
-            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
+            --mbti-yellow: #FFEB3B;
+            --mbti-green: #81C784;
+            --mbti-blue: #64B5F6;
+            --mbti-purple: #BA68C8;
             --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow), var(--mbti-green), var(--mbti-blue), var(--mbti-purple));
             --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
-            --mbti-text: #333333;   /* สีข้อความหลัก */
+            --mbti-bg: #f5f5f5;
+            --mbti-text: #333333;
         }
 
         body {
@@ -295,7 +295,7 @@
     </div>
     <div class="container">
         <h1>แบบทดสอบบุคลิกภาพ MBTI</h1>
-        
+
         <div class="instructions">
             <h3>คำชี้แจง:</h3>
             <ul>
@@ -305,7 +305,7 @@
             </ul>
         </div>
 
-        <form id="mbtiForm">
+        <form id="mbtiForm" method="POST">
             <div class="question-section">
                 <h2>ส่วนที่ 1: Extraversion (E) vs Introversion (I)</h2>
                 <div id="ei-questions">
@@ -334,6 +334,7 @@
                 </div>
             </div>
 
+            <input type="hidden" name="mbti_result" id="mbti_result">
             <button type="submit">ดูผลการทดสอบ</button>
         </form>
 
@@ -388,8 +389,8 @@
             const container = document.getElementById(`${section}-questions`);
             questions.forEach((question, index) => {
                 const questionNumber = index + (section === 'ei' ? 1 : 
-                                             section === 'sn' ? 9 : 
-                                             section === 'tf' ? 17 : 25);
+                                           section === 'sn' ? 9 : 
+                                           section === 'tf' ? 17 : 25);
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question-container';
                 questionDiv.innerHTML = `
@@ -434,9 +435,35 @@
 
             const result = `${ei >= 0 ? 'E' : 'I'}${sn >= 0 ? 'S' : 'N'}${tf >= 0 ? 'T' : 'F'}${jp >= 0 ? 'J' : 'P'}`;
 
-            localStorage.setItem('mbtiResult', result);
+            // ตรวจสอบว่าผู้ใช้ล็อกอินอยู่หรือไม่
+            const isLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
 
-            window.location.href = '/result';
+            if (isLoggedIn) {
+                // ถ้าล็อกอินอยู่ ให้ส่งผลลัพธ์ไปยังเซิร์ฟเวอร์
+                fetch('/save_mbti', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ mbti_result: result }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // ตั้งค่า hasTakenQuiz เป็น true เมื่อทำแบบทดสอบเสร็จ
+                        localStorage.setItem('hasTakenQuiz', 'true');
+                        localStorage.setItem('mbtiType', result);
+                        window.location.href = '/result';
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการบันทึกผลลัพธ์');
+                    }
+                });
+            } else {
+                // ถ้าไม่ล็อกอิน ให้เก็บผลลัพธ์ใน localStorage
+                localStorage.setItem('mbtiType', result);
+                localStorage.setItem('hasTakenQuiz', 'true');
+                window.location.href = '/result';
+            }
         });
 
         // Initialize questions
