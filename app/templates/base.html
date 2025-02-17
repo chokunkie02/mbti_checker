@@ -3,96 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MBTI Checker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{% block title %}MBTI Checker{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
-            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
-            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
-            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
+            --mbti-yellow: #FFEB3B;
+            --mbti-green: #81C784;
+            --mbti-blue: #64B5F6;
+            --mbti-purple: #BA68C8;
             --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow), var(--mbti-green), var(--mbti-blue), var(--mbti-purple));
             --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
-            --mbti-text: #333333;   /* สีข้อความหลัก */
+            --mbti-bg: #f5f5f5;
+            --mbti-text: #333333;
         }
 
         body {
             font-family: 'Kanit', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--mbti-bg);
+            line-height: 1.6;
+            background: var(--mbti-bg);
+            min-height: 100vh;
             color: var(--mbti-text);
-        }
-
-        header {
-            background: var(--mbti-gradient);
-            padding: 1rem 0;
-            box-shadow: var(--mbti-shadow);
-        }
-
-        nav ul {
-            list-style: none;
+            padding: 20px;
             display: flex;
-            justify-content: center;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
             padding: 0;
-            margin: 0;
         }
 
-        nav ul li {
-            margin: 0 1rem;
+        .sidebar ul li {
+            margin-bottom: 15px;
         }
 
-        nav ul li a {
-            color: white;
+        .sidebar ul li a {
+            color: var(--mbti-text);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        nav ul li a:hover {
+        .sidebar ul li a:hover {
+            background: rgba(0, 0, 0, 0.05);
             color: var(--mbti-purple);
         }
 
-        main {
-            padding: 2rem;
-            text-align: center;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--mbti-shadow);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
         }
 
-        footer {
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
             background: var(--mbti-gradient);
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-            box-shadow: var(--mbti-shadow);
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+                margin-right: 0;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
-                <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
-                <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
-                <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
-                <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
-                <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
-                <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
-                <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
+            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
+            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
+            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
+            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
+            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
+            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
+            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
+        </ul>
+    </div>
+    <div class="container">
         {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <p>&copy; 2025 MBTI Checker. สงวนลิขสิทธิ์</p>
-    </footer>
+    </div>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

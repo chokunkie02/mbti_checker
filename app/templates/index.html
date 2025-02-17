@@ -1,278 +1,143 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MBTI Checker | ค้นหาบุคลิกภาพของคุณ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends "base.html" %}
 
-        :root {
-            --mbti-yellow: #FFEB3B; /* Extraversion (E) - โทนพาสเทล */
-            --mbti-green: #81C784;  /* Sensing (S) - โทนพาสเทล */
-            --mbti-blue: #64B5F6;    /* Thinking (T) - โทนพาสเทล */
-            --mbti-purple: #BA68C8;  /* Feeling (F) - โทนพาสเทล */
-            --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow), var(--mbti-green), var(--mbti-blue), var(--mbti-purple));
-            --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --mbti-bg: #f5f5f5;     /* สีพื้นหลังโทนมินิมอล */
-            --mbti-text: #333333;   /* สีข้อความหลัก */
-        }
+{% block title %}MBTI Checker | ค้นหาบุคลิกภาพของคุณ{% endblock %}
 
-        body {
-            font-family: 'Kanit', sans-serif;
-            line-height: 1.6;
-            background: var(--mbti-bg);
-            min-height: 100vh;
-            color: var(--mbti-text);
-            padding: 20px;
-            display: flex;
-        }
+{% block content %}
+<h1>MBTI Checker</h1>
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2.5rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--mbti-shadow);
-            position: relative;
-            overflow: hidden;
-            flex-grow: 1;
-        }
+<p class="intro-text">
+    MBTI (Myers-Briggs Type Indicator) คือแบบทดสอบบุคลิกภาพที่ได้รับความนิยมอย่างมาก 
+    โดยแบ่งบุคลิกภาพออกเป็น 16 ประเภท ผ่านการวิเคราะห์ 4 มิติสำคัญ
+</p>
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--mbti-gradient);
-            border-radius: 2px;
-        }
+<ul class="dimension-list">
+    <li class="dimension-item">
+        <strong>ทิศทางพลังงาน:</strong> ชอบสังคมภายนอก (Extraversion) หรือใช้เวลาคนเดียว (Introversion)
+    </li>
+    <li class="dimension-item">
+        <strong>การรับข้อมูล:</strong> ใช้ประสาทสัมผัส (Sensing) หรือใช้สัญชาตญาณ (Intuition)
+    </li>
+    <li class="dimension-item">
+        <strong>การตัดสินใจ:</strong> ใช้เหตุผล (Thinking) หรือใช้ความรู้สึก (Feeling)
+    </li>
+    <li class="dimension-item">
+        <strong>การใช้ชีวิต:</strong> ชอบความเป็นระเบียบ (Judging) หรือยืดหยุ่น (Perceiving)
+    </li>
+</ul>
 
-        h1 {
-            text-align: center;
-            color: var(--mbti-text);
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            font-weight: 700;
-            position: relative;
-            padding-bottom: 1rem;
-        }
+<p class="intro-text">
+    การรู้จักบุคลิกภาพของตนเองผ่าน MBTI จะช่วยให้คุณเข้าใจตนเองมากขึ้น 
+    ทั้งในด้านการทำงาน การสื่อสาร และการใช้ชีวิตประจำวัน 
+    มาร่วมค้นหาประเภทบุคลิกภาพของคุณผ่านแบบทดสอบของเรา 
+    แล้วนำผลลัพธ์ไปปรับใช้ในการพัฒนาตนเองกันเถอะ!
+</p>
 
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--mbti-gradient);
-            border-radius: 2px;
-        }
+<a href="{{ url_for('main.quiz') }}" class="start-button">เริ่มทำแบบทดสอบ</a>
 
-        .intro-text {
-            font-size: 1.1rem;
-            margin: 2rem 0;
-            text-align: justify;
-            color: var(--mbti-text);
-            font-weight: 300;
-            line-height: 1.8;
-        }
+<p class="footer-text">
+    © 2025 MBTI Checker. สงวนลิขสิทธิ์
+</p>
+{% endblock %}
 
-        .dimension-list {
-            margin: 2.5rem 0;
-            padding-left: 0;
-            list-style-type: none;
-            display: grid;
-            gap: 1rem;
-        }
+{% block extra_css %}
+<style>
+    .intro-text {
+        font-size: 1.1rem;
+        margin: 2rem 0;
+        text-align: justify;
+        color: var(--mbti-text);
+        font-weight: 300;
+        line-height: 1.8;
+    }
 
-        .dimension-item {
-            margin-bottom: 1rem;
-            padding: 1.2rem 1.5rem;
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .dimension-list {
+        margin: 2.5rem 0;
+        padding-left: 0;
+        list-style-type: none;
+        display: grid;
+        gap: 1rem;
+    }
 
-        .dimension-item:nth-child(1) {
-            border-left: 4px solid var(--mbti-purple);
-        }
+    .dimension-item {
+        margin-bottom: 1rem;
+        padding: 1.2rem 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .dimension-item:nth-child(2) {
-            border-left: 4px solid var(--mbti-yellow);
-        }
+    .dimension-item:nth-child(1) {
+        border-left: 4px solid var(--mbti-purple);
+    }
 
-        .dimension-item:nth-child(3) {
-            border-left: 4px solid var(--mbti-green);
-        }
+    .dimension-item:nth-child(2) {
+        border-left: 4px solid var(--mbti-yellow);
+    }
 
-        .dimension-item:nth-child(4) {
-            border-left: 4px solid var(--mbti-blue);
-        }
+    .dimension-item:nth-child(3) {
+        border-left: 4px solid var(--mbti-green);
+    }
 
-        .dimension-item:hover {
-            transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
+    .dimension-item:nth-child(4) {
+        border-left: 4px solid var(--mbti-blue);
+    }
+
+    .dimension-item:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+
+    .start-button {
+        display: block;
+        width: max-content;
+        margin: 3rem auto 1rem;
+        padding: 1rem 3rem;
+        background: var(--mbti-gradient);
+        background-size: 300% 300%;
+        animation: gradient-shift 5s ease infinite;
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .start-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+    }
+
+    .footer-text {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 2rem;
+        font-weight: 300;
+    }
+
+    @media (max-width: 768px) {
+        .intro-text, .dimension-item {
+            font-size: 1rem;
         }
 
         .start-button {
-            display: block;
-            width: max-content;
-            margin: 3rem auto 1rem;
-            padding: 1rem 3rem;
-            background: var(--mbti-gradient);
-            background-size: 300% 300%;
-            animation: gradient-shift 5s ease infinite;
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            width: 100%;
         }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .start-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
-        }
-
-        .footer-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 2rem;
-            font-weight: 300;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-                flex-direction: column;
-            }
-
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .intro-text, .dimension-item {
-                font-size: 1rem;
-            }
-
-            .start-button {
-                padding: 0.8rem 2rem;
-                font-size: 1.1rem;
-                width: 100%;
-            }
-        }
-
-        .sidebar {
-            width: 250px;
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-right: 20px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin-bottom: 15px;
-        }
-
-        .sidebar ul li a {
-            color: var(--mbti-text);
-            text-decoration: none;
-            font-weight: 500;
-            display: block;
-            padding: 10px;
-            border-radius: 10px;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .sidebar ul li a:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--mbti-purple);
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <ul>
-            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
-            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
-            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
-            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
-            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
-            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
-            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
-            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
-        </ul>
-    </div>
-    <div class="container">
-        <h1>MBTI Checker</h1>
-        
-        <p class="intro-text">
-            MBTI (Myers-Briggs Type Indicator) คือแบบทดสอบบุคลิกภาพที่ได้รับความนิยมอย่างมาก 
-            โดยแบ่งบุคลิกภาพออกเป็น 16 ประเภท ผ่านการวิเคราะห์ 4 มิติสำคัญ
-        </p>
-
-        <ul class="dimension-list">
-            <li class="dimension-item">
-                <strong>ทิศทางพลังงาน:</strong> ชอบสังคมภายนอก (Extraversion) หรือใช้เวลาคนเดียว (Introversion)
-            </li>
-            <li class="dimension-item">
-                <strong>การรับข้อมูล:</strong> ใช้ประสาทสัมผัส (Sensing) หรือใช้สัญชาตญาณ (Intuition)
-            </li>
-            <li class="dimension-item">
-                <strong>การตัดสินใจ:</strong> ใช้เหตุผล (Thinking) หรือใช้ความรู้สึก (Feeling)
-            </li>
-            <li class="dimension-item">
-                <strong>การใช้ชีวิต:</strong> ชอบความเป็นระเบียบ (Judging) หรือยืดหยุ่น (Perceiving)
-            </li>
-        </ul>
-
-        <p class="intro-text">
-            การรู้จักบุคลิกภาพของตนเองผ่าน MBTI จะช่วยให้คุณเข้าใจตนเองมากขึ้น 
-            ทั้งในด้านการทำงาน การสื่อสาร และการใช้ชีวิตประจำวัน 
-            มาร่วมค้นหาประเภทบุคลิกภาพของคุณผ่านแบบทดสอบของเรา 
-            แล้วนำผลลัพธ์ไปปรับใช้ในการพัฒนาตนเองกันเถอะ!
-        </p>
-
-        <a href="{{ url_for('main.quiz') }}" class="start-button">เริ่มทำแบบทดสอบ</a>
-        
-        <p class="footer-text">
-            © 2025 MBTI Checker. สงวนลิขสิทธิ์
-        </p>
-    </div>
-</body>
-</html>
+    }
+</style>
+{% endblock %}

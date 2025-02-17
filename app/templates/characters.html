@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Characters</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <h1>Characters</h1>
-    <p>แสดงตัวละครจากอนิเมะ/หนังที่มี MBTI Type เดียวกัน</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Characters{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Add any character-specific styles here */
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Characters</h1>
+<p>แสดงตัวละครจากอนิเมะ/หนังที่มี MBTI Type เดียวกัน</p>
+{% endblock %}
