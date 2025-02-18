@@ -100,32 +100,56 @@
 
     /* User Type Display */
     .user-type-display {
-        text-align: center;
-        margin: 2rem 0;
-        padding: 1rem;
         background: white;
         border-radius: 12px;
         box-shadow: var(--mbti-shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .user-type-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .user-type-section {
+        flex: 0 0 200px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-type-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
     }
 
     .user-type-box {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        padding: 1rem 2rem;
+        justify-content: center;
+        padding: 1rem;
         border-radius: 12px;
         background: white;
         box-shadow: var(--mbti-shadow);
-        margin: 1rem;
+        width: 100px;
+        height: 100px;
     }
 
     /* Character Grid */
     .character-grid {
+        flex: 1;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
     }
 
     .character-card {
@@ -138,11 +162,29 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        position: relative;
     }
 
     .character-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .character-card::after {
+        content: '👁️ คลิกเพื่อดูรายละเอียด';
+        position: absolute;
+        bottom: 8px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #666;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .character-card:hover::after {
+        opacity: 1;
     }
 
     .character-name {
@@ -176,11 +218,11 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background: white;
-        padding: 2rem;
+        padding: 2.5rem;
         border-radius: 20px;
         box-shadow: var(--mbti-shadow);
         z-index: 1000;
-        max-width: 600px;
+        max-width: 800px;
         width: 90%;
     }
 
@@ -191,21 +233,34 @@
         margin-bottom: 1.5rem;
     }
 
+    .modal-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
     .modal-close {
         background: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: 2rem;
         cursor: pointer;
         color: #666;
+        transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+        color: #333;
     }
 
     .trait-list {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 
     .trait-item {
         margin-bottom: 1rem;
-        padding: 0.5rem;
+        padding: 1rem;
         border-radius: 8px;
         background: #f5f5f5;
     }
@@ -213,6 +268,14 @@
     .trait-label {
         font-weight: 600;
         margin-right: 0.5rem;
+        color: #333;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+        font-style: italic;
     }
 
     @media (max-width: 768px) {
@@ -224,14 +287,26 @@
             grid-template-columns: repeat(2, var(--box-size));
         }
 
+        .user-type-container {
+            flex-direction: column;
+        }
+
+        .user-type-section {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+
         .character-grid {
             grid-template-columns: 1fr;
-            padding: 1rem;
         }
 
         .modal {
-            padding: 1rem;
+            padding: 1.5rem;
             width: 95%;
+        }
+
+        .trait-list {
+            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -246,18 +321,21 @@
 <div class="type-grid" id="type-grid"></div>
 
 <div class="user-type-display">
-    <h2>MBTI Type ของคุณ</h2>
-    <div class="user-type-box" id="user-type-box">
-        <span id="user-type-value">-</span>
+    <div class="user-type-container">
+        <div class="user-type-section">
+            <h2 class="user-type-title">MBTI Type ของคุณ</h2>
+            <div class="user-type-box" id="user-type-box">
+                <span id="user-type-value">-</span>
+            </div>
+        </div>
+        <div class="character-grid" id="character-grid"></div>
     </div>
 </div>
-
-<div class="character-grid" id="character-grid"></div>
 
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal" id="character-modal">
     <div class="modal-header">
-        <h2 id="modal-title"></h2>
+        <h2 class="modal-title" id="modal-title"></h2>
         <button class="modal-close" onclick="closeModal()">&times;</button>
     </div>
     <div id="modal-content"></div>
@@ -284,6 +362,14 @@
         'ISTP': 'explorer', 'ESTP': 'explorer', 'ISFP': 'explorer', 'ESFP': 'explorer'
     };
 
+    // ชื่อบ้านที่ใช้ในการแสดงผลกับชื่อบ้านในข้อมูล JSON
+    const houseMapping = {
+        'analyst': 'purpleHouse',
+        'diplomat': 'greenHouse',
+        'guardian': 'blueHouse',
+        'explorer': 'yellowHouse'
+    };
+
     const types = [
         "INTJ", "ENTJ", "INTP", "ENTP",
         "INFJ", "ENFJ", "INFP", "ENFP",
@@ -291,24 +377,13 @@
         "ISTP", "ESTP", "ISFP", "ESFP"
     ];
 
-    function getTypeHouse(type) {
-        if (!type) return '';
-        
-        if (type.includes('NT')) {
-            return 'purpleHouse'; // Analysts - NT types
-        } else if (type.includes('NF')) {
-            return 'greenHouse';  // Diplomats - NF types
-        } else if (type.includes('SJ')) {
-            return 'blueHouse';   // Guardians - SJ types
-        } else if (type.includes('SP')) {
-            return 'yellowHouse'; // Explorers - SP types
-        }
-        
-        return '';
-    }
-
     function getTypeHouseClass(type) {
         return typeHouses[type] || '';
+    }
+
+    function getTypeHouseData(type) {
+        const houseClass = getTypeHouseClass(type);
+        return houseMapping[houseClass] || '';
     }
 
     function renderTypeGrid() {
@@ -345,23 +420,23 @@
     function renderCharacters() {
         const characterGrid = document.getElementById('character-grid');
         if (!userType) {
-            characterGrid.innerHTML = '<p class="no-characters">เลือก MBTI Type ของคุณเพื่อดูตัวละคร</p>';
+            characterGrid.innerHTML = '<p class="empty-message">เลือก MBTI Type ของคุณเพื่อดูตัวละคร</p>';
             return;
         }
 
-        const houseType = getTypeHouse(userType);
-        console.log('House Type:', houseType);
+        const houseData = getTypeHouseData(userType);
+        console.log('House Data Name:', houseData);
         console.log('User Type:', userType);
         console.log('Character Data:', characterData);
 
-        if (!characterData[houseType] || !characterData[houseType].types || !characterData[houseType].types[userType]) {
-            characterGrid.innerHTML = '<p class="no-characters">ไม่พบข้อมูลตัวละครสำหรับ Type นี้</p>';
+        if (!characterData[houseData] || !characterData[houseData].types || !characterData[houseData].types[userType]) {
+            characterGrid.innerHTML = '<p class="empty-message">ไม่พบข้อมูลตัวละครสำหรับ Type นี้</p>';
             return;
         }
 
-        const typeData = characterData[houseType].types[userType];
+        const typeData = characterData[houseData].types[userType];
         if (!typeData.characters || !Array.isArray(typeData.characters)) {
-            characterGrid.innerHTML = '<p class="no-characters">ไม่พบข้อมูลตัวละครที่ถูกต้อง</p>';
+            characterGrid.innerHTML = '<p class="empty-message">ไม่พบข้อมูลตัวละครที่ถูกต้อง</p>';
             return;
         }
 
@@ -381,7 +456,7 @@
 
         modalTitle.textContent = name;
         modalContent.innerHTML = `
-            <p class="anime-title">${anime}</p>
+            <p class="anime-title" style="font-size: 1.2rem; margin-bottom: 1.5rem;">${anime}</p>
             <div class="trait-list">
                 ${traits.I ? `<div class="trait-item"><span class="trait-label">I:</span> ${traits.I}</div>` : ''}
                 ${traits.E ? `<div class="trait-item"><span class="trait-label">E:</span> ${traits.E}</div>` : ''}
@@ -424,11 +499,11 @@
             try {
                 // ลองแก้ไขปัญหา JSON parsing
                 let jsonText = text;
-                // ใช้ fallback data กรณีที่ parsing ไม่สำเร็จ
                 characterData = JSON.parse(jsonText);
                 console.log('Parsed character data structure:', Object.keys(characterData));
                 
-                if (!characterData.purpleHouse && !characterData.greenHouse) {
+                if (!characterData.purpleHouse && !characterData.greenHouse && 
+                    !characterData.blueHouse && !characterData.yellowHouse) {
                     throw new Error('Data format incorrect - missing expected house types');
                 }
                 
@@ -462,84 +537,16 @@
                 }
                 
                 document.getElementById('character-grid').innerHTML = 
-                    `<p class="no-characters">ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message} ${lineInfo}</p>
+                    `<p class="empty-message">ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message} ${lineInfo}</p>
                     <p>บริเวณที่เกิดข้อผิดพลาด: "${errorContext}"</p>
                     <p>กรุณาตรวจสอบและแก้ไขไฟล์ JSON ก่อนลองใหม่อีกครั้ง</p>`;
-                
-                // สร้าง fallback data ชั่วคราว
-                characterData = createFallbackData();
             }
         } catch (error) {
             console.error("Error fetching character data:", error);
             document.getElementById('character-grid').innerHTML = 
-                `<p class="no-characters">ไม่สามารถโหลดข้อมูลตัวละครได้: ${error.message}</p>
+                `<p class="empty-message">ไม่สามารถโหลดข้อมูลตัวละครได้: ${error.message}</p>
                 <p>กรุณาตรวจสอบการเชื่อมต่อและลองใหม่อีกครั้ง</p>`;
-                
-            // สร้าง fallback data ชั่วคราว
-            characterData = createFallbackData();
         }
-    }
-    
-    // ฟังก์ชันสร้างข้อมูลแทนกรณีที่ไม่สามารถโหลดข้อมูลได้
-    function createFallbackData() {
-        return {
-            purpleHouse: {
-                types: {
-                    INTJ: {
-                        characters: [
-                            {
-                                name: "ตัวอย่าง INTJ",
-                                anime: "ตัวอย่างอนิเมะ",
-                                traits: { I: "ชอบอยู่คนเดียว", N: "มีความคิดสร้างสรรค์", T: "ตัดสินใจด้วยเหตุผล", J: "ชอบวางแผน" }
-                            }
-                        ]
-                    },
-                    // เพิ่ม type อื่นๆ ตามต้องการ
-                }
-            },
-            greenHouse: {
-                types: {
-                    INFJ: {
-                        characters: [
-                            {
-                                name: "ตัวอย่าง INFJ",
-                                anime: "ตัวอย่างอนิเมะ",
-                                traits: { I: "ชอบอยู่คนเดียว", N: "มีความคิดสร้างสรรค์", F: "ตัดสินใจด้วยความรู้สึก", J: "ชอบวางแผน" }
-                            }
-                        ]
-                    },
-                    // เพิ่ม type อื่นๆ ตามต้องการ
-                }
-            },
-            blueHouse: {
-                types: {
-                    ISTJ: {
-                        characters: [
-                            {
-                                name: "ตัวอย่าง ISTJ",
-                                anime: "ตัวอย่างอนิเมะ",
-                                traits: { I: "ชอบอยู่คนเดียว", S: "สนใจรายละเอียด", T: "ตัดสินใจด้วยเหตุผล", J: "ชอบวางแผน" }
-                            }
-                        ]
-                    },
-                    // เพิ่ม type อื่นๆ ตามต้องการ
-                }
-            },
-            yellowHouse: {
-                types: {
-                    ISTP: {
-                        characters: [
-                            {
-                                name: "ตัวอย่าง ISTP",
-                                anime: "ตัวอย่างอนิเมะ",
-                                traits: { I: "ชอบอยู่คนเดียว", S: "สนใจรายละเอียด", T: "ตัดสินใจด้วยเหตุผล", P: "ยืดหยุ่น" }
-                            }
-                        ]
-                    },
-                    // เพิ่ม type อื่นๆ ตามต้องการ
-                }
-            }
-        };
     }
 
     window.addEventListener('load', () => {
