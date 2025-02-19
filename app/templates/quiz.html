@@ -1,9 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}แบบทดสอบ MBTI{% endblock %}
+{% block title %}แบบทดสอบ MBTI ที่แม่นยำ{% endblock %}
 
 {% block extra_css %}
 <style>
+    :root {
+        --mbti-purple: #6c5ce7;
+        --mbti-gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        --mbti-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        --mbti-text: #2d3436;
+        --mbti-light-bg: #f7f7ff;
+    }
+    
+    body {
+        background-color: var(--mbti-light-bg);
+    }
+    
+    .page-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    h1 {
+        text-align: center;
+        color: var(--mbti-purple);
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+    
     .instructions {
         background: white;
         padding: 20px;
@@ -39,18 +64,41 @@
         font-weight: bold;
     }
 
+    .progress-container {
+        width: 100%;
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin: 30px 0;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: var(--mbti-gradient);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
     .question-section {
         margin-bottom: 40px;
     }
 
     .question-section h2 {
         color: white;
-        padding: 10px 20px;
+        padding: 15px 20px;
         margin-bottom: 20px;
         font-size: 1.5rem;
         background: var(--mbti-gradient);
         border-radius: 8px;
         box-shadow: var(--mbti-shadow);
+        display: flex;
+        align-items: center;
+    }
+    
+    .question-section h2 .section-icon {
+        margin-right: 10px;
+        font-size: 1.2em;
     }
 
     .question-container {
@@ -66,31 +114,49 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
+    
+    .question-text {
+        font-size: 1.1rem;
+        margin-bottom: 18px;
+        line-height: 1.5;
+        color: var(--mbti-text);
+    }
 
     .options {
         display: flex;
-        justify-content: center;
-        gap: 30px;
+        justify-content: space-between;
+        gap: 10px;
         margin-top: 15px;
     }
 
     .radio-option {
         display: flex;
+        flex-direction: column;
         align-items: center;
+        text-align: center;
         gap: 8px;
         cursor: pointer;
-        padding: 8px 16px;
-        border-radius: 20px;
+        padding: 10px 5px;
+        border-radius: 10px;
         transition: all 0.3s ease;
         background: #f8f9fa;
+        flex: 1;
+        min-width: 0;
     }
 
     .radio-option:hover {
         background: #e9ecef;
     }
-
+    
     .radio-option input[type="radio"] {
         cursor: pointer;
+        margin: 5px 0;
+    }
+    
+    .option-label {
+        font-size: 0.85rem;
+        line-height: 1.3;
+        word-wrap: break-word;
     }
 
     button[type="submit"] {
@@ -121,6 +187,14 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
     }
+    
+    button[type="submit"]:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        animation: none;
+    }
 
     #result {
         text-align: center;
@@ -131,16 +205,61 @@
         background: white;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
+    
+    .answer-validation {
+        color: #e74c3c;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+        display: none;
+    }
+    
+    .section-nav {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+    
+    .nav-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        background: #f1f1f1;
+        color: var(--mbti-text);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-button:hover {
+        background: #e0e0e0;
+    }
+    
+    .nav-button.next {
+        background: var(--mbti-purple);
+        color: white;
+    }
+    
+    .nav-button.next:hover {
+        background: #5b4cc4;
+    }
+    
+    .nav-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 
     @media (max-width: 768px) {
         .options {
-            flex-direction: column;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .radio-option {
-            width: 100%;
-            justify-content: center;
+            flex: 0 0 calc(50% - 8px);
+        }
+        
+        .option-label {
+            font-size: 0.8rem;
         }
 
         button[type="submit"] {
@@ -152,147 +271,251 @@
 {% endblock %}
 
 {% block content %}
-<h1>แบบทดสอบบุคลิกภาพ MBTI</h1>
+<div class="page-container">
+    <h1>แบบทดสอบบุคลิกภาพ MBTI ที่แม่นยำ</h1>
 
-<div class="instructions">
-    <h3>คำชี้แจง:</h3>
-    <ul>
-        <li>แบบทดสอบมีทั้งหมด 32 ข้อ</li>
-        <li>กรุณาตอบทุกข้อตามความรู้สึกแรกของคุณ</li>
-        <li>ไม่มีคำตอบที่ถูกหรือผิด</li>
-    </ul>
+    <div class="instructions">
+        <h3>คำชี้แจง:</h3>
+        <ul>
+            <li>แบบทดสอบมีทั้งหมด 32 ข้อ แบ่งเป็น 4 ส่วน</li>
+            <li>แต่ละข้อมีตัวเลือก 5 ระดับ ตั้งแต่ "เห็นด้วยอย่างยิ่ง" ถึง "ไม่เห็นด้วยอย่างยิ่ง"</li>
+            <li>กรุณาตอบตามความเป็นจริง ไม่ใช่แบบที่คุณอยากเป็น</li>
+            <li>ตอบตามความรู้สึกแรกของคุณ ไม่ต้องคิดมากเกินไป</li>
+            <li>ไม่มีคำตอบที่ถูกหรือผิด แต่ละคนมีบุคลิกภาพที่แตกต่างกัน</li>
+        </ul>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <form id="mbtiForm" method="POST">
+        <div class="question-section" id="section-1">
+            <h2><span class="section-icon">👥</span> ส่วนที่ 1: พลังงานและการมีปฏิสัมพันธ์</h2>
+            <div id="ei-questions">
+                <!-- Questions 1-8 will be generated by JavaScript -->
+            </div>
+            <div class="section-nav">
+                <button type="button" class="nav-button next" id="next-section-1">ไปส่วนถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-2" style="display: none;">
+            <h2><span class="section-icon">🔍</span> ส่วนที่ 2: การรับข้อมูลและการตีความ</h2>
+            <div id="sn-questions">
+                <!-- Questions 9-16 will be generated by JavaScript -->
+            </div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-2">กลับไปส่วนก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-2">ไปส่วนถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-3" style="display: none;">
+            <h2><span class="section-icon">🧠</span> ส่วนที่ 3: การตัดสินใจและการประเมินค่า</h2>
+            <div id="tf-questions">
+                <!-- Questions 17-24 will be generated by JavaScript -->
+            </div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-3">กลับไปส่วนก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-3">ไปส่วนถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-4" style="display: none;">
+            <h2><span class="section-icon">⏱️</span> ส่วนที่ 4: ไลฟ์สไตล์และการวางแผน</h2>
+            <div id="jp-questions">
+                <!-- Questions 25-32 will be generated by JavaScript -->
+            </div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-4">กลับไปส่วนก่อนหน้า</button>
+            </div>
+        </div>
+
+        <div class="answer-validation" id="section-validation">กรุณาตอบทุกข้อก่อนไปส่วนถัดไป</div>
+
+        <input type="hidden" name="mbti_result" id="mbti_result">
+        <button type="submit" id="submit-button" style="display: none;">ดูผลการทดสอบ</button>
+    </form>
+
+    <div id="result" style="display:none;"></div>
 </div>
-
-<form id="mbtiForm" method="POST">
-    <div class="question-section">
-        <h2>ส่วนที่ 1: Extraversion (E) vs Introversion (I)</h2>
-        <div id="ei-questions">
-            <!-- Questions 1-8 -->
-        </div>
-    </div>
-
-    <div class="question-section">
-        <h2>ส่วนที่ 2: Sensing (S) vs Intuition (N)</h2>
-        <div id="sn-questions">
-            <!-- Questions 9-16 -->
-        </div>
-    </div>
-
-    <div class="question-section">
-        <h2>ส่วนที่ 3: Thinking (T) vs Feeling (F)</h2>
-        <div id="tf-questions">
-            <!-- Questions 17-24 -->
-        </div>
-    </div>
-
-    <div class="question-section">
-        <h2>ส่วนที่ 4: Judging (J) vs Perceiving (P)</h2>
-        <div id="jp-questions">
-            <!-- Questions 25-32 -->
-        </div>
-    </div>
-
-    <input type="hidden" name="mbti_result" id="mbti_result">
-    <button type="submit">ดูผลการทดสอบ</button>
-</form>
-
-<div id="result" style="display:none;"></div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     const questions = {
         ei: [
-            "คุณชอบพบปะผู้คนใหม่ๆ",
-            "คุณรู้สึกมีพลังเมื่อได้อยู่ท่ามกลางผู้คน",
-            "คุณชอบทำงานเป็นทีมมากกว่าทำงานคนเดียว",
-            "คุณมักเป็นคนเริ่มบทสนทนาก่อน",
-            "คุณชอบงานสังสรรค์และกิจกรรมกลุ่ม",
-            "คุณแสดงความคิดเห็นออกมาได้ง่าย",
-            "คุณชอบเป็นจุดสนใจของผู้อื่น",
-            "คุณตัดสินใจเร็วและพร้อมลงมือทำทันที"
+            "ฉันมักจะรู้สึกมีพลังเมื่อได้พูดคุยกับคนหลายๆ คน",
+            "ฉันมักเป็นคนเริ่มต้นบทสนทนากับคนที่เพิ่งรู้จัก",
+            "ฉันชอบทำกิจกรรมกลุ่มมากกว่าอยู่คนเดียว",
+            "ฉันรู้สึกเหนื่อยล้าหลังจากเข้าสังคมหรืองานที่มีคนเยอะ (คำถามแบบกลับ)",
+            "ฉันชอบแสดงความคิดเห็นในที่สาธารณะ",
+            "ฉันต้องการเวลาอยู่คนเดียวเพื่อชาร์จพลังให้ตัวเอง (คำถามแบบกลับ)",
+            "ฉันรู้สึกสนุกเมื่อได้อยู่ในที่ที่มีกิจกรรมคึกคักและมีคนเยอะ",
+            "ฉันพูดออกมาก่อนที่จะคิดให้รอบคอบบ่อยครั้ง"
         ],
         sn: [
-            "คุณให้ความสำคัญกับรายละเอียดมากกว่าภาพรวม",
-            "คุณชอบทำตามแผนที่วางไว้มากกว่าด้นสด",
-            "คุณเชื่อในประสบการณ์จริงมากกว่าทฤษฎี",
-            "คุณชอบงานที่เป็นรูปธรรมจับต้องได้",
-            "คุณสนใจเรื่องในปัจจุบันมากกว่าอนาคต",
-            "คุณชอบวิธีการแก้ปัญหาแบบดั้งเดิมที่พิสูจน์แล้ว",
-            "คุณตัดสินใจโดยใช้ข้อมูลจริงมากกว่าสัญชาตญาณ",
-            "คุณชอบเรียนรู้ทักษะใหม่ทีละขั้นตอน"
+            "ฉันชอบใส่ใจรายละเอียดและข้อเท็จจริงที่ชัดเจน",
+            "ฉันมักจะคิดถึงความเป็นไปได้ในอนาคตมากกว่าสนใจสิ่งที่เกิดขึ้นตอนนี้ (คำถามแบบกลับ)",
+            "ฉันเชื่อในสิ่งที่เห็นและจับต้องได้มากกว่าทฤษฎีหรือความคิดที่เป็นนามธรรม",
+            "ฉันมักจะมองเห็นแบบแผนและความเชื่อมโยงที่คนอื่นมองข้าม (คำถามแบบกลับ)",
+            "ฉันชอบทำงานที่มีขั้นตอนชัดเจน ปฏิบัติได้จริง",
+            "ฉันมักจะคิดถึงภาพรวมและความหมายที่แฝงอยู่เบื้องหลัง (คำถามแบบกลับ)",
+            "ฉันชอบเรียนรู้จากประสบการณ์จริงมากกว่าการอ่านหรือการทำความเข้าใจแนวคิด",
+            "ฉันชอบใช้จินตนาการและมองหาความเป็นไปได้ใหม่ๆ (คำถามแบบกลับ)"
         ],
         tf: [
-            "คุณตัดสินใจด้วยเหตุผลมากกว่าความรู้สึก",
-            "คุณชอบวิเคราะห์ปัญหาอย่างเป็นระบบ",
-            "คุณให้ความสำคัญกับความถูกต้องมากกว่าความสามัคคี",
-            "คุณมักวิจารณ์ความคิดผู้อื่นอย่างตรงไปตรงมา",
-            "คุณชอบความยุติธรรมมากกว่าความเห็นอกเห็นใจ",
-            "คุณตัดสินใจโดยไม่คำนึงถึงความรู้สึกคนอื่น",
-            "คุณชอบถกเถียงด้วยเหตุผล",
-            "คุณเน้นความสำเร็จของงานมากกว่าความสัมพันธ์"
+            "ฉันมักตัดสินใจโดยใช้เหตุผลและตรรกะเป็นหลัก",
+            "ฉันพิจารณาความรู้สึกของคนอื่นก่อนจะตัดสินใจเรื่องสำคัญ (คำถามแบบกลับ)",
+            "ฉันมักจะพูดความจริงตรงๆ แม้อาจทำให้คนอื่นรู้สึกไม่ดี",
+            "การรักษาความสัมพันธ์ที่ดีสำคัญกว่าการเอาชนะในการโต้แย้ง (คำถามแบบกลับ)",
+            "ฉันชอบวิเคราะห์ปัญหาอย่างเป็นเหตุเป็นผลโดยไม่ใส่ความรู้สึกส่วนตัวเข้าไป",
+            "ฉันมักจะตัดสินใจตามสิ่งที่รู้สึกว่าถูกต้องในใจมากกว่าข้อมูลเชิงตรรกะ (คำถามแบบกลับ)",
+            "คนมักบอกว่าฉันเป็นคนเย็นชาหรือไม่แสดงอารมณ์",
+            "ฉันให้ความสำคัญกับความกลมเกลียวและความเข้าใจซึ่งกันและกัน (คำถามแบบกลับ)"
         ],
         jp: [
-            "คุณชอบวางแผนล่วงหน้าเสมอ",
-            "คุณทำงานเป็นระบบและมีขั้นตอน",
-            "คุณชอบจัดตารางเวลาที่แน่นอน",
-            "คุณทำงานให้เสร็จก่อนกำหนดเสมอ",
-            "คุณชอบความเป็นระเบียบเรียบร้อย",
-            "คุณรู้สึกไม่สบายใจเมื่อมีการเปลี่ยนแปลงกะทันหัน",
-            "คุณชอบทำงานให้เสร็จทีละอย่าง",
-            "คุณต้องการความชัดเจนในทุกสถานการณ์"
+            "ฉันชอบวางแผนและเตรียมพร้อมล่วงหน้าเสมอ",
+            "ฉันชอบความยืดหยุ่นและการปรับเปลี่ยนไปตามสถานการณ์ (คำถามแบบกลับ)",
+            "ฉันทำงานอย่างเป็นระบบและมีการจัดการเวลาที่ดี",
+            "ฉันมักจะปล่อยให้สิ่งต่างๆ เกิดขึ้นตามธรรมชาติโดยไม่พยายามควบคุมมากเกินไป (คำถามแบบกลับ)",
+            "ฉันรู้สึกไม่สบายใจเมื่อมีการเปลี่ยนแปลงกะทันหัน",
+            "ฉันชอบที่จะมีตัวเลือกเปิดไว้และตัดสินใจในนาทีสุดท้าย (คำถามแบบกลับ)",
+            "ฉันเป็นคนเรียบร้อย มีระเบียบ ทุกอย่างต้องอยู่ในที่ของมัน",
+            "ฉันชอบการผจญภัยและความตื่นเต้นของสิ่งที่ไม่คาดคิด (คำถามแบบกลับ)"
         ]
     };
 
+    const optionValues = [2, 1, 0, -1, -2]; // เห็นด้วยอย่างยิ่ง(2) ถึง ไม่เห็นด้วยอย่างยิ่ง(-2)
+    const optionLabels = ["เห็นด้วยอย่างยิ่ง", "เห็นด้วย", "เฉยๆ/ไม่แน่ใจ", "ไม่เห็นด้วย", "ไม่เห็นด้วยอย่างยิ่ง"];
+    
+    let currentSection = 1;
+    const totalSections = 4;
+    
+    // สร้างคำถามสำหรับแต่ละส่วน
     function createQuestions(section, questions) {
         const container = document.getElementById(`${section}-questions`);
+        container.innerHTML = '';
+        
         questions.forEach((question, index) => {
+            const isReversed = question.includes("(คำถามแบบกลับ)");
+            // แสดงคำถามโดยไม่มีข้อความ "(คำถามแบบกลับ)"
+            const displayQuestion = question.replace("(คำถามแบบกลับ)", "");
+            
             const questionNumber = index + (section === 'ei' ? 1 : 
                                        section === 'sn' ? 9 : 
                                        section === 'tf' ? 17 : 25);
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question-container';
-            questionDiv.innerHTML = `
-                <div>${questionNumber}. ${question}</div>
-                <div class="options">
-                    <label class="radio-option">
-                        <input type="radio" name="q${questionNumber}" value="yes" required>
-                        ใช่
+            
+            let optionsHTML = `<div class="question-text">${questionNumber}. ${displayQuestion}</div><div class="options">`;
+            
+            // สร้างตัวเลือก 5 ระดับ
+            for (let i = 0; i < 5; i++) {
+                // กำหนดค่าตามลำดับสำหรับคำถามปกติ หรือกลับค่าสำหรับคำถามแบบกลับ
+                const value = isReversed ? optionValues[4-i] : optionValues[i];
+                
+                optionsHTML += `
+                    <label class="radio-option" data-reversed="${isReversed}">
+                        <input type="radio" name="q${questionNumber}" value="${value}" required>
+                        <span class="option-label">${optionLabels[i]}</span>
                     </label>
-                    <label class="radio-option">
-                        <input type="radio" name="q${questionNumber}" value="neutral">
-                        กลางๆ
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="q${questionNumber}" value="no">
-                        ไม่ใช่
-                    </label>
-                </div>
-            `;
+                `;
+            }
+            
+            optionsHTML += `</div>`;
+            questionDiv.innerHTML = optionsHTML;
             container.appendChild(questionDiv);
         });
     }
 
-    function calculateResult(answers, start, end) {
-        let score = 0;
-        for (let i = start; i <= end; i++) {
-            if (answers[`q${i}`] === 'yes') score++;
-            if (answers[`q${i}`] === 'no') score--;
+    // คำนวณคะแนน MBTI
+    function calculateResult() {
+        const form = document.getElementById('mbtiForm');
+        const formData = new FormData(form);
+        
+        let eiScore = 0;
+        let snScore = 0;
+        let tfScore = 0;
+        let jpScore = 0;
+        
+        // รวมคะแนนสำหรับแต่ละมิติ
+        for (let i = 1; i <= 8; i++) {
+            const value = parseInt(formData.get(`q${i}`) || 0);
+            eiScore += value;
         }
-        return score;
+        
+        for (let i = 9; i <= 16; i++) {
+            const value = parseInt(formData.get(`q${i}`) || 0);
+            snScore += value;
+        }
+        
+        for (let i = 17; i <= 24; i++) {
+            const value = parseInt(formData.get(`q${i}`) || 0);
+            tfScore += value;
+        }
+        
+        for (let i = 25; i <= 32; i++) {
+            const value = parseInt(formData.get(`q${i}`) || 0);
+            jpScore += value;
+        }
+        
+        // แปลงคะแนนเป็นประเภท MBTI
+        const result = `${eiScore >= 0 ? 'E' : 'I'}${snScore >= 0 ? 'S' : 'N'}${tfScore >= 0 ? 'T' : 'F'}${jpScore >= 0 ? 'J' : 'P'}`;
+        return result;
     }
-
+    
+    // ตรวจสอบว่าตอบครบทุกข้อในส่วนปัจจุบันหรือไม่
+    function isSectionComplete(sectionNum) {
+        const startQ = (sectionNum - 1) * 8 + 1;
+        const endQ = sectionNum * 8;
+        
+        for (let i = startQ; i <= endQ; i++) {
+            const radios = document.querySelectorAll(`input[name="q${i}"]:checked`);
+            if (radios.length === 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // สลับระหว่างส่วนต่างๆ
+    function switchSection(oldSection, newSection) {
+        if (oldSection > 0) {
+            document.getElementById(`section-${oldSection}`).style.display = 'none';
+        }
+        document.getElementById(`section-${newSection}`).style.display = 'block';
+        
+        // อัปเดตแถบความคืบหน้า
+        const progress = ((newSection - 1) / totalSections) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+        
+        // แสดงปุ่มส่งในส่วนสุดท้าย
+        if (newSection === totalSections) {
+            document.getElementById('submit-button').style.display = 'block';
+        } else {
+            document.getElementById('submit-button').style.display = 'none';
+        }
+        
+        currentSection = newSection;
+    }
+    
+    // จัดการการส่งแบบฟอร์ม
     document.getElementById('mbtiForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const formData = new FormData(this);
-        const answers = Object.fromEntries(formData.entries());
-
-        const ei = calculateResult(answers, 1, 8);
-        const sn = calculateResult(answers, 9, 16);
-        const tf = calculateResult(answers, 17, 24);
-        const jp = calculateResult(answers, 25, 32);
-
-        const result = `${ei >= 0 ? 'E' : 'I'}${sn >= 0 ? 'S' : 'N'}${tf >= 0 ? 'T' : 'F'}${jp >= 0 ? 'J' : 'P'}`;
+        
+        // ตรวจสอบว่าตอบครบทุกข้อหรือไม่
+        const allSectionsComplete = [1, 2, 3, 4].every(isSectionComplete);
+        
+        if (!allSectionsComplete) {
+            alert('กรุณาตอบทุกข้อคำถามก่อนส่งแบบทดสอบ');
+            return;
+        }
+        
+        const result = calculateResult();
+        document.getElementById('mbti_result').value = result;
 
         const isLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
 
@@ -320,10 +543,42 @@
             window.location.href = '/result';
         }
     });
+    
+    // จัดการปุ่มนำทาง
+    document.addEventListener('DOMContentLoaded', function() {
+        // ปุ่มไปส่วนถัดไป
+        document.querySelectorAll('[id^="next-section-"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentSectionNum = parseInt(this.id.split('-')[2]);
+                
+                if (isSectionComplete(currentSectionNum)) {
+                    switchSection(currentSectionNum, currentSectionNum + 1);
+                    document.getElementById('section-validation').style.display = 'none';
+                } else {
+                    document.getElementById('section-validation').style.display = 'block';
+                }
+            });
+        });
+        
+        // ปุ่มกลับไปส่วนก่อนหน้า
+        document.querySelectorAll('[id^="prev-section-"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentSectionNum = parseInt(this.id.split('-')[2]);
+                switchSection(currentSectionNum, currentSectionNum - 1);
+                document.getElementById('section-validation').style.display = 'none';
+            });
+        });
+    });
 
-    // Initialize questions
-    Object.entries(questions).forEach(([section, questionList]) => {
-        createQuestions(section, questionList);
+    // สร้างคำถามทั้งหมดเมื่อหน้าเว็บโหลดเสร็จ
+    document.addEventListener('DOMContentLoaded', function() {
+        // สร้างคำถามสำหรับทุกส่วน
+        Object.entries(questions).forEach(([section, questionList]) => {
+            createQuestions(section, questionList);
+        });
+        
+        // เริ่มจากส่วนแรก
+        switchSection(0, 1);
     });
 </script>
 {% endblock %}
