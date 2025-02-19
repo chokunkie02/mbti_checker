@@ -6,6 +6,7 @@
     <title>{% block title %}MBTI Checker{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -22,6 +23,9 @@
             --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             --mbti-bg: #f5f5f5;
             --mbti-text: #333333;
+            --sidebar-collapsed-width: 70px;
+            --sidebar-expanded-width: 250px;
+            --transition-speed: 0.3s;
         }
 
         body {
@@ -30,41 +34,111 @@
             background: var(--mbti-bg);
             min-height: 100vh;
             color: var(--mbti-text);
-            padding: 20px;
+            padding: 0;
             display: flex;
+            position: relative;
         }
 
         .sidebar {
-            width: 250px;
             background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-right: 20px;
+            box-shadow: var(--mbti-shadow);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-collapsed-width);
+            transition: width var(--transition-speed) ease;
+            z-index: 100;
+            overflow-x: hidden;
+        }
+
+        .sidebar.expanded {
+            width: var(--sidebar-expanded-width);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--mbti-text);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-content {
+            padding: 20px 0;
         }
 
         .sidebar ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         .sidebar ul li {
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .sidebar ul li a {
             color: var(--mbti-text);
             text-decoration: none;
             font-weight: 500;
-            display: block;
-            padding: 10px;
-            border-radius: 10px;
-            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            transition: background 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
         }
 
         .sidebar ul li a:hover {
             background: rgba(0, 0, 0, 0.05);
             color: var(--mbti-purple);
+        }
+
+        .sidebar ul li a .icon {
+            min-width: 40px;
+            display: flex;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a .link-text {
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .sidebar.expanded ul li a .link-text {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-collapsed-width);
+            padding: 20px;
+            transition: margin-left var(--transition-speed) ease;
+        }
+
+        .main-content.sidebar-expanded {
+            margin-left: var(--sidebar-expanded-width);
         }
 
         .container {
@@ -76,7 +150,6 @@
             box-shadow: var(--mbti-shadow);
             position: relative;
             overflow: hidden;
-            flex-grow: 1;
         }
 
         .container::before {
@@ -91,40 +164,208 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-                flex-direction: column;
-            }
-
             .sidebar {
-                width: 100%;
-                margin-bottom: 20px;
-                margin-right: 0;
+                width: 0;
             }
-
+            
+            .sidebar.expanded {
+                width: var(--sidebar-expanded-width);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .main-content.sidebar-expanded {
+                margin-left: 0;
+            }
+            
             .container {
                 padding: 1.5rem;
+            }
+            
+            .mobile-menu-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 90;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+            }
+            
+            .mobile-menu-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .mobile-toggle {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 101;
+                background: white;
+                border: none;
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: var(--mbti-shadow);
+                font-size: 20px;
+                color: var(--mbti-text);
+                cursor: pointer;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-toggle {
+                display: none;
+            }
+            
+            .mobile-menu-overlay {
+                display: none;
             }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="sidebar">
-        <ul>
-            <li><a href="{{ url_for('main.home') }}">หน้าแรก</a></li>
-            <li><a href="{{ url_for('main.quiz') }}">ทำแบบทดสอบ</a></li>
-            <li><a href="{{ url_for('main.result') }}">ผลลัพธ์</a></li>
-            <li><a href="{{ url_for('main.characters') }}">ตัวละคร</a></li>
-            <li><a href="{{ url_for('main.relationships') }}">ความสัมพันธ์</a></li>
-            <li><a href="{{ url_for('main.history') }}">ประวัติ</a></li>
-            <li><a href="{{ url_for('main.about') }}">เกี่ยวกับเรา</a></li>
-            <li><a href="{{ url_for('main.contact') }}">ติดต่อเรา</a></li>
-        </ul>
+    <!-- เมนูมือถือ (แสดงเฉพาะบนมือถือ) -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <ul>
+                <li>
+                    <a href="{{ url_for('main.home') }}">
+                        <span class="icon"><i class="fas fa-home"></i></span>
+                        <span class="link-text">หน้าแรก</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.quiz') }}">
+                        <span class="icon"><i class="fas fa-tasks"></i></span>
+                        <span class="link-text">ทำแบบทดสอบ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.result') }}">
+                        <span class="icon"><i class="fas fa-chart-pie"></i></span>
+                        <span class="link-text">ผลลัพธ์</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.characters') }}">
+                        <span class="icon"><i class="fas fa-user-friends"></i></span>
+                        <span class="link-text">ตัวละคร</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.relationships') }}">
+                        <span class="icon"><i class="fas fa-heart"></i></span>
+                        <span class="link-text">ความสัมพันธ์</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.history') }}">
+                        <span class="icon"><i class="fas fa-history"></i></span>
+                        <span class="link-text">ประวัติ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.about') }}">
+                        <span class="icon"><i class="fas fa-info-circle"></i></span>
+                        <span class="link-text">เกี่ยวกับเรา</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.contact') }}">
+                        <span class="icon"><i class="fas fa-envelope"></i></span>
+                        <span class="link-text">ติดต่อเรา</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('expanded');
+                mainContent.classList.toggle('sidebar-expanded');
+                
+                const icon = toggleBtn.querySelector('i');
+                if (sidebar.classList.contains('expanded')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            }
+            
+            function toggleMobileMenu() {
+                sidebar.classList.toggle('expanded');
+                mobileOverlay.classList.toggle('active');
+                
+                const icon = mobileToggle.querySelector('i');
+                if (sidebar.classList.contains('expanded')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            }
+            
+            toggleBtn.addEventListener('click', toggleSidebar);
+            mobileToggle.addEventListener('click', toggleMobileMenu);
+            mobileOverlay.addEventListener('click', toggleMobileMenu);
+            
+            // เมื่อกดเลือกเมนูบนมือถือให้ปิด sidebar
+            if (window.innerWidth <= 768) {
+                const menuLinks = document.querySelectorAll('.sidebar ul li a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        sidebar.classList.remove('expanded');
+                        mobileOverlay.classList.remove('active');
+                        
+                        const mobileIcon = mobileToggle.querySelector('i');
+                        mobileIcon.classList.remove('fa-times');
+                        mobileIcon.classList.add('fa-bars');
+                    });
+                });
+            }
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

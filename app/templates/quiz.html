@@ -5,37 +5,63 @@
 {% block extra_css %}
 <style>
     :root {
-        --mbti-purple: #6c5ce7;
-        --mbti-gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-        --mbti-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        --analyst-color: #BA68C8;    /* บ้านม่วง - นักวิเคราะห์ */
+        --diplomat-color: #81C784;    /* บ้านเขียว - นักการทูต */
+        --guardian-color: #64B5F6;    /* บ้านฟ้า - ผู้พิทักษ์ */
+        --explorer-color: #FFEB3B;    /* บ้านเหลือง - นักสำรวจ */
+        --mbti-gradient: linear-gradient(135deg, var(--analyst-color), var(--diplomat-color), 
+                                            var(--guardian-color), var(--explorer-color));
+        --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         --mbti-text: #2d3436;
         --mbti-light-bg: #f7f7ff;
     }
-    
+
     body {
         background-color: var(--mbti-light-bg);
+        scroll-behavior: smooth;
     }
-    
+
     .page-container {
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
     }
-    
+
     h1 {
         text-align: center;
-        color: var(--mbti-purple);
+        color: var(--analyst-color);
         margin-bottom: 30px;
         font-weight: 700;
+        font-size: 2.5rem;
+        position: relative;
+        padding-bottom: 1rem;
+        animation: fadeIn 0.5s ease;
     }
-    
+
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: var(--mbti-gradient);
+    }
+
     .instructions {
         background: white;
         padding: 20px;
         border-radius: 15px;
         margin-bottom: 30px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--mbti-shadow);
         border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        animation: slideIn 0.5s ease;
+    }
+
+    .instructions:hover {
+        transform: translateY(-3px);
     }
 
     .instructions h3 {
@@ -54,11 +80,12 @@
         padding-left: 25px;
         position: relative;
         color: var(--mbti-text);
+        line-height: 1.8;
     }
 
     .instructions ul li::before {
         content: '•';
-        color: var(--mbti-purple);
+        color: var(--analyst-color);
         position: absolute;
         left: 8px;
         font-weight: bold;
@@ -71,17 +98,51 @@
         border-radius: 4px;
         margin: 30px 0;
         overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease;
     }
-    
+
     .progress-bar {
         height: 100%;
         background: var(--mbti-gradient);
         width: 0%;
-        transition: width 0.3s ease;
+        transition: width 0.5s ease;
+        background-size: 200% 200%;
+        animation: gradient-shift 5s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .question-section {
         margin-bottom: 40px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideIn 0.5s ease forwards;
+        display: none;
+    }
+
+    .question-section.active {
+        display: block;
     }
 
     .question-section h2 {
@@ -90,15 +151,12 @@
         margin-bottom: 20px;
         font-size: 1.5rem;
         background: var(--mbti-gradient);
-        border-radius: 8px;
+        background-size: 200% 200%;
+        animation: gradient-shift 5s ease infinite;
+        border-radius: 12px;
         box-shadow: var(--mbti-shadow);
         display: flex;
         align-items: center;
-    }
-    
-    .question-section h2 .section-icon {
-        margin-right: 10px;
-        font-size: 1.2em;
     }
 
     .question-container {
@@ -106,15 +164,17 @@
         padding: 20px;
         border-radius: 12px;
         background: white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--mbti-shadow);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeIn 0.5s ease;
+        border: 2px solid transparent;
     }
 
     .question-container:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     }
-    
+
     .question-text {
         font-size: 1.1rem;
         margin-bottom: 18px;
@@ -136,27 +196,37 @@
         text-align: center;
         gap: 8px;
         cursor: pointer;
-        padding: 10px 5px;
-        border-radius: 10px;
+        padding: 12px 8px;
+        border-radius: 12px;
         transition: all 0.3s ease;
         background: #f8f9fa;
         flex: 1;
         min-width: 0;
+        border: 2px solid transparent;
     }
 
     .radio-option:hover {
-        background: #e9ecef;
+        background: white;
+        border-color: var(--analyst-color);
+        transform: translateY(-2px);
+        box-shadow: var(--mbti-shadow);
     }
-    
+
     .radio-option input[type="radio"] {
         cursor: pointer;
         margin: 5px 0;
     }
-    
+
+    .radio-option input[type="radio"]:checked + .option-label {
+        color: var(--analyst-color);
+        font-weight: 500;
+    }
+
     .option-label {
         font-size: 0.85rem;
         line-height: 1.3;
         word-wrap: break-word;
+        transition: color 0.3s ease;
     }
 
     button[type="submit"] {
@@ -177,75 +247,56 @@
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
 
-    @keyframes gradient-shift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
     button[type="submit"]:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
-    }
-    
-    button[type="submit"]:disabled {
-        background: #cccccc;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-        animation: none;
+        box-shadow: var(--mbti-shadow);
     }
 
-    #result {
-        text-align: center;
-        font-size: 24px;
-        margin-top: 20px;
-        padding: 20px;
-        border-radius: 12px;
-        background: white;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-    
     .answer-validation {
         color: #e74c3c;
         margin-top: 10px;
         font-size: 0.9rem;
         text-align: center;
         display: none;
+        animation: fadeIn 0.3s ease;
+        background: #fde8e8;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #f8b4b4;
     }
-    
+
     .section-nav {
         display: flex;
         justify-content: space-between;
         margin-top: 30px;
+        animation: fadeIn 0.5s ease;
     }
-    
+
     .nav-button {
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
-        border-radius: 20px;
+        border-radius: 30px;
         background: #f1f1f1;
         color: var(--mbti-text);
         cursor: pointer;
         transition: all 0.3s ease;
+        font-weight: 500;
     }
-    
+
     .nav-button:hover {
         background: #e0e0e0;
+        transform: translateY(-2px);
     }
-    
+
     .nav-button.next {
-        background: var(--mbti-purple);
+        background: var(--mbti-gradient);
         color: white;
+        background-size: 200% 200%;
+        animation: gradient-shift 5s ease infinite;
     }
-    
+
     .nav-button.next:hover {
-        background: #5b4cc4;
-    }
-    
-    .nav-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+        box-shadow: var(--mbti-shadow);
     }
 
     @media (max-width: 768px) {
@@ -257,7 +308,7 @@
         .radio-option {
             flex: 0 0 calc(50% - 8px);
         }
-        
+
         .option-label {
             font-size: 0.8rem;
         }
@@ -266,22 +317,25 @@
             width: 100%;
             padding: 15px 20px;
         }
+
+        .nav-button {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="page-container">
-    <h1>แบบทดสอบบุคลิกภาพ MBTI ที่แม่นยำ</h1>
-
+    <h1>แบบทดสอบ MBTI</h1>
     <div class="instructions">
-        <h3>คำชี้แจง:</h3>
+        <h3>คำแนะนำ</h3>
         <ul>
             <li>แบบทดสอบมีทั้งหมด 32 ข้อ แบ่งเป็น 4 ส่วน</li>
-            <li>แต่ละข้อมีตัวเลือก 5 ระดับ ตั้งแต่ "เห็นด้วยอย่างยิ่ง" ถึง "ไม่เห็นด้วยอย่างยิ่ง"</li>
-            <li>กรุณาตอบตามความเป็นจริง ไม่ใช่แบบที่คุณอยากเป็น</li>
-            <li>ตอบตามความรู้สึกแรกของคุณ ไม่ต้องคิดมากเกินไป</li>
-            <li>ไม่มีคำตอบที่ถูกหรือผิด แต่ละคนมีบุคลิกภาพที่แตกต่างกัน</li>
+            <li>แต่ละข้อมีตัวเลือก 5 ระดับ ให้เลือกตามความเป็นจริง</li>
+            <li>ไม่มีคำตอบที่ถูกหรือผิด ตอบตามความรู้สึกของคุณ</li>
+            <li>อย่าคิดนานเกินไป ให้ตอบตามสัญชาตญาณแรก</li>
         </ul>
     </div>
 
@@ -292,43 +346,35 @@
     <form id="mbtiForm" method="POST">
         <div class="question-section" id="section-1">
             <h2><span class="section-icon">👥</span> ส่วนที่ 1: พลังงานและการมีปฏิสัมพันธ์</h2>
-            <div id="ei-questions">
-                <!-- Questions 1-8 will be generated by JavaScript -->
-            </div>
+            <div id="ei-questions"></div>
             <div class="section-nav">
-                <button type="button" class="nav-button next" id="next-section-1">ไปส่วนถัดไป</button>
+                <button type="button" class="nav-button next" id="next-section-1">ถัดไป</button>
             </div>
         </div>
 
-        <div class="question-section" id="section-2" style="display: none;">
+        <div class="question-section" id="section-2">
             <h2><span class="section-icon">🔍</span> ส่วนที่ 2: การรับข้อมูลและการตีความ</h2>
-            <div id="sn-questions">
-                <!-- Questions 9-16 will be generated by JavaScript -->
-            </div>
+            <div id="sn-questions"></div>
             <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-2">กลับไปส่วนก่อนหน้า</button>
-                <button type="button" class="nav-button next" id="next-section-2">ไปส่วนถัดไป</button>
+                <button type="button" class="nav-button prev" id="prev-section-2">ก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-2">ถัดไป</button>
             </div>
         </div>
 
-        <div class="question-section" id="section-3" style="display: none;">
+        <div class="question-section" id="section-3">
             <h2><span class="section-icon">🧠</span> ส่วนที่ 3: การตัดสินใจและการประเมินค่า</h2>
-            <div id="tf-questions">
-                <!-- Questions 17-24 will be generated by JavaScript -->
-            </div>
+            <div id="tf-questions"></div>
             <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-3">กลับไปส่วนก่อนหน้า</button>
-                <button type="button" class="nav-button next" id="next-section-3">ไปส่วนถัดไป</button>
+                <button type="button" class="nav-button prev" id="prev-section-3">ก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-3">ถัดไป</button>
             </div>
         </div>
 
-        <div class="question-section" id="section-4" style="display: none;">
+        <div class="question-section" id="section-4">
             <h2><span class="section-icon">⏱️</span> ส่วนที่ 4: ไลฟ์สไตล์และการวางแผน</h2>
-            <div id="jp-questions">
-                <!-- Questions 25-32 will be generated by JavaScript -->
-            </div>
+            <div id="jp-questions"></div>
             <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-4">กลับไปส่วนก่อนหน้า</button>
+                <button type="button" class="nav-button prev" id="prev-section-4">ก่อนหน้า</button>
             </div>
         </div>
 
@@ -337,12 +383,8 @@
         <input type="hidden" name="mbti_result" id="mbti_result">
         <button type="submit" id="submit-button" style="display: none;">ดูผลการทดสอบ</button>
     </form>
-
-    <div id="result" style="display:none;"></div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
     const questions = {
         ei: [
@@ -387,170 +429,114 @@
         ]
     };
 
-    const optionValues = [2, 1, 0, -1, -2]; // เห็นด้วยอย่างยิ่ง(2) ถึง ไม่เห็นด้วยอย่างยิ่ง(-2)
+    const optionValues = [2, 1, 0, -1, -2];
     const optionLabels = ["เห็นด้วยอย่างยิ่ง", "เห็นด้วย", "เฉยๆ/ไม่แน่ใจ", "ไม่เห็นด้วย", "ไม่เห็นด้วยอย่างยิ่ง"];
-    
     let currentSection = 1;
     const totalSections = 4;
-    
-    // สร้างคำถามสำหรับแต่ละส่วน
+
     function createQuestions(section, questions) {
+        console.log(`Creating questions for section: ${section}`);
         const container = document.getElementById(`${section}-questions`);
+        if (!container) {
+            console.error(`Container not found for section: ${section}`);
+            return;
+        }
         container.innerHTML = '';
-        
+
         questions.forEach((question, index) => {
             const isReversed = question.includes("(คำถามแบบกลับ)");
-            // แสดงคำถามโดยไม่มีข้อความ "(คำถามแบบกลับ)"
             const displayQuestion = question.replace("(คำถามแบบกลับ)", "");
-            
-            const questionNumber = index + (section === 'ei' ? 1 : 
-                                       section === 'sn' ? 9 : 
-                                       section === 'tf' ? 17 : 25);
+            const questionNumber = index + (
+                section === 'ei' ? 1 :
+                section === 'sn' ? 9 :
+                section === 'tf' ? 17 : 25
+            );
+
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question-container';
-            
-            let optionsHTML = `<div class="question-text">${questionNumber}. ${displayQuestion}</div><div class="options">`;
-            
-            // สร้างตัวเลือก 5 ระดับ
-            for (let i = 0; i < 5; i++) {
-                // กำหนดค่าตามลำดับสำหรับคำถามปกติ หรือกลับค่าสำหรับคำถามแบบกลับ
-                const value = isReversed ? optionValues[4-i] : optionValues[i];
-                
-                optionsHTML += `
-                    <label class="radio-option" data-reversed="${isReversed}">
-                        <input type="radio" name="q${questionNumber}" value="${value}" required>
-                        <span class="option-label">${optionLabels[i]}</span>
-                    </label>
-                `;
-            }
-            
-            optionsHTML += `</div>`;
-            questionDiv.innerHTML = optionsHTML;
+            questionDiv.innerHTML = `
+                <div class="question-text">${questionNumber}. ${displayQuestion}</div>
+                <div class="options">
+                    ${optionValues.map((value, i) => `
+                        <label class="radio-option" data-reversed="${isReversed}">
+                            <input type="radio" name="q${questionNumber}" value="${isReversed ? optionValues[4-i] : value}" required>
+                            <span class="option-label">${optionLabels[i]}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
             container.appendChild(questionDiv);
         });
+
+        // Make sure the container is visible after creating questions
+        container.style.display = 'block';
     }
 
-    // คำนวณคะแนน MBTI
-    function calculateResult() {
-        const form = document.getElementById('mbtiForm');
-        const formData = new FormData(form);
-        
-        let eiScore = 0;
-        let snScore = 0;
-        let tfScore = 0;
-        let jpScore = 0;
-        
-        // รวมคะแนนสำหรับแต่ละมิติ
-        for (let i = 1; i <= 8; i++) {
-            const value = parseInt(formData.get(`q${i}`) || 0);
-            eiScore += value;
-        }
-        
-        for (let i = 9; i <= 16; i++) {
-            const value = parseInt(formData.get(`q${i}`) || 0);
-            snScore += value;
-        }
-        
-        for (let i = 17; i <= 24; i++) {
-            const value = parseInt(formData.get(`q${i}`) || 0);
-            tfScore += value;
-        }
-        
-        for (let i = 25; i <= 32; i++) {
-            const value = parseInt(formData.get(`q${i}`) || 0);
-            jpScore += value;
-        }
-        
-        // แปลงคะแนนเป็นประเภท MBTI
-        const result = `${eiScore >= 0 ? 'E' : 'I'}${snScore >= 0 ? 'S' : 'N'}${tfScore >= 0 ? 'T' : 'F'}${jpScore >= 0 ? 'J' : 'P'}`;
-        return result;
-    }
-    
-    // ตรวจสอบว่าตอบครบทุกข้อในส่วนปัจจุบันหรือไม่
     function isSectionComplete(sectionNum) {
         const startQ = (sectionNum - 1) * 8 + 1;
         const endQ = sectionNum * 8;
-        
+
         for (let i = startQ; i <= endQ; i++) {
-            const radios = document.querySelectorAll(`input[name="q${i}"]:checked`);
-            if (radios.length === 0) {
+            if (!document.querySelector(`input[name="q${i}"]:checked`)) {
                 return false;
             }
         }
-        
         return true;
     }
-    
-    // สลับระหว่างส่วนต่างๆ
+
     function switchSection(oldSection, newSection) {
+        console.log(`Switching from section ${oldSection} to ${newSection}`);
+
         if (oldSection > 0) {
-            document.getElementById(`section-${oldSection}`).style.display = 'none';
+            const oldSectionElement = document.getElementById(`section-${oldSection}`);
+            if (oldSectionElement) {
+                oldSectionElement.style.display = 'none';
+                oldSectionElement.classList.remove('active');
+            }
         }
-        document.getElementById(`section-${newSection}`).style.display = 'block';
-        
-        // อัปเดตแถบความคืบหน้า
-        const progress = ((newSection - 1) / totalSections) * 100;
-        document.getElementById('progress-bar').style.width = `${progress}%`;
-        
-        // แสดงปุ่มส่งในส่วนสุดท้าย
-        if (newSection === totalSections) {
-            document.getElementById('submit-button').style.display = 'block';
-        } else {
-            document.getElementById('submit-button').style.display = 'none';
-        }
-        
-        currentSection = newSection;
-    }
-    
-    // จัดการการส่งแบบฟอร์ม
-    document.getElementById('mbtiForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // ตรวจสอบว่าตอบครบทุกข้อหรือไม่
-        const allSectionsComplete = [1, 2, 3, 4].every(isSectionComplete);
-        
-        if (!allSectionsComplete) {
-            alert('กรุณาตอบทุกข้อคำถามก่อนส่งแบบทดสอบ');
-            return;
-        }
-        
-        const result = calculateResult();
-        document.getElementById('mbti_result').value = result;
 
-        const isLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
+        const newSectionElement = document.getElementById(`section-${newSection}`);
+        if (newSectionElement) {
+            newSectionElement.style.display = 'block';
+            newSectionElement.classList.add('active');
 
-        if (isLoggedIn) {
-            fetch('/save_mbti', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ mbti_result: result }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    localStorage.setItem('hasTakenQuiz', 'true');
-                    localStorage.setItem('mbtiType', result);
-                    window.location.href = '/result';
-                } else {
-                    alert('เกิดข้อผิดพลาดในการบันทึกผลลัพธ์');
-                }
+            // Update progress bar
+            const progress = ((newSection - 1) / totalSections) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+            }
+
+            // Show/hide submit button
+            const submitButton = document.getElementById('submit-button');
+            if (submitButton) {
+                submitButton.style.display = newSection === totalSections ? 'block' : 'none';
+            }
+
+            // Scroll to top
+            window.scrollTo({
+                top: document.querySelector('.page-container').offsetTop,
+                behavior: 'smooth'
             });
+
+            currentSection = newSection;
         } else {
-            localStorage.setItem('mbtiType', result);
-            localStorage.setItem('hasTakenQuiz', 'true');
-            window.location.href = '/result';
+            console.error(`Section ${newSection} not found`);
         }
-    });
-    
-    // จัดการปุ่มนำทาง
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // ปุ่มไปส่วนถัดไป
+        console.log('DOM Content Loaded');
+
+        // Create questions for all sections
+        Object.entries(questions).forEach(([section, questionList]) => {
+            createQuestions(section, questionList);
+        });
+
+        // Add event listeners for navigation buttons
         document.querySelectorAll('[id^="next-section-"]').forEach(button => {
             button.addEventListener('click', function() {
                 const currentSectionNum = parseInt(this.id.split('-')[2]);
-                
                 if (isSectionComplete(currentSectionNum)) {
                     switchSection(currentSectionNum, currentSectionNum + 1);
                     document.getElementById('section-validation').style.display = 'none';
@@ -559,8 +545,7 @@
                 }
             });
         });
-        
-        // ปุ่มกลับไปส่วนก่อนหน้า
+
         document.querySelectorAll('[id^="prev-section-"]').forEach(button => {
             button.addEventListener('click', function() {
                 const currentSectionNum = parseInt(this.id.split('-')[2]);
@@ -568,16 +553,35 @@
                 document.getElementById('section-validation').style.display = 'none';
             });
         });
-    });
 
-    // สร้างคำถามทั้งหมดเมื่อหน้าเว็บโหลดเสร็จ
-    document.addEventListener('DOMContentLoaded', function() {
-        // สร้างคำถามสำหรับทุกส่วน
-        Object.entries(questions).forEach(([section, questionList]) => {
-            createQuestions(section, questionList);
+        // Handle form submission
+        document.getElementById('mbtiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isSectionComplete(totalSections)) {
+                alert('กรุณาตอบทุกข้อคำถามก่อนส่งแบบทดสอบ');
+                return;
+            }
+
+            // Calculate MBTI result
+            const formData = new FormData(this);
+            let eiScore = 0, snScore = 0, tfScore = 0, jpScore = 0;
+
+            for (let i = 1; i <= 8; i++) eiScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 9; i <= 16; i++) snScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 17; i <= 24; i++) tfScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 25; i <= 32; i++) jpScore += parseInt(formData.get(`q${i}`) || 0);
+
+            const result = `${eiScore >= 0 ? 'E' : 'I'}${snScore >= 0 ? 'S' : 'N'}${tfScore >= 0 ? 'T' : 'F'}${jpScore >= 0 ? 'J' : 'P'}`;
+            document.getElementById('mbti_result').value = result;
+
+            // Store result and redirect
+            localStorage.setItem('mbtiType', result);
+            localStorage.setItem('hasTakenQuiz', 'true');
+            window.location.href = '/result';
         });
-        
-        // เริ่มจากส่วนแรก
+
+        // Show initial section
         switchSection(0, 1);
     });
 </script>
