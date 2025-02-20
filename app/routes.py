@@ -50,6 +50,11 @@ def relationships():
     return render_template("relationships.html")
 
 
+@bp.route("/animals")
+def animals():
+    return render_template("animals.html")
+
+
 @bp.route("/history")
 @login_required
 def history():
