@@ -49,61 +49,12 @@
         font-weight: 300;
     }
 
-    /* Type Grid Styles */
-    .type-grid {
-        display: grid;
-        grid-template-columns: repeat(4, var(--box-size));
-        gap: 12px;
-        margin-bottom: 2rem;
-        justify-content: center;
-    }
-
-    .type-grid button {
-        width: var(--box-size);
-        height: var(--box-size);
-        padding: 8px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        background: white;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* House Colors */
-    .analyst {
-        color: var(--analyst-color);
-        border-color: var(--analyst-color) !important;
-    }
-
-    .diplomat {
-        color: var(--diplomat-color);
-        border-color: var(--diplomat-color) !important;
-    }
-
-    .guardian {
-        color: var(--guardian-color);
-        border-color: var(--guardian-color) !important;
-    }
-
-    .explorer {
-        color: var(--explorer-color);
-        border-color: var(--explorer-color) !important;
-    }
-
-    .type-grid button:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--mbti-shadow);
-    }
-
     /* User Type Display */
     .user-type-display {
         background: white;
         border-radius: 12px;
         box-shadow: var(--mbti-shadow);
-        padding: 1.5rem;
+        padding: 2rem;
         margin-bottom: 2rem;
         max-width: 1200px;
         margin-left: auto;
@@ -113,42 +64,64 @@
     .user-type-container {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
-        gap: 20px;
+        gap: 40px;
     }
 
     .user-type-section {
+        position: relative;
         flex: 0 0 200px;
-        padding: 1rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
     }
 
     .user-type-title {
         font-size: 1.2rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         font-weight: 600;
     }
 
     .user-type-box {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: var(--box-size);
+        height: var(--box-size);
         padding: 1rem;
         border-radius: 12px;
         background: white;
         box-shadow: var(--mbti-shadow);
-        width: 100px;
-        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid transparent;
+        position: relative;
+    }
+
+    .change-type-btn {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--mbti-gradient);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .change-type-btn:hover {
+        transform: translateX(-50%) translateY(-2px);
+        box-shadow: var(--mbti-shadow);
     }
 
     /* Character Grid */
     .character-grid {
         flex: 1;
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
     }
 
@@ -196,6 +169,101 @@
     .anime-title {
         color: #666;
         font-size: 0.9rem;
+    }
+
+    /* Popup Styles */
+    .popup, .overlay {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+    }
+
+    .popup {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: var(--mbti-shadow);
+        min-width: 400px;
+        max-width: 90vw;
+        animation: scaleIn 0.3s ease;
+    }
+
+    .popup h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .type-grid {
+        display: grid;
+        grid-template-columns: repeat(4, var(--box-size));
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .type-grid button {
+        width: var(--box-size);
+        height: var(--box-size);
+        padding: 8px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* House Colors */
+    .analyst {
+        color: var(--analyst-color);
+        border-color: var(--analyst-color) !important;
+    }
+
+    .diplomat {
+        color: var(--diplomat-color);
+        border-color: var(--diplomat-color) !important;
+    }
+
+    .guardian {
+        color: var(--guardian-color);
+        border-color: var(--guardian-color) !important;
+    }
+
+    .explorer {
+        color: var(--explorer-color);
+        border-color: var(--explorer-color) !important;
+    }
+
+    .type-grid button:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--mbti-shadow);
+    }
+
+    .overlay {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     /* Modal Styles */
@@ -247,10 +315,6 @@
         transition: color 0.3s ease;
     }
 
-    .modal-close:hover {
-        color: #333;
-    }
-
     .trait-list {
         margin-top: 1.5rem;
         display: grid;
@@ -283,26 +347,26 @@
             --box-size: 80px;
         }
 
-        .type-grid {
-            grid-template-columns: repeat(2, var(--box-size));
-        }
-
         .user-type-container {
             flex-direction: column;
+            align-items: center;
         }
 
         .user-type-section {
-            flex: 0 0 auto;
-            width: 100%;
+            margin-bottom: 2rem;
         }
 
         .character-grid {
             grid-template-columns: 1fr;
         }
 
-        .modal {
-            padding: 1.5rem;
-            width: 95%;
+        .popup {
+            min-width: 90vw;
+            padding: 1rem;
+        }
+
+        .type-grid {
+            grid-template-columns: repeat(2, var(--box-size));
         }
 
         .trait-list {
@@ -318,8 +382,6 @@
     <div class="subtitle">ตัวละครอนิเมะที่มี MBTI Type เดียวกับคุณ</div>
 </div>
 
-<div class="type-grid" id="type-grid"></div>
-
 <div class="user-type-display">
     <div class="user-type-container">
         <div class="user-type-section">
@@ -327,9 +389,16 @@
             <div class="user-type-box" id="user-type-box">
                 <span id="user-type-value">-</span>
             </div>
+            <button id="change-type-btn" class="change-type-btn">เปลี่ยน Type</button>
         </div>
         <div class="character-grid" id="character-grid"></div>
     </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+    <h2>เลือก MBTI Type ของคุณ</h2>
+    <div class="type-grid" id="popup-type-grid"></div>
 </div>
 
 <div class="modal-overlay" id="modal-overlay"></div>
@@ -362,7 +431,6 @@
         'ISTP': 'explorer', 'ESTP': 'explorer', 'ISFP': 'explorer', 'ESFP': 'explorer'
     };
 
-    // ชื่อบ้านที่ใช้ในการแสดงผลกับชื่อบ้านในข้อมูล JSON
     const houseMapping = {
         'analyst': 'purpleHouse',
         'diplomat': 'greenHouse',
@@ -386,18 +454,20 @@
         return houseMapping[houseClass] || '';
     }
 
-    function renderTypeGrid() {
-        const typeGrid = document.getElementById('type-grid');
-        typeGrid.innerHTML = types.map(type => `
+    function renderPopupTypeGrid() {
+        const popupTypeGrid = document.getElementById('popup-type-grid');
+        popupTypeGrid.innerHTML = types.map(type => `
             <button class="${getTypeHouseClass(type)}" data-type="${type}">
                 <img src="/static/mbti/${type}.png" alt="${type}" style="width: 100%; height: 100%; object-fit: contain;">
             </button>
         `).join('');
 
-        typeGrid.querySelectorAll('button').forEach(button => {
+        popupTypeGrid.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', () => {
                 userType = button.getAttribute('data-type');
                 localStorage.setItem('mbtiType', userType);
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('popup').style.display = 'none';
                 updateUserType();
                 renderCharacters();
             });
@@ -425,10 +495,6 @@
         }
 
         const houseData = getTypeHouseData(userType);
-        console.log('House Data Name:', houseData);
-        console.log('User Type:', userType);
-        console.log('Character Data:', characterData);
-
         if (!characterData[houseData] || !characterData[houseData].types || !characterData[houseData].types[userType]) {
             characterGrid.innerHTML = '<p class="empty-message">ไม่พบข้อมูลตัวละครสำหรับ Type นี้</p>';
             return;
@@ -480,12 +546,23 @@
         modalOverlay.style.display = 'none';
     }
 
+    document.getElementById('change-type-btn').addEventListener('click', () => {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('popup').style.display = 'block';
+        renderPopupTypeGrid();
+    });
+
+    document.getElementById('overlay').addEventListener('click', () => {
+        if (userType) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+    });
+
     document.getElementById('modal-overlay').addEventListener('click', closeModal);
 
     async function fetchCharacterData() {
         try {
-            console.log('Fetching character data from:', characterDataUrl);
-            // เพิ่ม cache: 'no-store' เพื่อป้องกันการใช้แคชเก่า
             const response = await fetch(characterDataUrl, { cache: 'no-store' });
             
             if (!response.ok) {
@@ -493,14 +570,9 @@
             }
             
             const text = await response.text();
-            console.log('Received data length:', text.length);
-            console.log('Sample of received data:', text.substring(0, 100) + '...');
             
             try {
-                // ลองแก้ไขปัญหา JSON parsing
-                let jsonText = text;
-                characterData = JSON.parse(jsonText);
-                console.log('Parsed character data structure:', Object.keys(characterData));
+                characterData = JSON.parse(text);
                 
                 if (!characterData.purpleHouse && !characterData.greenHouse && 
                     !characterData.blueHouse && !characterData.yellowHouse) {
@@ -510,50 +582,24 @@
                 renderCharacters();
             } catch (parseError) {
                 console.error("JSON parsing error:", parseError);
-                
-                // แสดงข้อมูลเพิ่มเติมเพื่อการแก้ไข
-                const errorPosition = parseError.message.match(/position (\d+)/);
-                let errorContext = '';
-                let lineInfo = '';
-                
-                if (errorPosition && errorPosition[1]) {
-                    const pos = parseInt(errorPosition[1]);
-                    const start = Math.max(0, pos - 30);
-                    const end = Math.min(text.length, pos + 30);
-                    errorContext = text.substring(start, end);
-                    
-                    // คำนวณหาบรรทัดที่เกิดข้อผิดพลาด
-                    let line = 1;
-                    let col = 1;
-                    for (let i = 0; i < pos; i++) {
-                        if (text[i] === '\n') {
-                            line++;
-                            col = 1;
-                        } else {
-                            col++;
-                        }
-                    }
-                    lineInfo = `(บรรทัด ${line} คอลัมน์ ${col})`;
-                }
-                
                 document.getElementById('character-grid').innerHTML = 
-                    `<p class="empty-message">ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message} ${lineInfo}</p>
-                    <p>บริเวณที่เกิดข้อผิดพลาด: "${errorContext}"</p>
-                    <p>กรุณาตรวจสอบและแก้ไขไฟล์ JSON ก่อนลองใหม่อีกครั้ง</p>`;
+                    `<p class="empty-message">ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message}</p>`;
             }
         } catch (error) {
             console.error("Error fetching character data:", error);
             document.getElementById('character-grid').innerHTML = 
-                `<p class="empty-message">ไม่สามารถโหลดข้อมูลตัวละครได้: ${error.message}</p>
-                <p>กรุณาตรวจสอบการเชื่อมต่อและลองใหม่อีกครั้ง</p>`;
+                `<p class="empty-message">ไม่สามารถโหลดข้อมูลตัวละครได้: ${error.message}</p>`;
         }
     }
 
     window.addEventListener('load', () => {
-        console.log('Page loaded, initializing...');
-        renderTypeGrid();
         updateUserType();
         fetchCharacterData();
+        if (!userType) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+            renderPopupTypeGrid();
+        }
     });
 </script>
 {% endblock %}
