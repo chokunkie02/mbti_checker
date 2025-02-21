@@ -194,7 +194,6 @@
         border-color: var(--mbti-color);
     }
 
-
     /* Popup and overlay styles */
     .overlay {
         position: fixed;
@@ -219,16 +218,20 @@
         position: fixed;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
+        transform: translate(-50%, -50%) scale(0.95);
         background: white;
         padding: 2rem;
         border-radius: 20px;
-        z-index: 1001;
+        box-shadow: none;
+        width: min(600px, 90vw);
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
-        max-width: 90vw;
-        width: 800px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1001;
+    }
+
+    .popup:hover {
+        transform: translate(-50%, -50%) scale(1);
     }
 
     .popup.active {
@@ -240,131 +243,164 @@
     .type-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        padding: 2rem;
+        gap: 1rem;
+        padding: 1rem;
         position: relative;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 20px;
-        overflow: hidden;
     }
 
     .type-button {
-        position: relative;
-        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
         border: none;
-        border-radius: 15px;
-        padding: 2rem;
+        width: 130px;
+        height: 130px;
+        background: white;
+        position: relative;
+        z-index: 1;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+        position: relative;
+        overflow: hidden;
         opacity: 0;
         transform: scale(0.9);
         animation: scaleIn 0.4s forwards;
         animation-delay: calc(var(--animation-order) * 0.1s);
-        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .type-button::before,
+    .type-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150%;
+        height: 150%;
+        transform: translate(-50%, -50%);
+        background: repeating-conic-gradient(from 0deg,
+            rgba(var(--mbti-color-rgb), 0.05) 0deg 30deg,
+            transparent 30deg 60deg
+        );
+        border-radius: 50%;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .type-button::after {
+        width: 120%;
+        height: 120%;
+        background: repeating-conic-gradient(from 45deg,
+            rgba(var(--mbti-color-rgb), 0.08) 0deg 10deg,
+            transparent 10deg 30deg
+        );
+        animation: rotate 15s linear infinite reverse;
+    }
+
+    .type-button:hover::before,
+    .type-button:hover::after {
+        opacity: 1;
     }
 
     .type-button img {
-        width: 120px;
-        height: 120px;
+        width: 80px;
+        height: 80px;
         object-fit: contain;
-        transition: transform 0.3s ease;
-        position: relative;
         z-index: 1;
+        transition: all 0.3s ease;
     }
 
-    /* Add shooting star effect for popup */
-    @keyframes shootingStar {
-        0% {
-            transform: translateX(-100%) translateY(-100%);
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.5;
-        }
-        100% {
-            transform: translateX(100%) translateY(100%);
-            opacity: 0;
-        }
+    .type-button.analyst { background: rgba(142, 68, 173, 0.05); }
+    .type-button.diplomat { background: rgba(39, 174, 96, 0.05); }
+    .type-button.guardian { background: rgba(41, 128, 185, 0.05); }
+    .type-button.explorer { background: rgba(241, 196, 15, 0.05); }
+
+    .type-button.analyst:hover { background: rgba(142, 68, 173, 0.1); }
+    .type-button.diplomat:hover { background: rgba(39, 174, 96, 0.1); }
+    .type-button.guardian:hover { background: rgba(41, 128, 185, 0.1); }
+    .type-button.explorer:hover { background: rgba(241, 196, 15, 0.1); }
+
+    .type-button:hover {
+        transform: translateY(-2px);
     }
 
-    .shooting-star {
+    .type-button:hover img {
+        transform: scale(1.1);
+    }
+
+    .type-button::after {
+        content: '';
         position: absolute;
-        width: 100px;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--mbti-color), transparent);
-        animation: shootingStar 1.5s linear;
-        pointer-events: none;
+        inset: 0;
+        background: var(--mbti-gradient);
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: -1;
+        border-radius: inherit;
     }
+
+    .type-button:hover::after {
+        opacity: 0.1;
+    }
+
+    .type-button.analyst { --button-color: var(--analyst-color); }
+    .type-button.diplomat { --button-color: var(--diplomat-color); }
+    .type-button.guardian { --button-color: var(--guardian-color); }
+    .type-button.explorer { --button-color: var(--explorer-color); }
 
     .content-section {
         background: rgba(255, 255, 255, 0.8);
         border-radius: 20px;
-        padding: 3rem 2rem;
-        margin: 4rem auto;
+        padding: 2rem 1.5rem;
+        margin: 2rem auto;
         box-shadow: var(--mbti-shadow);
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-        max-width: 1000px;
+        max-width: 800px;
         opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInSlideUp 0.8s ease forwards;
-        animation-play-state: paused;
-    }
-
-    .content-section.visible {
-        animation-play-state: running;
+        transform: translateY(30px);
+        animation: fadeInSlideUp 1s ease forwards;
+        animation-delay: calc(var(--animation-order) * 0.2s);
     }
 
     @keyframes fadeInSlideUp {
-        from {
+        0% {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
-        to {
+        100% {
             opacity: 1;
             transform: translateY(0);
         }
-    }
-
-    .content-section:hover {
-        transform: translateY(-5px);
     }
 
     .content-section::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-            135deg,
-            rgba(var(--mbti-color-rgb), 0.1) 0%,
-            rgba(var(--mbti-color-rgb), 0.2) 50%,
-            rgba(var(--mbti-color-rgb), 0.1) 100%
+        background: linear-gradient(135deg,
+            rgba(var(--mbti-color-rgb), 0.05) 0%,
+            rgba(var(--mbti-color-rgb), 0.1) 50%,
+            rgba(var(--mbti-color-rgb), 0.05) 100%
         );
         background-size: 200% 200%;
-        animation: pulseBackground 3s ease infinite;
+        animation: gradientShift 3s ease infinite;
         opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: -1;
+        transition: opacity 0.5s ease;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
     }
 
     .content-section:hover::before {
         opacity: 1;
-    }
-
-    @keyframes pulseBackground {
-        0% { 
-            background-position: 0% 50%;
-            opacity: 0.1;
-        }
-        50% { 
-            background-position: 100% 50%;
-            opacity: 0.2;
-        }
-        100% { 
-            background-position: 0% 50%;
-            opacity: 0.1;
-        }
     }
 
     .content-section h2 {
@@ -430,40 +466,6 @@
         margin-bottom: 2rem;
     }
 
-    .meteor {
-        position: absolute;
-        pointer-events: none;
-        width: 3px;
-        height: 120px;
-        background: linear-gradient(
-            to bottom, 
-            rgba(var(--mbti-color-rgb), 1), 
-            rgba(var(--mbti-color-rgb), 0.3),
-            transparent
-        );
-        transform-origin: top left;
-        z-index: 100;
-        opacity: 0;
-        will-change: transform;
-        filter: drop-shadow(0 0 8px var(--mbti-color));
-    }
-
-    @keyframes meteorFall {
-        0% {
-            opacity: 1;
-            transform: rotate(45deg) translateX(0) translateY(0);
-        }
-        40% {
-            opacity: 0.8;
-        }
-        60% {
-            opacity: 0.4;
-        }
-        100% {
-            opacity: 0;
-            transform: rotate(45deg) translateX(400px) translateY(400px);
-        }
-    }
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -485,6 +487,7 @@
             transform: scale(1);
         }
     }
+
     @media (max-width: 992px) {
         .insights-container {
             flex-direction: column;
@@ -514,6 +517,18 @@
             padding: 1rem;
         }
     }
+
+    /* Scroll Reveal Animation */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
 </style>
 {% endblock %}
 
@@ -524,7 +539,7 @@
     </div>
 
     <div class="center-content">
-        <div class="center-type" id="mbti-type" data-type="{{ current_user.mbti_type if current_user.is_authenticated else 'INFP' }}">
+        <div class="center-type" id="mbti-type" data-type="{% if current_user.is_authenticated %}{{ current_user.mbti_type }}{% else %}INFP{% endif %}">
             <!-- MBTI type will be loaded here -->
         </div>
     </div>
@@ -618,6 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('mbtiType', userType);
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('popup').style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 initPage();
             });
         });
@@ -629,13 +645,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('overlay');
         overlay.style.display = 'block';
         popup.style.display = 'block';
-
-        // Add periodic shooting stars
-        const shootingStarInterval = setInterval(() => {
-            addShootingStar(popup);
-        }, 2000);
-
-        popup.dataset.intervalId = shootingStarInterval;
 
         setTimeout(() => popup.classList.add('active'), 10);
 
@@ -695,9 +704,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatContent(content) {
         let lines = content.split('\n');
         let formattedLines = lines.map(line => {
-            // Remove all asterisks and extra spaces
-            line = line.trim().replace(/\*/g, '').trim();
-            return line ? `<p>${line}</p>` : '';
+            // Remove all asterisks and extra spaces, including leading asterisks
+            line = line.trim().replace(/[\*\s]+/g, ' ').replace(/^\* /, '').trim();
+            return line ? `<p class="content-text">${line}</p>` : '';
         });
         return formattedLines.filter(line => line).join('');
     }
@@ -742,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const cleanTitle = topic.title.replace(/^\d+\.\s*/, '');
 
             const sectionHtml = `
-                <div class="content-section" id="section-${index}">
+                <div class="content-section reveal" id="section-${index}">
                     <h2>${cleanTitle}</h2>
                     <div class="content-card">
                         ${formatContent(topic.content)}
@@ -779,90 +788,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function createMeteor(section, x, y) {
-        const meteor = document.createElement('div');
-        meteor.className = 'meteor';
-
-        const randomOffsetX = (Math.random() - 0.5) * 100;
-        const randomOffsetY = (Math.random() - 0.5) * 100;
-
-        meteor.style.left = `${x + randomOffsetX}px`;
-        meteor.style.top = `${y + randomOffsetY}px`;
-
-        const size = 80 + Math.random() * 60;
-        meteor.style.height = `${size}px`;
-
-        const duration = 1.2 + Math.random() * 0.8;
-        meteor.style.animation = `meteorFall ${duration}s ease-out forwards`;
-
-        section.appendChild(meteor);
-
-        setTimeout(() => {
-            meteor.remove();
-        }, duration * 1000 + 100);
-    }
-
-    document.querySelectorAll('.content-section').forEach(section => {
-        let lastTime = 0;
-        const throttleDelay = 50;
-
-        section.addEventListener('mousemove', (e) => {
-            const currentTime = Date.now();
-            if (currentTime - lastTime >= throttleDelay) {
-                const rect = section.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        createMeteor(section, mouseX, mouseY);
-                    }, i * 120);
-                }
-
-                lastTime = currentTime;
-            }
-        });
-    });
-
     // Add intersection observer for content sections
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+                entry.target.classList.add('active');
             }
         });
     }, {
         threshold: 0.1
     });
 
-    // Add shooting stars to popup
-    function addShootingStar(container) {
-        const star = document.createElement('div');
-        star.className = 'shooting-star';
-
-        // Random position and angle
-        const startX = Math.random() * 100;
-        const startY = Math.random() * 100;
-        star.style.left = `${startX}%`;
-        star.style.top = `${startY}%`;
-
-        container.appendChild(star);
-
-        star.addEventListener('animationend', () => star.remove());
-    }
+    // Observe all elements with the 'reveal' class
+    document.querySelectorAll('.reveal').forEach(section => {
+        observer.observe(section);
+    });
 
     // Cleanup shooting stars when closing popup
     document.getElementById('overlay').addEventListener('click', () => {
         const popup = document.getElementById('popup');
-        clearInterval(Number(popup.dataset.intervalId));
         popup.style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     });
 
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // เรียกใช้ scrollToTop เมื่อโหลดหน้าและหลังจากโหลดข้อมูล
+    window.onload = scrollToTop;
 
     async function initPage() {
-        // Scroll to top on page load
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Force scroll to top before loading content
+        scrollToTop();
 
         const mbtiData = await fetchMbtiData();
         if (mbtiData) {
@@ -870,8 +828,13 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCenterType(userType || 'INFP');
             createTopics(mbtiData);
 
-            // Observe all content sections
-            document.querySelectorAll('.content-section').forEach(section => {
+            // Add animation to content sections with delay
+            document.querySelectorAll('.content-section').forEach((section, index) => {
+                section.style.setProperty('--animation-order', index + 1);
+            });
+
+            // Observe all elements with the 'reveal' class
+            document.querySelectorAll('.reveal').forEach(section => {
                 observer.observe(section);
             });
         }
