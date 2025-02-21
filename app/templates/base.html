@@ -1,578 +1,583 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MBTI Checker{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        MBTI Checker
+      {% endblock %}
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --mbti-yellow: #FFD93D;
-            --mbti-green: #4CAF50;
-            --mbti-blue: #2196F3;
-            --mbti-purple: #9C27B0;
-            --mbti-gradient: linear-gradient(135deg, 
-                var(--mbti-yellow) 0%,
-                var(--mbti-green) 33%,
-                var(--mbti-blue) 66%,
-                var(--mbti-purple) 100%);
-            --mbti-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            --mbti-bg: #f8f9fa;
-            --mbti-text: #2c3e50;
-            --sidebar-collapsed-width: 70px;
-            --sidebar-expanded-width: 250px;
-            --transition-speed: 0.3s;
-            --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
-            --base-font-size: 14px;
-        }
-
-        body {
-            font-family: 'Kanit', sans-serif;
-            font-size: var(--base-font-size);
-            line-height: 1.6;
-            background: var(--mbti-bg);
-            min-height: 100vh;
-            color: var(--mbti-text);
-            padding: 0;
-            display: flex;
-            position: relative;
-        }
-
-        /* Auth Popup Styles */
-        .auth-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--mbti-shadow);
-            font-size: 20px;
-            color: var(--mbti-text);
-            cursor: pointer;
-            transition: all 0.3s var(--transition-timing);
-        }
-
-        .auth-toggle:hover {
-            transform: scale(1.1);
-            background: var(--mbti-gradient);
-            color: white;
-        }
-
-        .auth-popup {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: var(--mbti-shadow);
-            z-index: 999;
-            min-width: 200px;
-            transform: translateX(120%);
-            transition: transform var(--transition-speed) var(--transition-timing);
-        }
-
-        .auth-popup.active {
-            transform: translateX(0);
-        }
-
-        .auth-popup a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            color: var(--mbti-text);
-            text-decoration: none;
-            font-size: 0.95rem;
-            border-radius: 10px;
-            transition: all 0.2s var(--transition-timing);
-            background: rgba(0, 0, 0, 0.03);
-        }
-
-        .auth-popup a:last-child {
-            margin-bottom: 0;
-        }
-
-        .auth-popup a:hover {
-            background: var(--mbti-gradient);
-            color: white;
-            transform: translateX(-5px);
-        }
-
-        .auth-popup a .icon {
-            margin-right: 10px;
-            font-size: 1.1rem;
-        }
-
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      :root {
+        --mbti-yellow: #ffd93d;
+        --mbti-green: #4caf50;
+        --mbti-blue: #2196f3;
+        --mbti-purple: #9c27b0;
+        --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow) 0%, var(--mbti-green) 33%, var(--mbti-blue) 66%, var(--mbti-purple) 100%);
+        --mbti-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        --mbti-bg: #f8f9fa;
+        --mbti-text: #2c3e50;
+        --sidebar-collapsed-width: 70px;
+        --sidebar-expanded-width: 250px;
+        --transition-speed: 0.3s;
+        --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+        --base-font-size: 14px;
+      }
+      
+      body {
+        font-family: 'Kanit', sans-serif;
+        font-size: var(--base-font-size);
+        line-height: 1.6;
+        background: var(--mbti-bg);
+        min-height: 100vh;
+        color: var(--mbti-text);
+        padding: 0;
+        display: flex;
+        position: relative;
+      }
+      
+      /* Auth Popup Styles */
+      .auth-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: white;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--mbti-shadow);
+        font-size: 20px;
+        color: var(--mbti-text);
+        cursor: pointer;
+        transition: all 0.3s var(--transition-timing);
+      }
+      
+      .auth-toggle:hover {
+        transform: scale(1.1);
+        background: var(--mbti-gradient);
+        color: white;
+      }
+      
+      .auth-popup {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: var(--mbti-shadow);
+        z-index: 999;
+        min-width: 200px;
+        transform: translateX(120%);
+        transition: transform var(--transition-speed) var(--transition-timing);
+      }
+      
+      .auth-popup.active {
+        transform: translateX(0);
+      }
+      
+      .auth-popup a {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        color: var(--mbti-text);
+        text-decoration: none;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        transition: all 0.2s var(--transition-timing);
+        background: rgba(0, 0, 0, 0.03);
+      }
+      
+      .auth-popup a:last-child {
+        margin-bottom: 0;
+      }
+      
+      .auth-popup a:hover {
+        background: var(--mbti-gradient);
+        color: white;
+        transform: translateX(-5px);
+      }
+      
+      .auth-popup a .icon {
+        margin-right: 10px;
+        font-size: 1.1rem;
+      }
+      
+      /* Sidebar Styles */
+      .sidebar {
+        background: white;
+        box-shadow: var(--mbti-shadow);
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--sidebar-collapsed-width);
+        transition: width var(--transition-speed) var(--transition-timing);
+        z-index: 100;
+        overflow-x: hidden;
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      
+      .sidebar.expanded {
+        width: var(--sidebar-expanded-width);
+      }
+      
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 20px 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 1));
+      }
+      
+      .toggle-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--mbti-text);
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all 0.2s var(--transition-timing);
+      }
+      
+      .toggle-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        transform: rotate(180deg);
+      }
+      
+      .sidebar-content {
+        padding: 20px 0;
+      }
+      
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .sidebar ul li {
+        margin-bottom: 5px;
+      }
+      
+      .sidebar ul li a {
+        color: var(--mbti-text);
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        transition: all 0.2s var(--transition-timing);
+        white-space: nowrap;
+        border-radius: 0 30px 30px 0;
+        margin-right: 15px;
+        position: relative;
+        overflow: hidden;
+        font-size: 0.95rem;
+      }
+      
+      .sidebar ul li a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--mbti-gradient);
+        opacity: 0;
+        transition: opacity 0.3s var(--transition-timing);
+        z-index: -1;
+      }
+      
+      .sidebar ul li a:hover {
+        color: white;
+      }
+      
+      .sidebar ul li a:hover::before {
+        opacity: 1;
+      }
+      
+      .sidebar ul li a .icon {
+        min-width: 40px;
+        display: flex;
+        justify-content: center;
+        font-size: 1rem;
+        transition: transform 0.3s var(--transition-timing);
+      }
+      
+      .sidebar ul li a:hover .icon {
+        transform: scale(1.2);
+      }
+      
+      .sidebar ul li a .link-text {
+        margin-left: 10px;
+        opacity: 0;
+        transition: opacity var(--transition-speed) var(--transition-timing), transform var(--transition-speed) var(--transition-timing);
+        transform: translateX(-10px);
+      }
+      
+      .sidebar.expanded ul li a .link-text {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      
+      /* Scroll to top button */
+      .scroll-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        color: var(--mbti-text);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--mbti-shadow);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s var(--transition-timing);
+        z-index: 1000;
+        border: none;
+      }
+      
+      .scroll-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+      .scroll-to-top:hover {
+        transform: translateY(-5px);
+        background: var(--mbti-gradient);
+        color: white;
+      }
+      
+      /* Main Content */
+      .main-content {
+        flex-grow: 1;
+        margin-left: var(--sidebar-collapsed-width);
+        padding: 20px;
+        transition: margin-left var(--transition-speed) var(--transition-timing);
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        width: calc(100% - var(--sidebar-collapsed-width));
+      }
+      
+      .main-content.sidebar-expanded {
+        margin-left: var(--sidebar-expanded-width);
+        width: calc(100% - var(--sidebar-expanded-width));
+      }
+      
+      /* Mobile Styles */
+      @media (max-width: 768px) {
         .sidebar {
-            background: white;
-            box-shadow: var(--mbti-shadow);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-collapsed-width);
-            transition: width var(--transition-speed) var(--transition-timing);
-            z-index: 100;
-            overflow-x: hidden;
-            border-right: 1px solid rgba(0, 0, 0, 0.05);
+          width: 0;
+          transform: translateX(-100%);
         }
-
+      
         .sidebar.expanded {
-            width: var(--sidebar-expanded-width);
+          width: var(--sidebar-expanded-width);
+          transform: translateX(0);
         }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 20px 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,1));
-        }
-
-        .toggle-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: var(--mbti-text);
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: all 0.2s var(--transition-timing);
-        }
-
-        .toggle-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            transform: rotate(180deg);
-        }
-
-        .sidebar-content {
-            padding: 20px 0;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar ul li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar ul li a {
-            color: var(--mbti-text);
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            transition: all 0.2s var(--transition-timing);
-            white-space: nowrap;
-            border-radius: 0 30px 30px 0;
-            margin-right: 15px;
-            position: relative;
-            overflow: hidden;
-            font-size: 0.95rem;
-        }
-
-        .sidebar ul li a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--mbti-gradient);
-            opacity: 0;
-            transition: opacity 0.3s var(--transition-timing);
-            z-index: -1;
-        }
-
-        .sidebar ul li a:hover {
-            color: white;
-        }
-
-        .sidebar ul li a:hover::before {
-            opacity: 1;
-        }
-
-        .sidebar ul li a .icon {
-            min-width: 40px;
-            display: flex;
-            justify-content: center;
-            font-size: 1rem;
-            transition: transform 0.3s var(--transition-timing);
-        }
-
-        .sidebar ul li a:hover .icon {
-            transform: scale(1.2);
-        }
-
-        .sidebar ul li a .link-text {
-            margin-left: 10px;
-            opacity: 0;
-            transition: opacity var(--transition-speed) var(--transition-timing),
-                        transform var(--transition-speed) var(--transition-timing);
-            transform: translateX(-10px);
-        }
-
-        .sidebar.expanded ul li a .link-text {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-
-        h1 {
-            font-size: 1.8rem;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-        }
-
-        h3 {
-            font-size: 1.2rem;
-        }
-
-        .container {
-            font-size: 0.95rem;
-        }
-
+      
         .main-content {
-            flex-grow: 1;
-            margin-left: var(--sidebar-collapsed-width);
-            padding: 20px;
-            transition: margin-left var(--transition-speed) var(--transition-timing);
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+          margin-left: 0;
+          width: 100%;
+          padding: 10px;
         }
-
+      
         .main-content.sidebar-expanded {
-            margin-left: var(--sidebar-expanded-width);
+          margin-left: 0;
+          width: 100%;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2.5rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--mbti-shadow);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s var(--transition-timing),
-                        box-shadow 0.3s var(--transition-timing);
+      
+        .mobile-menu-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(3px);
+          z-index: 90;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity var(--transition-speed) var(--transition-timing), visibility var(--transition-speed) var(--transition-timing);
         }
-
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      
+        .mobile-menu-overlay.active {
+          opacity: 1;
+          visibility: visible;
         }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--mbti-gradient);
-            border-radius: 2px;
+      
+        .mobile-toggle {
+          position: fixed;
+          top: 10px;
+          left: 10px;
+          z-index: 101;
+          background: white;
+          border: none;
+          width: 45px;
+          height: 45px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: var(--mbti-shadow);
+          font-size: 20px;
+          color: var(--mbti-text);
+          cursor: pointer;
+          transition: all 0.3s var(--transition-timing);
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 0;
-                transform: translateX(-100%);
-            }
-
-            .sidebar.expanded {
-                width: var(--sidebar-expanded-width);
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
-
-            .main-content.sidebar-expanded {
-                margin-left: 0;
-            }
-
-            .container {
-                padding: 1.5rem;
-            }
-
-            .mobile-menu-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(3px);
-                z-index: 90;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity var(--transition-speed) var(--transition-timing),
-                            visibility var(--transition-speed) var(--transition-timing);
-            }
-
-            .mobile-menu-overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .mobile-toggle {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 101;
-                background: white;
-                border: none;
-                width: 45px;
-                height: 45px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: var(--mbti-shadow);
-                font-size: 20px;
-                color: var(--mbti-text);
-                cursor: pointer;
-                transition: all 0.3s var(--transition-timing);
-            }
-
-            .mobile-toggle:hover {
-                transform: rotate(90deg);
-                background: var(--mbti-gradient);
-                color: white;
-            }
+      
+        .mobile-toggle:hover {
+          transform: rotate(90deg);
+          background: var(--mbti-gradient);
+          color: white;
         }
-
-        @media (min-width: 769px) {
-            .mobile-toggle {
-                display: none;
-            }
-
-            .mobile-menu-overlay {
-                display: none;
-            }
+      }
+      
+      @media (min-width: 769px) {
+        .mobile-toggle {
+          display: none;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+      
+        .mobile-menu-overlay {
+          display: none;
         }
-
-        .container {
-            animation: fadeIn 0.5s var(--transition-timing);
+      }
+      
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
+    {% block extra_css %}
+    {% endblock %}
+  </head>
+  <body>
     <!-- Auth Toggle Button -->
     <button class="auth-toggle" id="authToggle">
-        {% if current_user.is_authenticated %}
-            <i class="fas fa-user-circle"></i>
-        {% else %}
-            <i class="fas fa-sign-in-alt"></i>
-        {% endif %}
+      {% if current_user.is_authenticated %}
+        <i class="fas fa-user-circle"></i>
+      {% else %}
+        <i class="fas fa-sign-in-alt"></i>
+      {% endif %}
     </button>
 
     <!-- Auth Popup -->
     <div class="auth-popup" id="authPopup">
-        {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.logout') }}">
-                <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
-                <span>ออกจากระบบ</span>
-            </a>
-        {% else %}
-            <a href="{{ url_for('main.login') }}">
-                <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
-                <span>เข้าสู่ระบบ</span>
-            </a>
-            <a href="{{ url_for('main.register') }}">
-                <span class="icon"><i class="fas fa-user-plus"></i></span>
-                <span>ลงทะเบียน</span>
-            </a>
-        {% endif %}
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.logout') }}">
+          <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+          <span>ออกจากระบบ</span>
+        </a>
+      {% else %}
+        <a href="{{ url_for('main.login') }}">
+          <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+          <span>เข้าสู่ระบบ</span>
+        </a>
+        <a href="{{ url_for('main.register') }}">
+          <span class="icon"><i class="fas fa-user-plus"></i></span>
+          <span>ลงทะเบียน</span>
+        </a>
+      {% endif %}
     </div>
 
-    <!-- เมนูมือถือ (แสดงเฉพาะบนมือถือ) -->
-    <button class="mobile-toggle" id="mobileToggle">
-        <i class="fas fa-bars"></i>
-    </button>
+    <!-- Scroll to top button -->
+    <button class="scroll-to-top" id="scrollToTop"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
     <div class="mobile-menu-overlay" id="mobileOverlay"></div>
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <button class="toggle-btn" id="toggleBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <div class="sidebar-content">
-            <ul>
-                <li>
-                    <a href="{{ url_for('main.home') }}">
-                        <span class="icon"><i class="fas fa-home"></i></span>
-                        <span class="link-text">หน้าแรก</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.quiz') }}">
-                        <span class="icon"><i class="fas fa-tasks"></i></span>
-                        <span class="link-text">ทำแบบทดสอบ</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.result') }}">
-                        <span class="icon"><i class="fas fa-chart-pie"></i></span>
-                        <span class="link-text">ผลลัพธ์</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.characters') }}">
-                        <span class="icon"><i class="fas fa-user-friends"></i></span>
-                        <span class="link-text">ตัวละคร</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.relationships') }}">
-                        <span class="icon"><i class="fas fa-heart"></i></span>
-                        <span class="link-text">ความสัมพันธ์</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.animals') }}">
-                        <span class="icon"><i class="fas fa-paw"></i></span>
-                        <span class="link-text">สัตว์ที่ตรงกับไทป์เรา</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.insights') }}">
-                        <span class="icon"><i class="fas fa-lightbulb"></i></span>
-                        <span class="link-text">ข้อมูลเชิงลึก</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.about') }}">
-                        <span class="icon"><i class="fas fa-info-circle"></i></span>
-                        <span class="link-text">เกี่ยวกับเรา</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+      <div class="sidebar-header">
+        <button class="toggle-btn" id="toggleBtn"><i class="fas fa-bars"></i></button>
+      </div>
+      <div class="sidebar-content">
+        <ul>
+          <li>
+            <a href="{{ url_for('main.home') }}">
+              <span class="icon"><i class="fas fa-home"></i></span>
+              <span class="link-text">หน้าแรก</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.quiz') }}">
+              <span class="icon"><i class="fas fa-tasks"></i></span>
+              <span class="link-text">ทำแบบทดสอบ</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.result') }}">
+              <span class="icon"><i class="fas fa-chart-pie"></i></span>
+              <span class="link-text">ผลลัพธ์</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.characters') }}">
+              <span class="icon"><i class="fas fa-user-friends"></i></span>
+              <span class="link-text">ตัวละคร</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.relationships') }}">
+              <span class="icon"><i class="fas fa-heart"></i></span>
+              <span class="link-text">ความสัมพันธ์</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.animals') }}">
+              <span class="icon"><i class="fas fa-paw"></i></span>
+              <span class="link-text">สัตว์ที่ตรงกับไทป์เรา</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.insights') }}">
+              <span class="icon"><i class="fas fa-lightbulb"></i></span>
+              <span class="link-text">ข้อมูลเชิงลึก</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.about') }}">
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              <span class="link-text">เกี่ยวกับเรา</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
-        <div class="container">
-            {% block content %}{% endblock %}
-        </div>
+      {% block content %}
+      {% endblock %}
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const toggleBtn = document.getElementById('toggleBtn');
-            const mobileToggle = document.getElementById('mobileToggle');
-            const mobileOverlay = document.getElementById('mobileOverlay');
-
-            function toggleSidebar() {
-                sidebar.classList.toggle('expanded');
-                mainContent.classList.toggle('sidebar-expanded');
-
-                const icon = toggleBtn.querySelector('i');
-                if (sidebar.classList.contains('expanded')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            }
-
-            function toggleMobileMenu() {
-                sidebar.classList.toggle('expanded');
-                mobileOverlay.classList.toggle('active');
-
-                const icon = mobileToggle.querySelector('i');
-                if (sidebar.classList.contains('expanded')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            }
-
-            toggleBtn.addEventListener('click', toggleSidebar);
-            mobileToggle.addEventListener('click', toggleMobileMenu);
-            mobileOverlay.addEventListener('click', toggleMobileMenu);
-
-            // เมื่อกดเลือกเมนูบนมือถือให้ปิด sidebar
-            if (window.innerWidth <= 768) {
-                const menuLinks = document.querySelectorAll('.sidebar ul li a');
-                menuLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        sidebar.classList.remove('expanded');
-                        mobileOverlay.classList.remove('active');
-
-                        const mobileIcon = mobileToggle.querySelector('i');
-                        mobileIcon.classList.remove('fa-times');
-                        mobileIcon.classList.add('fa-bars');
-                    });
-                });
-            }
-
-            // Auth popup toggle
-            const authToggle = document.getElementById('authToggle');
-            const authPopup = document.getElementById('authPopup');
-
-            authToggle.addEventListener('click', function() {
-                authPopup.classList.toggle('active');
-            });
-
-            // Close popup when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!authPopup.contains(event.target) && !authToggle.contains(event.target)) {
-                    authPopup.classList.remove('active');
-                }
-            });
-        });
+      document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebar')
+        const mainContent = document.getElementById('mainContent')
+        const toggleBtn = document.getElementById('toggleBtn')
+        const mobileToggle = document.getElementById('mobileToggle')
+        const mobileOverlay = document.getElementById('mobileOverlay')
+        const authToggle = document.getElementById('authToggle')
+        const authPopup = document.getElementById('authPopup')
+        const scrollToTopBtn = document.getElementById('scrollToTop')
+      
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+          sidebar.classList.toggle('expanded')
+          mainContent.classList.toggle('sidebar-expanded')
+      
+          const icon = toggleBtn.querySelector('i')
+          if (sidebar.classList.contains('expanded')) {
+            icon.classList.remove('fa-bars')
+            icon.classList.add('fa-times')
+          } else {
+            icon.classList.remove('fa-times')
+            icon.classList.add('fa-bars')
+          }
+        }
+      
+        // Mobile menu toggle functionality
+        function toggleMobileMenu() {
+          sidebar.classList.toggle('expanded')
+          mobileOverlay.classList.toggle('active')
+      
+          const icon = mobileToggle.querySelector('i')
+          if (sidebar.classList.contains('expanded')) {
+            icon.classList.remove('fa-bars')
+            icon.classList.add('fa-times')
+          } else {
+            icon.classList.remove('fa-times')
+            icon.classList.add('fa-bars')
+          }
+        }
+      
+        // Scroll to top functionality
+        function toggleScrollBtn() {
+          if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible')
+          } else {
+            scrollToTopBtn.classList.remove('visible')
+          }
+        }
+      
+        function scrollToTop() {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          })
+        }
+      
+        // Event listeners
+        toggleBtn.addEventListener('click', toggleSidebar)
+        mobileToggle.addEventListener('click', toggleMobileMenu)
+        mobileOverlay.addEventListener('click', toggleMobileMenu)
+        window.addEventListener('scroll', toggleScrollBtn)
+        scrollToTopBtn.addEventListener('click', scrollToTop)
+      
+        // Auth popup toggle
+        authToggle.addEventListener('click', function () {
+          authPopup.classList.toggle('active')
+        })
+      
+        // Close popup when clicking outside
+        document.addEventListener('click', function (event) {
+          if (!authPopup.contains(event.target) && !authToggle.contains(event.target)) {
+            authPopup.classList.remove('active')
+          }
+        })
+      
+        // Close sidebar on mobile when clicking menu items
+        if (window.innerWidth <= 768) {
+          const menuLinks = document.querySelectorAll('.sidebar ul li a')
+          menuLinks.forEach((link) => {
+            link.addEventListener('click', function () {
+              sidebar.classList.remove('expanded')
+              mobileOverlay.classList.remove('active')
+      
+              const mobileIcon = mobileToggle.querySelector('i')
+              mobileIcon.classList.remove('fa-times')
+              mobileIcon.classList.add('fa-bars')
+            })
+          })
+        }
+      })
     </script>
-    {% block extra_js %}{% endblock %}
-</body>
+    {% block extra_js %}
+    {% endblock %}
+  </body>
 </html>

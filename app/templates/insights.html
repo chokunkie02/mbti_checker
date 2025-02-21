@@ -1,77 +1,102 @@
 {% extends "base.html" %}
 
-{% block title %}MBTI Checker - ข้อมูลเชิงลึก{% endblock %}
+{% block title %}MBTI Insights{% endblock %}
 
 {% block extra_css %}
 <style>
+    :root {
+        --analyst-color: #BA68C8;    /* บ้านม่วง - นักวิเคราะห์ */
+        --diplomat-color: #81C784;    /* บ้านเขียว - นักการทูต */
+        --guardian-color: #64B5F6;    /* บ้านฟ้า - ผู้พิทักษ์ */
+        --explorer-color: #FFEB3B;    /* บ้านเหลือง - นักสำรวจ */
+        --mbti-gradient: linear-gradient(135deg, var(--analyst-color), var(--diplomat-color), 
+                                              var(--guardian-color), var(--explorer-color));
+        --mbti-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='none'/%3E%3Cpath d='M50 0a50 50 0 1 1 0 100 50 50 0 0 1 0-100z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
+    }
+
     .insights-container {
         position: relative;
         width: 100%;
         max-width: 1200px;
         margin: 2rem auto;
         padding: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2rem;
     }
 
-    .circle-container {
-        position: relative;
-        width: 600px;
-        height: 600px;
-        margin: 0 auto;
+    .left-topics, .right-topics {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 120px;
+    }
+
+    .center-content {
+        flex: 1;
+        max-width: 600px;
+        text-align: center;
     }
 
     .center-type {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background: white;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        display: flex;
+        display: inline-flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        z-index: 2;
         padding: 1rem;
+        margin-bottom: 2rem;
     }
 
     .center-type img {
-        width: 120px;
-        height: 120px;
+        width: 180px;
+        height: 180px;
         object-fit: contain;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
     }
 
     .center-type h2 {
-        font-size: 1.5rem;
+        font-size: 2rem;
         margin: 0;
-        color: var(--bs-primary);
+        margin-bottom: 0.2rem;
+        color: var(--mbti-color);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
 
-    .center-type p {
-        font-size: 0.9rem;
-        margin: 0.5rem 0 0;
+    .center-type .mbti-nickname {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
         color: var(--bs-secondary);
+        opacity: 0.8;
     }
 
-    .topics-circle {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
+    .change-type-btn {
+        background: var(--mbti-gradient);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.3);
+    }
+
+    .change-type-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--bs-primary-rgb), 0.4);
     }
 
     .topic {
-        position: absolute;
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: var(--bs-body-bg);
+        box-shadow: var(--mbti-shadow);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -81,308 +106,418 @@
         padding: 15px;
         font-size: 1rem;
         font-weight: 500;
+        border: 2px solid transparent;
     }
 
     .topic.active {
-        background: var(--bs-primary);
-        color: white;
         transform: scale(1.1);
+        border-color: var(--mbti-color);
+        color: var(--mbti-color);
     }
 
     .topic:hover {
         transform: scale(1.1);
-        background: var(--bs-primary);
-        color: white;
+        border-color: var(--mbti-color);
+        color: var(--mbti-color);
     }
 
-    .topic-popup {
-        position: absolute;
-        background: white;
-        padding: 1.5rem;
+    .content-section {
+        background: var(--bs-body-bg);
+        border-radius: 15px;
+        box-shadow: var(--mbti-shadow);
+        margin-top: 3rem;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .content-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .content-section h2 {
+        color: var(--mbti-color);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 2rem;
+        border-bottom: 2px solid var(--mbti-color);
+        padding-bottom: 1rem;
+    }
+
+    .content-card {
+        background: var(--bs-body-bg);
         border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        width: 280px;
-        opacity: 0;
-        visibility: hidden;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s;
+        border: 1px solid var(--bs-border-color);
+    }
+
+    .content-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .popup, .overlay {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+    }
+
+    .popup {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--bs-body-bg);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: var(--mbti-shadow);
+        min-width: 400px;
+        max-width: 90vw;
+        animation: scaleIn 0.3s ease;
+    }
+
+    .overlay {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .type-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .type-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        background: var(--bs-body-bg);
+        cursor: pointer;
         transition: all 0.3s ease;
-        z-index: 3;
+        box-shadow: var(--mbti-shadow);
     }
 
-    .topic-popup.active {
-        opacity: 1;
-        visibility: visible;
+    .type-button img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
     }
 
-    .topic-popup h3 {
-        color: var(--bs-primary);
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
+    .type-button.analyst:hover { background: var(--analyst-color); color: white; }
+    .type-button.diplomat:hover { background: var(--diplomat-color); color: white; }
+    .type-button.guardian:hover { background: var(--guardian-color); color: white; }
+    .type-button.explorer:hover { background: var(--explorer-color); color: white; }
+
+    @keyframes scaleIn {
+        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
-    /* Position the 8 topics in a circle */
-    .topic:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
-    .topic:nth-child(2) { top: 14.6%; right: 14.6%; }
-    .topic:nth-child(3) { top: 50%; right: 0; transform: translateY(-50%); }
-    .topic:nth-child(4) { bottom: 14.6%; right: 14.6%; }
-    .topic:nth-child(5) { bottom: 0; left: 50%; transform: translateX(-50%); }
-    .topic:nth-child(6) { bottom: 14.6%; left: 14.6%; }
-    .topic:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); }
-    .topic:nth-child(8) { top: 14.6%; left: 14.6%; }
-
-    /* Position popups */
-    .topic:nth-child(1) .topic-popup { bottom: 120%; left: 50%; transform: translateX(-50%); }
-    .topic:nth-child(2) .topic-popup { bottom: 120%; right: 0; }
-    .topic:nth-child(3) .topic-popup { top: 50%; right: 120%; transform: translateY(-50%); }
-    .topic:nth-child(4) .topic-popup { top: 120%; right: 0; }
-    .topic:nth-child(5) .topic-popup { top: 120%; left: 50%; transform: translateX(-50%); }
-    .topic:nth-child(6) .topic-popup { top: 120%; left: 0; }
-    .topic:nth-child(7) .topic-popup { top: 50%; left: 120%; transform: translateY(-50%); }
-    .topic:nth-child(8) .topic-popup { bottom: 120%; left: 0; }
-
-    .details-section {
-        margin-top: 3rem;
-        padding: 2rem;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .details-section h2 {
-        color: var(--bs-primary);
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
+    @media (max-width: 992px) {
+        .insights-container {
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .details-content {
-        font-size: 1.1rem;
-        line-height: 1.6;
-    }
+        .left-topics, .right-topics {
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-    .summary-section {
-        margin-top: 3rem;
-        padding: 2rem;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
+        .topic {
+            width: 100px;
+            height: 100px;
+            font-size: 0.9rem;
+        }
 
-    .summary-section h2 {
-        color: var(--bs-primary);
-        margin-bottom: 1.5rem;
-        text-align: center;
+        .type-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .popup {
+            width: 90vw;
+            padding: 1rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="insights-container">
-    <div class="circle-container">
+    <div class="left-topics">
+        <!-- Topics will be loaded here -->
+    </div>
+
+    <div class="center-content">
         <div class="center-type" id="mbti-type">
             <!-- MBTI type will be loaded here -->
         </div>
-        <div class="topics-circle" id="topics-container">
-            <!-- Topics will be loaded here -->
-        </div>
-    </div>
-    
-    <div class="details-section" id="details-section">
-        <h2>รายละเอียด</h2>
-        <div class="details-content" id="details-content">
-            <!-- Details content will be loaded here -->
-        </div>
     </div>
 
-    <div class="summary-section" id="summary-section">
-        <h2>สรุป</h2>
-        <div class="summary-content" id="summary-content">
-            <!-- Summary content will be loaded here -->
-        </div>
+    <div class="right-topics">
+        <!-- Topics will be loaded here -->
     </div>
 </div>
 
+<div id="content-sections">
+    <!-- Content sections will be loaded here -->
+</div>
+
+<!-- Type selection popup -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+    <div class="type-grid" id="typeGrid">
+        <!-- Type buttons will be generated here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentMbtiData = null;
-    let activePopup = null;
     let userType = null;
 
+    const MBTI_TYPES = [
+        'INTJ', 'ENTJ', 'INTP', 'ENTP',
+        'INFJ', 'ENFJ', 'INFP', 'ENFP',
+        'ISTJ', 'ESTJ', 'ISFJ', 'ESFJ',
+        'ISTP', 'ESTP', 'ISFP', 'ESFP'
+    ];
+
+    const TYPE_NICKNAMES = {
+        'INTJ': ['The Mastermind', 'นักวางกลยุทธ์'],
+        'ENTJ': ['The Commander', 'ผู้นำกลยุทธ์'],
+        'INTP': ['The Logician', 'นักตรรกะ'],
+        'ENTP': ['The Debater', 'นักโต้แย้ง'],
+        'INFJ': ['The Advocate', 'นักปราชญ์ผู้มีวิสัยทัศน์'],
+        'ENFJ': ['The Protagonist', 'ผู้นำที่มีอุดมการณ์'],
+        'INFP': ['The Mediator', 'นักไกล่เกลี่ย'],
+        'ENFP': ['The Campaigner', 'นักรณรงค์'],
+        'ISTJ': ['The Logistician', 'นักบริหารจัดการ'],
+        'ESTJ': ['The Executive', 'นักบริหาร'],
+        'ISFJ': ['The Defender', 'ผู้พิทักษ์'],
+        'ESFJ': ['The Consul', 'ผู้ให้คำปรึกษา'],
+        'ISTP': ['The Virtuoso', 'ผู้ชำนาญการ'],
+        'ESTP': ['The Entrepreneur', 'ผู้ประกอบการ'],
+        'ISFP': ['The Adventurer', 'นักผจญภัย'],
+        'ESFP': ['The Entertainer', 'นักแสดง']
+    };
+
+    const typeHouses = {
+        'INTJ': 'analyst', 'ENTJ': 'analyst', 'INTP': 'analyst', 'ENTP': 'analyst',
+        'INFJ': 'diplomat', 'ENFJ': 'diplomat', 'INFP': 'diplomat', 'ENFP': 'diplomat',
+        'ISTJ': 'guardian', 'ESTJ': 'guardian', 'ISFJ': 'guardian', 'ESFJ': 'guardian',
+        'ISTP': 'explorer', 'ESTP': 'explorer', 'ISFP': 'explorer', 'ESFP': 'explorer'
+    };
+
     // Check if user is logged in and has MBTI type
-    {% if current_user.is_authenticated and current_user.mbti_type %}
-        userType = '{{ current_user.mbti_type }}';
-    {% else %}
+    const userTypeElement = document.getElementById('mbti-type');
+    if (userTypeElement && userTypeElement.dataset.type) {
+        userType = userTypeElement.dataset.type;
+    } else {
         userType = localStorage.getItem('mbtiType');
-    {% endif %}
+    }
+
+    // Create type selection buttons
+    function createTypeButtons() {
+        const typeGrid = document.getElementById('typeGrid');
+        typeGrid.innerHTML = MBTI_TYPES.map(type => {
+            const house = typeHouses[type];
+            return `
+                <button class="type-button ${house}" data-type="${type}">
+                    <img src="/static/mbti/${type}.png" alt="${type}">
+                    ${type}
+                </button>
+            `;
+        }).join('');
+
+        // Add click events to buttons
+        typeGrid.querySelectorAll('.type-button').forEach(button => {
+            button.addEventListener('click', () => {
+                userType = button.getAttribute('data-type');
+                localStorage.setItem('mbtiType', userType);
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('popup').style.display = 'none';
+                initPage();
+            });
+        });
+    }
+
+    // Show type popup
+    function showTypePopup() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    // Make showTypePopup available globally
+    window.showTypePopup = showTypePopup;
 
     // Fetch MBTI data from GitHub
     async function fetchMbtiData() {
         const url = 'https://raw.githubusercontent.com/chokunkie02/mbti_checker/refs/heads/main/app/templates/insights.json';
         try {
-            // Check network connection
-            if (!navigator.onLine) {
-                throw new Error('ไม่มีการเชื่อมต่ออินเทอร์เน็ต กรุณาตรวจสอบการเชื่อมต่อของคุณ');
-            }
-
-            // Fetch data with timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
-
-            const response = await fetch(url, { 
-                signal: controller.signal,
-                cache: 'no-store'  // Prevent caching
-            });
-            clearTimeout(timeoutId);
-
-            // Check response status
-            if (!response.ok) {
-                throw new Error(`ไม่สามารถเข้าถึงข้อมูลได้ (HTTP ${response.status}): ${response.statusText}`);
-            }
-
-            // Get response text
-            const text = await response.text();
-
-            // Try parsing JSON
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (parseError) {
-                console.error('Raw response:', text);
-                throw new Error(`ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message}`);
-            }
-
-            // Validate data structure
-            if (!Array.isArray(data)) {
-                throw new Error('ข้อมูลที่ได้รับไม่ใช่รูปแบบ Array ที่ถูกต้อง');
-            }
-
-            // Find user's MBTI type data
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
             const mbtiData = data.find(item => item.title.startsWith(userType));
-            if (!mbtiData) {
-                throw new Error(`ไม่พบข้อมูลสำหรับ MBTI Type: ${userType}`);
-            }
-
-            // Validate required fields
-            if (!mbtiData.title || !mbtiData.sections || !Array.isArray(mbtiData.sections)) {
-                throw new Error('ข้อมูล MBTI ไม่ครบถ้วนหรือไม่ถูกต้อง');
-            }
-
+            if (!mbtiData) throw new Error(`No data found for MBTI Type: ${userType}`);
             return mbtiData;
-
         } catch (error) {
             console.error('Error fetching MBTI data:', error);
-            // Show error in the UI
-            document.querySelector('.insights-container').innerHTML = `
-                <div class="alert alert-danger text-center">
-                    <h4 class="alert-heading">ไม่สามารถโหลดข้อมูลได้</h4>
-                    <p>${error.message}</p>
-                    <hr>
-                    <p class="mb-0">
-                        <button class="btn btn-outline-danger" onclick="location.reload()">
-                            ลองใหม่อีกครั้ง
-                        </button>
-                    </p>
-                </div>
-            `;
             return null;
         }
     }
 
     function updateCenterType(mbtiData) {
         const mbtiType = document.getElementById('mbti-type');
-        const typeTitle = mbtiData.title.split(':');
-        const type = typeTitle[0].split('(')[0].trim();
-        
+        const type = userType;
+        const [nickname, thaiName] = TYPE_NICKNAMES[type];
+        const house = typeHouses[type];
+
+        document.documentElement.style.setProperty('--mbti-color', 
+            house === 'analyst' ? 'var(--analyst-color)' :
+            house === 'diplomat' ? 'var(--diplomat-color)' :
+            house === 'guardian' ? 'var(--guardian-color)' :
+            'var(--explorer-color)'
+        );
+
         mbtiType.innerHTML = `
             <img src="/static/mbti/${type}.png" alt="${type}">
-            <h2>${type}</h2>
-            <p>${typeTitle[1].trim()}</p>
+            <h2>${nickname}</h2>
+            <div class="mbti-nickname">(${thaiName})</div>
+            <button class="btn change-type-btn" onclick="showTypePopup()">
+                เปลี่ยน Type
+            </button>
         `;
     }
 
     function createTopics(mbtiData) {
-        const container = document.getElementById('topics-container');
-        container.innerHTML = '';
+        const leftTopics = document.querySelector('.left-topics');
+        const rightTopics = document.querySelector('.right-topics');
+        const contentSections = document.getElementById('content-sections');
 
-        // Filter out summary section and create 8 topics
+        leftTopics.innerHTML = '';
+        rightTopics.innerHTML = '';
+        contentSections.innerHTML = '';
+
+        // Filter out summary section and create topics
         const topics = mbtiData.sections.filter(section => !section.title.toLowerCase().includes('สรุป'));
-        topics.slice(0, 8).forEach((section) => {
+
+        // Create topics for both sides
+        topics.slice(0, 8).forEach((section, index) => {
             const topic = document.createElement('div');
             topic.className = 'topic';
-            
+
             let shortTitle = section.title.split('.')[1];
             if (shortTitle.includes('ของ')) {
                 shortTitle = shortTitle.split('ของ')[0];
             }
             topic.textContent = shortTitle.trim();
 
-            const popup = document.createElement('div');
-            popup.className = 'topic-popup';
-            popup.innerHTML = `
-                <h3>${section.title}</h3>
-                <div>${section.content}</div>
-            `;
-
-            topic.appendChild(popup);
-            container.appendChild(topic);
-
-            // Add hover event
-            topic.addEventListener('mouseenter', () => {
-                if (activePopup) {
-                    activePopup.classList.remove('active');
-                }
-                popup.classList.add('active');
-                activePopup = popup;
-            });
-
-            // Add click event
             topic.addEventListener('click', () => {
                 document.querySelectorAll('.topic').forEach(t => t.classList.remove('active'));
                 topic.classList.add('active');
-                
-                const detailsContent = document.getElementById('details-content');
-                detailsContent.innerHTML = `
-                    <h3>${section.title}</h3>
-                    <div>${section.content}</div>
-                `;
 
-                // Scroll to details section
-                document.getElementById('details-section').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById(`section-${index}`).scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             });
-        });
-    }
 
-    function updateSummary(mbtiData) {
+            // Add to left or right side
+            if (index < 4) {
+                leftTopics.appendChild(topic);
+            } else {
+                rightTopics.appendChild(topic);
+            }
+
+            // Create corresponding content section
+            const sectionHtml = `
+                <div class="content-section" id="section-${index}">
+                    <h2>${section.title}</h2>
+                    <div class="content-card">
+                        ${formatContent(section.content)}
+                    </div>
+                </div>
+            `;
+            contentSections.insertAdjacentHTML('beforeend', sectionHtml);
+        });
+
+        // Add summary section at the end
         const summarySection = mbtiData.sections.find(section => 
             section.title.toLowerCase().includes('สรุป')
         );
-        
+
         if (summarySection) {
-            document.getElementById('summary-content').innerHTML = summarySection.content;
+            const summaryHtml = `
+                <div class="content-section">
+                    <h2>${summarySection.title}</h2>
+                    <div class="content-card">
+                        ${formatContent(summarySection.content)}
+                    </div>
+                </div>
+            `;
+            contentSections.insertAdjacentHTML('beforeend', summaryHtml);
         }
     }
 
-    // Initialize page
+    function formatContent(content) {
+        if (content.includes('*')) {
+            const lines = content.split('\n');
+            const formattedLines = lines.map(line => {
+                if (line.trim().startsWith('*')) {
+                    return `<li>${line.trim().replace('* ', '')}</li>`;
+                }
+                return `<p>${line.trim()}</p>`;
+            });
+            return `<ul>${formattedLines.join('')}</ul>`;
+        }
+        return `<p>${content}</p>`;
+    }
+
     async function initPage() {
         if (!userType) {
-            document.querySelector('.insights-container').innerHTML = `
-                <div class="alert alert-warning text-center">
-                    กรุณาเลือก MBTI Type ของคุณก่อน
-                </div>
-            `;
+            createTypeButtons();
+            showTypePopup();
             return;
         }
 
         const mbtiData = await fetchMbtiData();
         if (!mbtiData) {
-            // Error already handled in fetchMbtiData
             return;
         }
 
         currentMbtiData = mbtiData;
         updateCenterType(mbtiData);
         createTopics(mbtiData);
-        updateSummary(mbtiData);
     }
 
+    document.getElementById('overlay').addEventListener('click', () => {
+        if (userType) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+    });
+
+    createTypeButtons();
     initPage();
 });
 </script>
