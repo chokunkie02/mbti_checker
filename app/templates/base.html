@@ -15,21 +15,28 @@
         }
 
         :root {
-            --mbti-yellow: #FFEB3B;
-            --mbti-green: #81C784;
-            --mbti-blue: #64B5F6;
-            --mbti-purple: #BA68C8;
-            --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow), var(--mbti-green), var(--mbti-blue), var(--mbti-purple));
-            --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --mbti-bg: #f5f5f5;
-            --mbti-text: #333333;
+            --mbti-yellow: #FFD93D;
+            --mbti-green: #4CAF50;
+            --mbti-blue: #2196F3;
+            --mbti-purple: #9C27B0;
+            --mbti-gradient: linear-gradient(135deg, 
+                var(--mbti-yellow) 0%,
+                var(--mbti-green) 33%,
+                var(--mbti-blue) 66%,
+                var(--mbti-purple) 100%);
+            --mbti-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --mbti-bg: #f8f9fa;
+            --mbti-text: #2c3e50;
             --sidebar-collapsed-width: 70px;
             --sidebar-expanded-width: 250px;
             --transition-speed: 0.3s;
+            --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+            --base-font-size: 14px;
         }
 
         body {
             font-family: 'Kanit', sans-serif;
+            font-size: var(--base-font-size);
             line-height: 1.6;
             background: var(--mbti-bg);
             min-height: 100vh;
@@ -37,6 +44,79 @@
             padding: 0;
             display: flex;
             position: relative;
+        }
+
+        /* Auth Popup Styles */
+        .auth-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--mbti-shadow);
+            font-size: 20px;
+            color: var(--mbti-text);
+            cursor: pointer;
+            transition: all 0.3s var(--transition-timing);
+        }
+
+        .auth-toggle:hover {
+            transform: scale(1.1);
+            background: var(--mbti-gradient);
+            color: white;
+        }
+
+        .auth-popup {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--mbti-shadow);
+            z-index: 999;
+            min-width: 200px;
+            transform: translateX(120%);
+            transition: transform var(--transition-speed) var(--transition-timing);
+        }
+
+        .auth-popup.active {
+            transform: translateX(0);
+        }
+
+        .auth-popup a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            color: var(--mbti-text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            transition: all 0.2s var(--transition-timing);
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .auth-popup a:last-child {
+            margin-bottom: 0;
+        }
+
+        .auth-popup a:hover {
+            background: var(--mbti-gradient);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .auth-popup a .icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
         }
 
         .sidebar {
@@ -47,9 +127,10 @@
             top: 0;
             left: 0;
             width: var(--sidebar-collapsed-width);
-            transition: width var(--transition-speed) ease;
+            transition: width var(--transition-speed) var(--transition-timing);
             z-index: 100;
             overflow-x: hidden;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .sidebar.expanded {
@@ -62,6 +143,7 @@
             justify-content: flex-end;
             padding: 20px 15px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,1));
         }
 
         .toggle-btn {
@@ -76,11 +158,12 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            transition: background-color 0.2s;
+            transition: all 0.2s var(--transition-timing);
         }
 
         .toggle-btn:hover {
             background-color: rgba(0, 0, 0, 0.05);
+            transform: rotate(180deg);
         }
 
         .sidebar-content {
@@ -104,37 +187,85 @@
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            transition: background 0.2s ease, color 0.2s ease;
+            transition: all 0.2s var(--transition-timing);
             white-space: nowrap;
+            border-radius: 0 30px 30px 0;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .sidebar ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--mbti-gradient);
+            opacity: 0;
+            transition: opacity 0.3s var(--transition-timing);
+            z-index: -1;
         }
 
         .sidebar ul li a:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--mbti-purple);
+            color: white;
+        }
+
+        .sidebar ul li a:hover::before {
+            opacity: 1;
         }
 
         .sidebar ul li a .icon {
             min-width: 40px;
             display: flex;
             justify-content: center;
-            font-size: 18px;
+            font-size: 1rem;
+            transition: transform 0.3s var(--transition-timing);
+        }
+
+        .sidebar ul li a:hover .icon {
+            transform: scale(1.2);
         }
 
         .sidebar ul li a .link-text {
             margin-left: 10px;
             opacity: 0;
-            transition: opacity var(--transition-speed) ease;
+            transition: opacity var(--transition-speed) var(--transition-timing),
+                        transform var(--transition-speed) var(--transition-timing);
+            transform: translateX(-10px);
         }
 
         .sidebar.expanded ul li a .link-text {
             opacity: 1;
+            transform: translateX(0);
+        }
+
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+        }
+
+        .container {
+            font-size: 0.95rem;
         }
 
         .main-content {
             flex-grow: 1;
             margin-left: var(--sidebar-collapsed-width);
             padding: 20px;
-            transition: margin-left var(--transition-speed) ease;
+            transition: margin-left var(--transition-speed) var(--transition-timing);
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
         }
 
         .main-content.sidebar-expanded {
@@ -150,6 +281,13 @@
             box-shadow: var(--mbti-shadow);
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s var(--transition-timing),
+                        box-shadow 0.3s var(--transition-timing);
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
         .container::before {
@@ -166,25 +304,27 @@
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
+                transform: translateX(-100%);
             }
-            
+
             .sidebar.expanded {
                 width: var(--sidebar-expanded-width);
+                transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
                 padding: 10px;
             }
-            
+
             .main-content.sidebar-expanded {
                 margin-left: 0;
             }
-            
+
             .container {
                 padding: 1.5rem;
             }
-            
+
             .mobile-menu-overlay {
                 position: fixed;
                 top: 0;
@@ -192,17 +332,19 @@
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(3px);
                 z-index: 90;
                 opacity: 0;
                 visibility: hidden;
-                transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+                transition: opacity var(--transition-speed) var(--transition-timing),
+                            visibility var(--transition-speed) var(--transition-timing);
             }
-            
+
             .mobile-menu-overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
-            
+
             .mobile-toggle {
                 position: fixed;
                 top: 10px;
@@ -220,6 +362,13 @@
                 font-size: 20px;
                 color: var(--mbti-text);
                 cursor: pointer;
+                transition: all 0.3s var(--transition-timing);
+            }
+
+            .mobile-toggle:hover {
+                transform: rotate(90deg);
+                background: var(--mbti-gradient);
+                color: white;
             }
         }
 
@@ -227,21 +376,64 @@
             .mobile-toggle {
                 display: none;
             }
-            
+
             .mobile-menu-overlay {
                 display: none;
             }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.5s var(--transition-timing);
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Auth Toggle Button -->
+    <button class="auth-toggle" id="authToggle">
+        {% if current_user.is_authenticated %}
+            <i class="fas fa-user-circle"></i>
+        {% else %}
+            <i class="fas fa-sign-in-alt"></i>
+        {% endif %}
+    </button>
+
+    <!-- Auth Popup -->
+    <div class="auth-popup" id="authPopup">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.logout') }}">
+                <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                <span>ออกจากระบบ</span>
+            </a>
+        {% else %}
+            <a href="{{ url_for('main.login') }}">
+                <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                <span>เข้าสู่ระบบ</span>
+            </a>
+            <a href="{{ url_for('main.register') }}">
+                <span class="icon"><i class="fas fa-user-plus"></i></span>
+                <span>ลงทะเบียน</span>
+            </a>
+        {% endif %}
+    </div>
+
     <!-- เมนูมือถือ (แสดงเฉพาะบนมือถือ) -->
     <button class="mobile-toggle" id="mobileToggle">
         <i class="fas fa-bars"></i>
     </button>
     <div class="mobile-menu-overlay" id="mobileOverlay"></div>
-    
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -282,9 +474,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.history') }}">
-                        <span class="icon"><i class="fas fa-history"></i></span>
-                        <span class="link-text">ประวัติ</span>
+                    <a href="{{ url_for('main.animals') }}">
+                        <span class="icon"><i class="fas fa-paw"></i></span>
+                        <span class="link-text">สัตว์ที่ตรงกับไทป์เรา</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.insights') }}">
+                        <span class="icon"><i class="fas fa-lightbulb"></i></span>
+                        <span class="link-text">ข้อมูลเชิงลึก</span>
                     </a>
                 </li>
                 <li>
@@ -293,23 +491,17 @@
                         <span class="link-text">เกี่ยวกับเรา</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{ url_for('main.contact') }}">
-                        <span class="icon"><i class="fas fa-envelope"></i></span>
-                        <span class="link-text">ติดต่อเรา</span>
-                    </a>
-                </li>
             </ul>
         </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <div class="container">
             {% block content %}{% endblock %}
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
@@ -317,11 +509,11 @@
             const toggleBtn = document.getElementById('toggleBtn');
             const mobileToggle = document.getElementById('mobileToggle');
             const mobileOverlay = document.getElementById('mobileOverlay');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('expanded');
                 mainContent.classList.toggle('sidebar-expanded');
-                
+
                 const icon = toggleBtn.querySelector('i');
                 if (sidebar.classList.contains('expanded')) {
                     icon.classList.remove('fa-bars');
@@ -331,11 +523,11 @@
                     icon.classList.add('fa-bars');
                 }
             }
-            
+
             function toggleMobileMenu() {
                 sidebar.classList.toggle('expanded');
                 mobileOverlay.classList.toggle('active');
-                
+
                 const icon = mobileToggle.querySelector('i');
                 if (sidebar.classList.contains('expanded')) {
                     icon.classList.remove('fa-bars');
@@ -345,11 +537,11 @@
                     icon.classList.add('fa-bars');
                 }
             }
-            
+
             toggleBtn.addEventListener('click', toggleSidebar);
             mobileToggle.addEventListener('click', toggleMobileMenu);
             mobileOverlay.addEventListener('click', toggleMobileMenu);
-            
+
             // เมื่อกดเลือกเมนูบนมือถือให้ปิด sidebar
             if (window.innerWidth <= 768) {
                 const menuLinks = document.querySelectorAll('.sidebar ul li a');
@@ -357,13 +549,28 @@
                     link.addEventListener('click', function() {
                         sidebar.classList.remove('expanded');
                         mobileOverlay.classList.remove('active');
-                        
+
                         const mobileIcon = mobileToggle.querySelector('i');
                         mobileIcon.classList.remove('fa-times');
                         mobileIcon.classList.add('fa-bars');
                     });
                 });
             }
+
+            // Auth popup toggle
+            const authToggle = document.getElementById('authToggle');
+            const authPopup = document.getElementById('authPopup');
+
+            authToggle.addEventListener('click', function() {
+                authPopup.classList.toggle('active');
+            });
+
+            // Close popup when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!authPopup.contains(event.target) && !authToggle.contains(event.target)) {
+                    authPopup.classList.remove('active');
+                }
+            });
         });
     </script>
     {% block extra_js %}{% endblock %}

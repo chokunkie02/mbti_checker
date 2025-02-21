@@ -55,6 +55,11 @@ def animals():
     return render_template("animals.html")
 
 
+@bp.route("/insights")
+def insights():
+    return render_template("insights.html")
+
+
 @bp.route("/history")
 @login_required
 def history():
@@ -64,11 +69,6 @@ def history():
 @bp.route("/about")
 def about():
     return render_template("about.html")
-
-
-@bp.route("/contact")
-def contact():
-    return render_template("contact.html")
 
 
 @bp.route("/save_mbti", methods=["POST"])
