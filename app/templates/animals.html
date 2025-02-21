@@ -5,39 +5,14 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.css" />
 <style>
-    :root {
-        --analyst-color: #BA68C8;
-        --diplomat-color: #81C784;
-        --guardian-color: #64B5F6;
-        --explorer-color: #FFEB3B;
-        --mbti-gradient: linear-gradient(135deg, var(--analyst-color), var(--diplomat-color), 
-                                            var(--guardian-color), var(--explorer-color));
-        --mbti-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        --mbti-bg: #f9f7ff;
-        --mbti-text: #333333;
-    }
-
-    body {
-        font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: var(--mbti-bg);
-        color: var(--mbti-text);
-        min-height: 100vh;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 20px;
-    }
-
     .page-header {
         text-align: center;
-        margin-bottom: 4rem;
+        margin-bottom: 2rem;
     }
 
     h1 {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
         font-weight: 800;
         background: var(--mbti-gradient);
         -webkit-background-clip: text;
@@ -47,50 +22,46 @@
 
     .subtitle {
         color: #666;
-        font-size: 1.3rem;
+        font-size: 1rem;
         font-weight: 300;
     }
 
     .current-type {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        margin-bottom: 3rem;
-        box-shadow: var(--mbti-shadow);
+        margin-bottom: 2rem;
         animation: fadeIn 0.5s ease;
     }
 
     .animal-info {
         display: flex;
         align-items: center;
-        gap: 2rem;
-        margin-bottom: 2rem;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .animal-image {
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         object-fit: contain;
     }
 
     .animal-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 800;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .animal-description {
-        font-size: 1.1rem;
-        line-height: 1.8;
+        font-size: 0.9rem;
+        line-height: 1.6;
         color: #666;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     .trait-row {
-        margin-bottom: 2rem;
-        padding: 1.5rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
         background: white;
-        border-radius: 15px;
+        border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: transform 0.3s ease;
     }
@@ -101,39 +72,36 @@
     }
 
     .trait-title {
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 700;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.5rem;
     }
 
     .trait-description {
         color: #666;
-        line-height: 1.6;
+        line-height: 1.4;
+        font-size: 0.9rem;
     }
 
     .carousel-section {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        box-shadow: var(--mbti-shadow);
-        margin-top: 3rem;
+        margin-top: 2rem;
     }
 
     .carousel-title {
         text-align: center;
-        font-size: 2rem;
-        margin-bottom: 2.5rem;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
         font-weight: 700;
     }
 
     .swiper {
-        padding: 30px 10px;
+        padding: 20px 10px;
     }
 
     .swiper-slide {
         background: white;
-        border-radius: 20px;
-        padding: 2rem;
+        border-radius: 15px;
+        padding: 1.5rem;
         box-shadow: var(--mbti-shadow);
         transition: all 0.3s ease;
         opacity: 0.7;
@@ -172,47 +140,71 @@
         background: var(--mbti-gradient);
     }
 
+    .loading {
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .loading-spinner {
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--mbti-purple);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 0.5rem;
+    }
+
+    .error-message {
+        background: #fee;
+        color: #c00;
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin: 0.75rem 0;
+        font-size: 0.9rem;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
-        .container { padding: 20px 15px; }
-        h1 { font-size: 2.5rem; }
-        .current-type { padding: 2rem; }
+        h1 { font-size: 2rem; }
         .animal-info { flex-direction: column; text-align: center; }
-        .animal-image { width: 150px; height: 150px; }
+        .animal-image { width: 120px; height: 120px; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1>MBTI Animals</h1>
-        <p class="subtitle">ค้นพบสัตว์ที่เป็นตัวแทนบุคลิกภาพของคุณ</p>
-    </div>
+<div class="page-header">
+    <h1>MBTI Animals</h1>
+    <p class="subtitle">ค้นพบสัตว์ที่เป็นตัวแทนบุคลิกภาพของคุณ</p>
+</div>
 
-    <div id="loading" class="loading">
-        <div class="loading-spinner"></div>
-        <div>กำลังโหลดข้อมูล...</div>
-    </div>
+<div id="loading" class="loading">
+    <div class="loading-spinner"></div>
+    <div>กำลังโหลดข้อมูล...</div>
+</div>
 
-    <div id="error-container"></div>
+<div id="error-container"></div>
 
-    <div class="current-type" id="current-type" style="display: none">
-        <!-- Animal content will be loaded here -->
-    </div>
+<div class="current-type" id="current-type" style="display: none">
+    <!-- Animal content will be loaded here -->
+</div>
 
-    <div class="carousel-section" id="carousel-section" style="display: none">
-        <h2 class="carousel-title">สัตว์ MBTI อื่นๆ</h2>
-        <div class="swiper">
-            <div class="swiper-wrapper" id="swiper-wrapper"></div>
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>
+<div class="carousel-section" id="carousel-section" style="display: none">
+    <h2 class="carousel-title">สัตว์ MBTI อื่นๆ</h2>
+    <div class="swiper">
+        <div class="swiper-wrapper" id="swiper-wrapper"></div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
     </div>
 </div>
 
@@ -223,24 +215,23 @@
     let userType = null;
     let swiper;
 
-    // Color mapping for each animal type
     const animalColors = {
-        'ESFP': ["#FF9800", "#FFEB3B", "#2196F3"],  // สีส้ม, สีเหลือง, สีฟ้า
-        'ESTP': ["#F44336", "#FF9800", "#212121"],  // สีแดง, สีส้ม, สีดำ
-        'ISFP': ["#FFEB3B", "#212121", "#795548"],  // สีเหลือง, สีดำ, สีน้ำตาล
-        'ISTP': ["#9E9E9E", "#FFFFFF", "#3F51B5"],  // สีเทา, สีขาว, สีน้ำเงิน
-        'ISTJ': ["#212121", "#9E9E9E", "#BDBDBD"],  // สีดำ, สีเทา, สีเงิน
-        'ESTJ': ["#FF9800", "#212121", "#FFC107"],  // สีส้ม, สีดำ, สีทอง
-        'ISFJ': ["#795548", "#F5F5DC", "#4CAF50"],  // สีน้ำตาล, สีเบจ, สีเขียว
-        'ESFJ': ["#D7CCC8", "#C8E6C9", "#FFFFFF"],  // สีน้ำตาลอ่อน, สีเขียวอ่อน, สีขาว
-        'INFJ': ["#1B5E20", "#795548", "#212121"],  // สีเขียวเข้ม, สีน้ำตาล, สีดำ
-        'ENFJ': ["#4CAF50", "#212121", "#BDBDBD"],  // สีเขียว, สีดำ, สีเงิน
-        'INFP': ["#9E9E9E", "#D7CCC8", "#C8E6C9"],  // สีเทา, สีน้ำตาลอ่อน, สีเขียวอ่อน
-        'ENFP': ["#FFEB3B", "#795548", "#FFFFFF"],  // สีเหลือง, สีน้ำตาล, สีขาว
-        'INTJ': ["#FFC107", "#795548", "#212121"],  // สีทอง, สีน้ำตาล, สีดำ
-        'ENTJ': ["#4CAF50", "#FFEB3B", "#F44336"],  // สีเขียว, สีเหลือง, สีแดง
-        'INTP': ["#2196F3", "#BDBDBD", "#FFFFFF"],  // สีฟ้า, สีเงิน, สีขาว
-        'ENTP': ["#9E9E9E", "#795548", "#FFFFFF"]   // สีเทา, สีน้ำตาล, สีขาว
+        'ESFP': ["#FF9800", "#FFEB3B", "#2196F3"],
+        'ESTP': ["#F44336", "#FF9800", "#212121"],
+        'ISFP': ["#FFEB3B", "#212121", "#795548"],
+        'ISTP': ["#9E9E9E", "#FFFFFF", "#3F51B5"],
+        'ISTJ': ["#212121", "#9E9E9E", "#BDBDBD"],
+        'ESTJ': ["#FF9800", "#212121", "#FFC107"],
+        'ISFJ': ["#795548", "#F5F5DC", "#4CAF50"],
+        'ESFJ': ["#D7CCC8", "#C8E6C9", "#FFFFFF"],
+        'INFJ': ["#1B5E20", "#795548", "#212121"],
+        'ENFJ': ["#4CAF50", "#212121", "#BDBDBD"],
+        'INFP': ["#9E9E9E", "#D7CCC8", "#C8E6C9"],
+        'ENFP': ["#FFEB3B", "#795548", "#FFFFFF"],
+        'INTJ': ["#FFC107", "#795548", "#212121"],
+        'ENTJ': ["#4CAF50", "#FFEB3B", "#F44336"],
+        'INTP': ["#2196F3", "#BDBDBD", "#FFFFFF"],
+        'ENTP': ["#9E9E9E", "#795548", "#FFFFFF"]
     };
 
     {% if current_user.is_authenticated and current_user.mbti_type %}
@@ -269,7 +260,7 @@
     }
 
     function renderApp() {
-        const currentAnimal = animals[0];  // Start with first animal by default
+        const currentAnimal = animals[0];
         displayCurrentType(currentAnimal);
         setupCarousel();
     }
