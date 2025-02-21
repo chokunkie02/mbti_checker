@@ -1,13 +1,389 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MBTI Type: {{ type }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <h1>MBTI Type: {{ type }}</h1>
-    <p>รายละเอียดเฉพาะของ MBTI Type นั้น เช่น จุดแข็ง-จุดอ่อน</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}MBTI Checker - ข้อมูลเชิงลึก{% endblock %}
+
+{% block extra_css %}
+<style>
+    .insights-container {
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .circle-container {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0 auto;
+    }
+
+    .center-type {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        z-index: 2;
+        padding: 1rem;
+    }
+
+    .center-type img {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+    }
+
+    .center-type h2 {
+        font-size: 1.5rem;
+        margin: 0;
+        color: var(--bs-primary);
+    }
+
+    .center-type p {
+        font-size: 0.9rem;
+        margin: 0.5rem 0 0;
+        color: var(--bs-secondary);
+    }
+
+    .topics-circle {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .topic {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .topic.active {
+        background: var(--bs-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .topic:hover {
+        transform: scale(1.1);
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .topic-popup {
+        position: absolute;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 280px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 3;
+    }
+
+    .topic-popup.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .topic-popup h3 {
+        color: var(--bs-primary);
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Position the 8 topics in a circle */
+    .topic:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+    .topic:nth-child(2) { top: 14.6%; right: 14.6%; }
+    .topic:nth-child(3) { top: 50%; right: 0; transform: translateY(-50%); }
+    .topic:nth-child(4) { bottom: 14.6%; right: 14.6%; }
+    .topic:nth-child(5) { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .topic:nth-child(6) { bottom: 14.6%; left: 14.6%; }
+    .topic:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); }
+    .topic:nth-child(8) { top: 14.6%; left: 14.6%; }
+
+    /* Position popups */
+    .topic:nth-child(1) .topic-popup { bottom: 120%; left: 50%; transform: translateX(-50%); }
+    .topic:nth-child(2) .topic-popup { bottom: 120%; right: 0; }
+    .topic:nth-child(3) .topic-popup { top: 50%; right: 120%; transform: translateY(-50%); }
+    .topic:nth-child(4) .topic-popup { top: 120%; right: 0; }
+    .topic:nth-child(5) .topic-popup { top: 120%; left: 50%; transform: translateX(-50%); }
+    .topic:nth-child(6) .topic-popup { top: 120%; left: 0; }
+    .topic:nth-child(7) .topic-popup { top: 50%; left: 120%; transform: translateY(-50%); }
+    .topic:nth-child(8) .topic-popup { bottom: 120%; left: 0; }
+
+    .details-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .details-section h2 {
+        color: var(--bs-primary);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .details-content {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .summary-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary-section h2 {
+        color: var(--bs-primary);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="insights-container">
+    <div class="circle-container">
+        <div class="center-type" id="mbti-type">
+            <!-- MBTI type will be loaded here -->
+        </div>
+        <div class="topics-circle" id="topics-container">
+            <!-- Topics will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="details-section" id="details-section">
+        <h2>รายละเอียด</h2>
+        <div class="details-content" id="details-content">
+            <!-- Details content will be loaded here -->
+        </div>
+    </div>
+
+    <div class="summary-section" id="summary-section">
+        <h2>สรุป</h2>
+        <div class="summary-content" id="summary-content">
+            <!-- Summary content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentMbtiData = null;
+    let activePopup = null;
+    let userType = null;
+
+    // Check if user is logged in and has MBTI type
+    {% if current_user.is_authenticated and current_user.mbti_type %}
+        userType = '{{ current_user.mbti_type }}';
+    {% else %}
+        userType = localStorage.getItem('mbtiType');
+    {% endif %}
+
+    // Fetch MBTI data from GitHub
+    async function fetchMbtiData() {
+        const url = 'https://raw.githubusercontent.com/chokunkie02/mbti_checker/refs/heads/main/app/templates/insights.json';
+        try {
+            // Check network connection
+            if (!navigator.onLine) {
+                throw new Error('ไม่มีการเชื่อมต่ออินเทอร์เน็ต กรุณาตรวจสอบการเชื่อมต่อของคุณ');
+            }
+
+            // Fetch data with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+
+            const response = await fetch(url, { 
+                signal: controller.signal,
+                cache: 'no-store'  // Prevent caching
+            });
+            clearTimeout(timeoutId);
+
+            // Check response status
+            if (!response.ok) {
+                throw new Error(`ไม่สามารถเข้าถึงข้อมูลได้ (HTTP ${response.status}): ${response.statusText}`);
+            }
+
+            // Get response text
+            const text = await response.text();
+
+            // Try parsing JSON
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseError) {
+                console.error('Raw response:', text);
+                throw new Error(`ไม่สามารถแปลงข้อมูล JSON ได้: ${parseError.message}`);
+            }
+
+            // Validate data structure
+            if (!Array.isArray(data)) {
+                throw new Error('ข้อมูลที่ได้รับไม่ใช่รูปแบบ Array ที่ถูกต้อง');
+            }
+
+            // Find user's MBTI type data
+            const mbtiData = data.find(item => item.title.startsWith(userType));
+            if (!mbtiData) {
+                throw new Error(`ไม่พบข้อมูลสำหรับ MBTI Type: ${userType}`);
+            }
+
+            // Validate required fields
+            if (!mbtiData.title || !mbtiData.sections || !Array.isArray(mbtiData.sections)) {
+                throw new Error('ข้อมูล MBTI ไม่ครบถ้วนหรือไม่ถูกต้อง');
+            }
+
+            return mbtiData;
+
+        } catch (error) {
+            console.error('Error fetching MBTI data:', error);
+            // Show error in the UI
+            document.querySelector('.insights-container').innerHTML = `
+                <div class="alert alert-danger text-center">
+                    <h4 class="alert-heading">ไม่สามารถโหลดข้อมูลได้</h4>
+                    <p>${error.message}</p>
+                    <hr>
+                    <p class="mb-0">
+                        <button class="btn btn-outline-danger" onclick="location.reload()">
+                            ลองใหม่อีกครั้ง
+                        </button>
+                    </p>
+                </div>
+            `;
+            return null;
+        }
+    }
+
+    function updateCenterType(mbtiData) {
+        const mbtiType = document.getElementById('mbti-type');
+        const typeTitle = mbtiData.title.split(':');
+        const type = typeTitle[0].split('(')[0].trim();
+        
+        mbtiType.innerHTML = `
+            <img src="/static/mbti/${type}.png" alt="${type}">
+            <h2>${type}</h2>
+            <p>${typeTitle[1].trim()}</p>
+        `;
+    }
+
+    function createTopics(mbtiData) {
+        const container = document.getElementById('topics-container');
+        container.innerHTML = '';
+
+        // Filter out summary section and create 8 topics
+        const topics = mbtiData.sections.filter(section => !section.title.toLowerCase().includes('สรุป'));
+        topics.slice(0, 8).forEach((section) => {
+            const topic = document.createElement('div');
+            topic.className = 'topic';
+            
+            let shortTitle = section.title.split('.')[1];
+            if (shortTitle.includes('ของ')) {
+                shortTitle = shortTitle.split('ของ')[0];
+            }
+            topic.textContent = shortTitle.trim();
+
+            const popup = document.createElement('div');
+            popup.className = 'topic-popup';
+            popup.innerHTML = `
+                <h3>${section.title}</h3>
+                <div>${section.content}</div>
+            `;
+
+            topic.appendChild(popup);
+            container.appendChild(topic);
+
+            // Add hover event
+            topic.addEventListener('mouseenter', () => {
+                if (activePopup) {
+                    activePopup.classList.remove('active');
+                }
+                popup.classList.add('active');
+                activePopup = popup;
+            });
+
+            // Add click event
+            topic.addEventListener('click', () => {
+                document.querySelectorAll('.topic').forEach(t => t.classList.remove('active'));
+                topic.classList.add('active');
+                
+                const detailsContent = document.getElementById('details-content');
+                detailsContent.innerHTML = `
+                    <h3>${section.title}</h3>
+                    <div>${section.content}</div>
+                `;
+
+                // Scroll to details section
+                document.getElementById('details-section').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    }
+
+    function updateSummary(mbtiData) {
+        const summarySection = mbtiData.sections.find(section => 
+            section.title.toLowerCase().includes('สรุป')
+        );
+        
+        if (summarySection) {
+            document.getElementById('summary-content').innerHTML = summarySection.content;
+        }
+    }
+
+    // Initialize page
+    async function initPage() {
+        if (!userType) {
+            document.querySelector('.insights-container').innerHTML = `
+                <div class="alert alert-warning text-center">
+                    กรุณาเลือก MBTI Type ของคุณก่อน
+                </div>
+            `;
+            return;
+        }
+
+        const mbtiData = await fetchMbtiData();
+        if (!mbtiData) {
+            // Error already handled in fetchMbtiData
+            return;
+        }
+
+        currentMbtiData = mbtiData;
+        updateCenterType(mbtiData);
+        createTopics(mbtiData);
+        updateSummary(mbtiData);
+    }
+
+    initPage();
+});
+</script>
+{% endblock %}
