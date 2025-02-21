@@ -1,28 +1,255 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<style>
+    :root {
+        --purple-color: #8E44AD;
+        --green-color: #27AE60;
+        --blue-color: #2980B9;
+        --yellow-color: #F1C40F;
+        --mbti-gradient: linear-gradient(135deg, 
+            var(--purple-color),
+            var(--green-color),
+            var(--blue-color),
+            var(--yellow-color)
+        );
+        --mbti-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-container {
+        max-width: 500px;
+        margin: 4rem auto;
+        padding: 3rem;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: var(--mbti-shadow);
+        position: relative;
+        overflow: hidden;
+        animation: containerFloat 3s infinite ease-in-out;
+    }
+
+    @keyframes containerFloat {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(142, 68, 173, 0.03) 0%,
+            rgba(39, 174, 96, 0.03) 25%,
+            rgba(41, 128, 185, 0.03) 50%,
+            rgba(241, 196, 15, 0.03) 75%,
+            rgba(142, 68, 173, 0.03) 100%
+        );
+        animation: gradientMove 15s linear infinite;
+        background-size: 400% 400%;
+    }
+
+    @keyframes gradientMove {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 400% 400%; }
+    }
+
+    .auth-container h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        background: var(--mbti-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: titlePulse 2s infinite;
+    }
+
+    @keyframes titlePulse {
+        0% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(1.05); filter: brightness(1.2); }
+        100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+        animation: slideIn 0.5s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+        animation: borderPulse 3s infinite;
+    }
+
+    @keyframes borderPulse {
+        0% { border-color: var(--purple-color); }
+        25% { border-color: var(--green-color); }
+        50% { border-color: var(--blue-color); }
+        75% { border-color: var(--yellow-color); }
+        100% { border-color: var(--purple-color); }
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
+        border-image: var(--mbti-gradient) 1;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 10px;
+        background: var(--mbti-gradient);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        animation: buttonFloat 2s infinite ease-in-out;
+    }
+
+    @keyframes buttonFloat {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0); }
+    }
+
+    .btn-submit:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-submit::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+        );
+        transform: rotate(45deg);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: 2rem;
+        animation: fadeIn 1s ease-out;
+    }
+
+    .auth-links a {
+        color: var(--purple-color);
+        text-decoration: none;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .auth-links a::before {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--mbti-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .auth-links a:hover::before {
+        transform: scaleX(1);
+    }
+
+    .error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        animation: errorShake 0.5s ease-out;
+    }
+
+    @keyframes errorShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="auth-container">
-    <h2>Login</h2>
+    <h2>เข้าสู่ระบบ</h2>
     <form method="POST" action="{{ url_for('main.login') }}">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
+        <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control", size=32) }}
             {% for error in form.username.errors %}
             <span class="error">{{ error }}</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control", size=32) }}
             {% for error in form.password.errors %}
             <span class="error">{{ error }}</span>
             {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn-submit") }}
+        </div>
     </form>
     <div class="auth-links">
         <p>ยังไม่มีบัญชี? <a href="{{ url_for('main.register') }}" class="register-link">ลงทะเบียนที่นี่</a></p>
     </div>
 </div>
 {% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add sparkle effect on input focus
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', function() {
+            const sparkles = this.nextElementSibling;
+            for (let i = 0; i < 3; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.style.position = 'absolute';
+                sparkle.style.width = '5px';
+                sparkle.style.height = '5px';
+                sparkle.style.backgroundColor = '#8E44AD';
+                sparkle.style.borderRadius = '50%';
+                sparkle.style.animation = `sparkle 1s ease-in-out infinite`;
+                sparkle.style.animationDelay = `${i * 0.2}s`;
+                sparkle.style.left = `${i * 10}px`;
+                sparkles.appendChild(sparkle);
+            }
+        });
+
+        input.addEventListener('blur', function() {
+            const sparkles = this.nextElementSibling;
+            sparkles.innerHTML = '';
+        });
+    });
+});
+</script>
