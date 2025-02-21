@@ -3,44 +3,52 @@
 {% block title %}MBTI Checker | ค้นหาบุคลิกภาพของคุณ{% endblock %}
 
 {% block content %}
-<h1>MBTI Checker</h1>
+<div class="content-wrapper">
+    <h1 class="fade-in">MBTI Checker</h1>
 
-<p class="intro-text">
-    MBTI (Myers-Briggs Type Indicator) คือแบบทดสอบบุคลิกภาพที่ได้รับความนิยมอย่างมาก 
-    โดยแบ่งบุคลิกภาพออกเป็น 16 ประเภท ผ่านการวิเคราะห์ 4 มิติสำคัญ
-</p>
+    <p class="intro-text slide-in">
+        MBTI (Myers-Briggs Type Indicator) คือแบบทดสอบบุคลิกภาพที่ได้รับความนิยมอย่างมาก 
+        โดยแบ่งบุคลิกภาพออกเป็น 16 ประเภท ผ่านการวิเคราะห์ 4 มิติสำคัญ
+    </p>
 
-<ul class="dimension-list">
-    <li class="dimension-item">
-        <strong>ทิศทางพลังงาน:</strong> ชอบสังคมภายนอก (Extraversion) หรือใช้เวลาคนเดียว (Introversion)
-    </li>
-    <li class="dimension-item">
-        <strong>การรับข้อมูล:</strong> ใช้ประสาทสัมผัส (Sensing) หรือใช้สัญชาตญาณ (Intuition)
-    </li>
-    <li class="dimension-item">
-        <strong>การตัดสินใจ:</strong> ใช้เหตุผล (Thinking) หรือใช้ความรู้สึก (Feeling)
-    </li>
-    <li class="dimension-item">
-        <strong>การใช้ชีวิต:</strong> ชอบความเป็นระเบียบ (Judging) หรือยืดหยุ่น (Perceiving)
-    </li>
-</ul>
+    <ul class="dimension-list">
+        <li class="dimension-item slide-in">
+            <strong>ทิศทางพลังงาน:</strong> ชอบสังคมภายนอก (Extraversion) หรือใช้เวลาคนเดียว (Introversion)
+        </li>
+        <li class="dimension-item slide-in">
+            <strong>การรับข้อมูล:</strong> ใช้ประสาทสัมผัส (Sensing) หรือใช้สัญชาตญาณ (Intuition)
+        </li>
+        <li class="dimension-item slide-in">
+            <strong>การตัดสินใจ:</strong> ใช้เหตุผล (Thinking) หรือใช้ความรู้สึก (Feeling)
+        </li>
+        <li class="dimension-item slide-in">
+            <strong>การใช้ชีวิต:</strong> ชอบความเป็นระเบียบ (Judging) หรือยืดหยุ่น (Perceiving)
+        </li>
+    </ul>
 
-<p class="intro-text">
-    การรู้จักบุคลิกภาพของตนเองผ่าน MBTI จะช่วยให้คุณเข้าใจตนเองมากขึ้น 
-    ทั้งในด้านการทำงาน การสื่อสาร และการใช้ชีวิตประจำวัน 
-    มาร่วมค้นหาประเภทบุคลิกภาพของคุณผ่านแบบทดสอบของเรา 
-    แล้วนำผลลัพธ์ไปปรับใช้ในการพัฒนาตนเองกันเถอะ!
-</p>
+    <p class="intro-text slide-in">
+        การรู้จักบุคลิกภาพของตนเองผ่าน MBTI จะช่วยให้คุณเข้าใจตนเองมากขึ้น 
+        ทั้งในด้านการทำงาน การสื่อสาร และการใช้ชีวิตประจำวัน 
+        มาร่วมค้นหาประเภทบุคลิกภาพของคุณผ่านแบบทดสอบของเรา 
+        แล้วนำผลลัพธ์ไปปรับใช้ในการพัฒนาตนเองกันเถอะ!
+    </p>
 
-<a href="{{ url_for('main.quiz') }}" class="start-button">เริ่มทำแบบทดสอบ</a>
+    <a href="{{ url_for('main.quiz') }}" class="start-button pulse">เริ่มทำแบบทดสอบ</a>
 
-<p class="footer-text">
-    © 2025 MBTI Checker. สงวนลิขสิทธิ์
-</p>
+    <p class="footer-text fade-in">
+        © 2025 MBTI Checker. สงวนลิขสิทธิ์
+    </p>
+</div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
+    .content-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding: 2rem;
+    }
+
     .intro-text {
         font-size: 1.1rem;
         margin: 2rem 0;
@@ -48,6 +56,8 @@
         color: var(--mbti-text);
         font-weight: 300;
         line-height: 1.8;
+        opacity: 0;
+        transform: translateY(20px);
     }
 
     .dimension-list {
@@ -61,72 +71,134 @@
     .dimension-item {
         margin-bottom: 1rem;
         padding: 1.2rem 1.5rem;
-        background-color: #f8f9fa;
+        background-color: var(--bs-dark-bg-subtle);
         border-radius: 12px;
         font-size: 1.1rem;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
+        opacity: 0;
+        transform: translateX(-20px);
+        border-left: 4px solid transparent;
     }
 
     .dimension-item:nth-child(1) {
-        border-left: 4px solid var(--mbti-purple);
+        border-left-color: var(--mbti-purple);
     }
 
     .dimension-item:nth-child(2) {
-        border-left: 4px solid var(--mbti-yellow);
+        border-left-color: var(--mbti-yellow);
     }
 
     .dimension-item:nth-child(3) {
-        border-left: 4px solid var(--mbti-green);
+        border-left-color: var(--mbti-green);
     }
 
     .dimension-item:nth-child(4) {
-        border-left: 4px solid var(--mbti-blue);
+        border-left-color: var(--mbti-blue);
     }
 
     .dimension-item:hover {
         transform: translateX(10px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
+        background-color: var(--bs-dark-bg-subtle);
     }
 
     .start-button {
         display: block;
         width: max-content;
         margin: 3rem auto 1rem;
-        padding: 1rem 3rem;
+        padding: 1.2rem 3.5rem;
         background: var(--mbti-gradient);
-        background-size: 300% 300%;
-        animation: gradient-shift 5s ease infinite;
+        background-size: 200% 200%;
         color: white;
         text-decoration: none;
         border-radius: 30px;
         font-size: 1.2rem;
         font-weight: 500;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
     }
 
-    @keyframes gradient-shift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+    .start-button::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+        transform: scale(0);
+        opacity: 0;
+        transition: transform 0.6s, opacity 0.6s;
+    }
+
+    .start-button:hover::after {
+        transform: scale(1);
+        opacity: 1;
     }
 
     .start-button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
     }
 
     .footer-text {
         text-align: center;
         font-size: 0.9rem;
-        color: #666;
+        color: var(--bs-secondary-color);
         margin-top: 2rem;
         font-weight: 300;
+        opacity: 0;
     }
+
+    /* Animation classes */
+    .fade-in {
+        animation: fadeIn 1s ease-out forwards;
+    }
+
+    .slide-in {
+        animation: slideIn 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Staggered animations for dimension items */
+    .dimension-item:nth-child(1) { animation-delay: 0.2s; }
+    .dimension-item:nth-child(2) { animation-delay: 0.4s; }
+    .dimension-item:nth-child(3) { animation-delay: 0.6s; }
+    .dimension-item:nth-child(4) { animation-delay: 0.8s; }
 
     @media (max-width: 768px) {
         .intro-text, .dimension-item {
@@ -134,7 +206,7 @@
         }
 
         .start-button {
-            padding: 0.8rem 2rem;
+            padding: 1rem 2.5rem;
             font-size: 1.1rem;
             width: 100%;
         }
