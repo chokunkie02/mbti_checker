@@ -14,8 +14,67 @@
         --mbti-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    body {
-        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='none'/%3E%3Cpath d='M50 0a50 50 0 1 1 0 100 50 50 0 0 1 0-100z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
+    @keyframes backgroundShift {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
+    }
+
+    @keyframes rotate {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .center-type {
+        position: relative;
+        padding: 3rem;
+        transition: all 0.3s ease;
+    }
+
+    .center-type::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 400px;
+        height: 400px;
+        transform: translate(-50%, -50%);
+        background: 
+            radial-gradient(circle at center, transparent 30%, rgba(var(--mbti-color-rgb), 0.05) 70%),
+            repeating-conic-gradient(from 0deg,
+                rgba(var(--mbti-color-rgb), 0.08) 0deg 30deg,
+                transparent 30deg 60deg
+            );
+        border-radius: 50%;
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+        transition: opacity 0.3s ease;
+    }
+
+    .center-type::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 350px;
+        height: 350px;
+        transform: translate(-50%, -50%);
+        background: repeating-conic-gradient(from 45deg,
+            rgba(var(--mbti-color-rgb), 0.1) 0deg 10deg,
+            transparent 10deg 30deg
+        );
+        border-radius: 50%;
+        z-index: -1;
+        animation: rotate 15s linear infinite reverse;
+        transition: opacity 0.3s ease;
+    }
+
+    .center-type:hover::before {
+        opacity: 0;
+    }
+
+    .center-type:hover::after {
+        opacity: 0;
     }
 
     .insights-container {
@@ -23,18 +82,24 @@
         width: 100%;
         max-width: 1200px;
         margin: 2rem auto;
-        padding: 1rem;
+        padding: 2rem;
         display: flex;
         justify-content: center;
         align-items: flex-start;
         gap: 2rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     }
 
     .left-topics, .right-topics {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        width: 120px;
+        gap: 1.5rem;
+        width: 200px;
     }
 
     .center-content {
@@ -43,21 +108,16 @@
         text-align: center;
     }
 
-    .center-type {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        margin-bottom: 2rem;
+    .center-type img {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
     }
 
-    .center-type img {
-        width: 180px;
-        height: 180px;
-        object-fit: contain;
-        margin-bottom: 1rem;
-        transition: transform 0.3s ease;
+    .center-type:hover img {
+        transform: scale(1.1);
     }
 
     .center-type h2 {
@@ -65,14 +125,12 @@
         margin: 0;
         margin-bottom: 0.2rem;
         color: var(--mbti-color);
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .center-type .mbti-nickname {
         font-size: 1.2rem;
         margin-bottom: 1rem;
-        color: var(--bs-secondary);
-        opacity: 0.8;
+        color: #666;
     }
 
     .change-type-btn {
@@ -83,176 +141,376 @@
         border-radius: 25px;
         font-weight: 500;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.3);
+        cursor: pointer;
     }
 
     .change-type-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(var(--bs-primary-rgb), 0.4);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .topic {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: var(--bs-body-bg);
-        box-shadow: var(--mbti-shadow);
+        width: 200px;
+        min-height: 64px;
+        border-radius: 15px;
+        background: transparent;
+        position: relative;
+        z-index: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
-        padding: 15px;
-        font-size: 1rem;
+        padding: 12px;
+        font-size: 1.1rem;
         font-weight: 500;
-        border: 2px solid transparent;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 0.6s forwards;
+        animation-delay: calc(var(--animation-order) * 0.1s);
+        border: 1px solid transparent;
+        overflow: hidden;
     }
 
-    .topic.active {
-        transform: scale(1.1);
-        border-color: var(--mbti-color);
-        color: var(--mbti-color);
+    .topic::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--mbti-gradient);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: -1;
+        border-radius: inherit;
+    }
+
+    .topic:hover::before,
+    .topic.active::before {
+        opacity: 0.1;
     }
 
     .topic:hover {
-        transform: scale(1.1);
+        transform: translateY(-5px);
         border-color: var(--mbti-color);
-        color: var(--mbti-color);
     }
 
-    .content-section {
-        background: var(--bs-body-bg);
-        border-radius: 15px;
-        box-shadow: var(--mbti-shadow);
-        margin-top: 3rem;
-        padding: 2rem;
-        transition: transform 0.3s ease;
-    }
 
-    .content-section:hover {
-        transform: translateY(-5px);
-    }
-
-    .content-section h2 {
-        color: var(--mbti-color);
-        margin-bottom: 1.5rem;
-        text-align: center;
-        font-size: 2rem;
-        border-bottom: 2px solid var(--mbti-color);
-        padding-bottom: 1rem;
-    }
-
-    .content-card {
-        background: var(--bs-body-bg);
-        border-radius: 10px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        transition: transform 0.3s;
-        border: 1px solid var(--bs-border-color);
-    }
-
-    .content-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .popup, .overlay {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-    }
-
-    .popup {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: var(--bs-body-bg);
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: var(--mbti-shadow);
-        min-width: 400px;
-        max-width: 90vw;
-        animation: scaleIn 0.3s ease;
-    }
-
+    /* Popup and overlay styles */
     .overlay {
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        z-index: 999;
-        animation: fadeIn 0.3s ease;
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        max-width: 90vw;
+        width: 800px;
+    }
+
+    .popup.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
     }
 
     .type-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
-        padding: 1rem;
+        padding: 2rem;
+        position: relative;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        overflow: hidden;
     }
 
     .type-button {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 1rem;
+        position: relative;
+        background: transparent;
         border: none;
-        border-radius: 10px;
-        background: var(--bs-body-bg);
+        border-radius: 15px;
+        padding: 2rem;
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: var(--mbti-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: scale(0.9);
+        animation: scaleIn 0.4s forwards;
+        animation-delay: calc(var(--animation-order) * 0.1s);
+        overflow: hidden;
     }
 
     .type-button img {
-        width: 60px;
-        height: 60px;
+        width: 120px;
+        height: 120px;
         object-fit: contain;
+        transition: transform 0.3s ease;
+        position: relative;
+        z-index: 1;
     }
 
-    .type-button.analyst:hover { background: var(--analyst-color); color: white; }
-    .type-button.diplomat:hover { background: var(--diplomat-color); color: white; }
-    .type-button.guardian:hover { background: var(--guardian-color); color: white; }
-    .type-button.explorer:hover { background: var(--explorer-color); color: white; }
+    /* Add shooting star effect for popup */
+    @keyframes shootingStar {
+        0% {
+            transform: translateX(-100%) translateY(-100%);
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+        100% {
+            transform: translateX(100%) translateY(100%);
+            opacity: 0;
+        }
+    }
+
+    .shooting-star {
+        position: absolute;
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--mbti-color), transparent);
+        animation: shootingStar 1.5s linear;
+        pointer-events: none;
+    }
+
+    .content-section {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin: 4rem auto;
+        box-shadow: var(--mbti-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        max-width: 1000px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInSlideUp 0.8s ease forwards;
+        animation-play-state: paused;
+    }
+
+    .content-section.visible {
+        animation-play-state: running;
+    }
+
+    @keyframes fadeInSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .content-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .content-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(var(--mbti-color-rgb), 0.1) 0%,
+            rgba(var(--mbti-color-rgb), 0.2) 50%,
+            rgba(var(--mbti-color-rgb), 0.1) 100%
+        );
+        background-size: 200% 200%;
+        animation: pulseBackground 3s ease infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+    }
+
+    .content-section:hover::before {
+        opacity: 1;
+    }
+
+    @keyframes pulseBackground {
+        0% { 
+            background-position: 0% 50%;
+            opacity: 0.1;
+        }
+        50% { 
+            background-position: 100% 50%;
+            opacity: 0.2;
+        }
+        100% { 
+            background-position: 0% 50%;
+            opacity: 0.1;
+        }
+    }
+
+    .content-section h2 {
+        color: var(--mbti-color);
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid currentColor;
+        position: relative;
+        font-size: 1.8rem;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem auto;
+        box-shadow: var(--mbti-shadow);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+    }
+
+    .content-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .content-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .content-card li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .content-card li::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: var(--mbti-color);
+        font-weight: bold;
+    }
+
+    .summary-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg,
+            rgba(var(--mbti-color-rgb), 0.05) 0%,
+            rgba(var(--mbti-color-rgb), 0.02) 100%
+        );
+        border-radius: 20px;
+        box-shadow: var(--mbti-shadow);
+    }
+
+    .summary-section h2 {
+        color: var(--mbti-color);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .meteor {
+        position: absolute;
+        pointer-events: none;
+        width: 3px;
+        height: 120px;
+        background: linear-gradient(
+            to bottom, 
+            rgba(var(--mbti-color-rgb), 1), 
+            rgba(var(--mbti-color-rgb), 0.3),
+            transparent
+        );
+        transform-origin: top left;
+        z-index: 100;
+        opacity: 0;
+        will-change: transform;
+        filter: drop-shadow(0 0 8px var(--mbti-color));
+    }
+
+    @keyframes meteorFall {
+        0% {
+            opacity: 1;
+            transform: rotate(45deg) translateX(0) translateY(0);
+        }
+        40% {
+            opacity: 0.8;
+        }
+        60% {
+            opacity: 0.4;
+        }
+        100% {
+            opacity: 0;
+            transform: rotate(45deg) translateX(400px) translateY(400px);
+        }
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
     @keyframes scaleIn {
-        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
     @media (max-width: 992px) {
         .insights-container {
             flex-direction: column;
             align-items: center;
+            padding: 1rem;
         }
 
         .left-topics, .right-topics {
             flex-direction: row;
-            width: 100%;
-            justify-content: center;
             flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
         }
 
         .topic {
-            width: 100px;
-            height: 100px;
-            font-size: 0.9rem;
+            width: calc(50% - 1rem);
         }
 
         .type-grid {
             grid-template-columns: repeat(2, 1fr);
+            padding: 1rem;
         }
 
         .popup {
-            width: 90vw;
+            width: 95vw;
             padding: 1rem;
         }
     }
@@ -266,7 +524,7 @@
     </div>
 
     <div class="center-content">
-        <div class="center-type" id="mbti-type">
+        <div class="center-type" id="mbti-type" data-type="{{ current_user.mbti_type if current_user.is_authenticated else 'INFP' }}">
             <!-- MBTI type will be loaded here -->
         </div>
     </div>
@@ -276,16 +534,21 @@
     </div>
 </div>
 
-<div id="content-sections">
-    <!-- Content sections will be loaded here -->
-</div>
-
-<!-- Type selection popup -->
+<!-- Popup for type selection -->
 <div class="overlay" id="overlay"></div>
 <div class="popup" id="popup">
     <div class="type-grid" id="typeGrid">
         <!-- Type buttons will be generated here -->
     </div>
+</div>
+
+<div id="content-sections">
+    <!-- Content sections will be loaded here -->
+</div>
+
+<!-- Add summary section -->
+<div class="summary-section" id="summary-section">
+    <!-- Summary content will be loaded here -->
 </div>
 {% endblock %}
 
@@ -344,7 +607,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return `
                 <button class="type-button ${house}" data-type="${type}">
                     <img src="/static/mbti/${type}.png" alt="${type}">
-                    ${type}
                 </button>
             `;
         }).join('');
@@ -363,8 +625,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show type popup
     function showTypePopup() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('popup').style.display = 'block';
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+
+        // Add periodic shooting stars
+        const shootingStarInterval = setInterval(() => {
+            addShootingStar(popup);
+        }, 2000);
+
+        popup.dataset.intervalId = shootingStarInterval;
+
+        setTimeout(() => popup.classList.add('active'), 10);
+
+        const buttons = popup.querySelectorAll('.type-button');
+        buttons.forEach((btn, i) => {
+            btn.style.setProperty('--animation-order', i + 1);
+        });
     }
 
     // Make showTypePopup available globally
@@ -386,9 +664,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function updateCenterType(mbtiData) {
-        const mbtiType = document.getElementById('mbti-type');
-        const type = userType;
+    function updateCenterType(type) {
+        const centerType = document.getElementById('mbti-type');
         const [nickname, thaiName] = TYPE_NICKNAMES[type];
         const house = typeHouses[type];
 
@@ -398,124 +675,207 @@ document.addEventListener('DOMContentLoaded', function() {
             house === 'guardian' ? 'var(--guardian-color)' :
             'var(--explorer-color)'
         );
+        document.documentElement.style.setProperty('--mbti-color-rgb', 
+            house === 'analyst' ? '142,68,173' :
+            house === 'diplomat' ? '39,174,96' :
+            house === 'guardian' ? '41,128,185' :
+            '241,196,15'
+        );
 
-        mbtiType.innerHTML = `
+        centerType.innerHTML = `
             <img src="/static/mbti/${type}.png" alt="${type}">
-            <h2>${nickname}</h2>
-            <div class="mbti-nickname">(${thaiName})</div>
-            <button class="btn change-type-btn" onclick="showTypePopup()">
+            <h2>${type}</h2>
+            <div class="mbti-nickname">${nickname}<br>(${thaiName})</div>
+            <button class="change-type-btn" onclick="showTypePopup()">
                 เปลี่ยน Type
             </button>
         `;
+    }
+
+    function formatContent(content) {
+        let lines = content.split('\n');
+        let formattedLines = lines.map(line => {
+            // Remove all asterisks and extra spaces
+            line = line.trim().replace(/\*/g, '').trim();
+            return line ? `<p>${line}</p>` : '';
+        });
+        return formattedLines.filter(line => line).join('');
     }
 
     function createTopics(mbtiData) {
         const leftTopics = document.querySelector('.left-topics');
         const rightTopics = document.querySelector('.right-topics');
         const contentSections = document.getElementById('content-sections');
+        const summarySection = document.getElementById('summary-section');
 
         leftTopics.innerHTML = '';
         rightTopics.innerHTML = '';
         contentSections.innerHTML = '';
+        summarySection.innerHTML = '';
 
-        // Filter out summary section and create topics
         const topics = mbtiData.sections.filter(section => !section.title.toLowerCase().includes('สรุป'));
+        const summaryContent = mbtiData.sections.find(section => 
+            section.title.toLowerCase().includes('สรุป')
+        );
 
-        // Create topics for both sides
-        topics.slice(0, 8).forEach((section, index) => {
-            const topic = document.createElement('div');
-            topic.className = 'topic';
+        topics.forEach((topic, index) => {
+            const topicElement = document.createElement('div');
+            topicElement.className = 'topic';
 
-            let shortTitle = section.title.split('.')[1];
-            if (shortTitle.includes('ของ')) {
-                shortTitle = shortTitle.split('ของ')[0];
+            // Remove number from title
+            let title = topic.title;
+            title = title.replace(/^\d+\.\s*/, '');
+            if (title.includes('ของ')) {
+                title = title.split('ของ')[0];
             }
-            topic.textContent = shortTitle.trim();
+            topicElement.textContent = title.trim();
 
-            topic.addEventListener('click', () => {
+            topicElement.style.setProperty('--animation-order', index + 1);
+
+            if (index < topics.length / 2) {
+                leftTopics.appendChild(topicElement);
+            } else {
+                rightTopics.appendChild(topicElement);
+            }
+
+            // Remove number from section title
+            const cleanTitle = topic.title.replace(/^\d+\.\s*/, '');
+
+            const sectionHtml = `
+                <div class="content-section" id="section-${index}">
+                    <h2>${cleanTitle}</h2>
+                    <div class="content-card">
+                        ${formatContent(topic.content)}
+                    </div>
+                </div>
+            `;
+            contentSections.insertAdjacentHTML('beforeend', sectionHtml);
+
+            topicElement.addEventListener('click', () => {
                 document.querySelectorAll('.topic').forEach(t => t.classList.remove('active'));
-                topic.classList.add('active');
+                topicElement.classList.add('active');
 
                 document.getElementById(`section-${index}`).scrollIntoView({ 
                     behavior: 'smooth',
                     block: 'start'
                 });
             });
-
-            // Add to left or right side
-            if (index < 4) {
-                leftTopics.appendChild(topic);
-            } else {
-                rightTopics.appendChild(topic);
-            }
-
-            // Create corresponding content section
-            const sectionHtml = `
-                <div class="content-section" id="section-${index}">
-                    <h2>${section.title}</h2>
-                    <div class="content-card">
-                        ${formatContent(section.content)}
-                    </div>
-                </div>
-            `;
-            contentSections.insertAdjacentHTML('beforeend', sectionHtml);
         });
 
-        // Add summary section at the end
-        const summarySection = mbtiData.sections.find(section => 
-            section.title.toLowerCase().includes('สรุป')
-        );
+        if (summaryContent) {
+            // Remove number from summary title
+            const cleanSummaryTitle = summaryContent.title.replace(/^\d+\.\s*/, '');
 
-        if (summarySection) {
-            const summaryHtml = `
-                <div class="content-section">
-                    <h2>${summarySection.title}</h2>
-                    <div class="content-card">
-                        ${formatContent(summarySection.content)}
-                    </div>
+            summarySection.innerHTML = `
+                <h2>${cleanSummaryTitle}</h2>
+                <div class="content-card">
+                    ${formatContent(summaryContent.content)}
                 </div>
             `;
-            contentSections.insertAdjacentHTML('beforeend', summaryHtml);
+        }
+
+        if (topics.length > 0) {
+            document.querySelector('.topic').click();
         }
     }
 
-    function formatContent(content) {
-        if (content.includes('*')) {
-            const lines = content.split('\n');
-            const formattedLines = lines.map(line => {
-                if (line.trim().startsWith('*')) {
-                    return `<li>${line.trim().replace('* ', '')}</li>`;
-                }
-                return `<p>${line.trim()}</p>`;
-            });
-            return `<ul>${formattedLines.join('')}</ul>`;
-        }
-        return `<p>${content}</p>`;
+    function createMeteor(section, x, y) {
+        const meteor = document.createElement('div');
+        meteor.className = 'meteor';
+
+        const randomOffsetX = (Math.random() - 0.5) * 100;
+        const randomOffsetY = (Math.random() - 0.5) * 100;
+
+        meteor.style.left = `${x + randomOffsetX}px`;
+        meteor.style.top = `${y + randomOffsetY}px`;
+
+        const size = 80 + Math.random() * 60;
+        meteor.style.height = `${size}px`;
+
+        const duration = 1.2 + Math.random() * 0.8;
+        meteor.style.animation = `meteorFall ${duration}s ease-out forwards`;
+
+        section.appendChild(meteor);
+
+        setTimeout(() => {
+            meteor.remove();
+        }, duration * 1000 + 100);
     }
+
+    document.querySelectorAll('.content-section').forEach(section => {
+        let lastTime = 0;
+        const throttleDelay = 50;
+
+        section.addEventListener('mousemove', (e) => {
+            const currentTime = Date.now();
+            if (currentTime - lastTime >= throttleDelay) {
+                const rect = section.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        createMeteor(section, mouseX, mouseY);
+                    }, i * 120);
+                }
+
+                lastTime = currentTime;
+            }
+        });
+    });
+
+    // Add intersection observer for content sections
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    // Add shooting stars to popup
+    function addShootingStar(container) {
+        const star = document.createElement('div');
+        star.className = 'shooting-star';
+
+        // Random position and angle
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        star.style.left = `${startX}%`;
+        star.style.top = `${startY}%`;
+
+        container.appendChild(star);
+
+        star.addEventListener('animationend', () => star.remove());
+    }
+
+    // Cleanup shooting stars when closing popup
+    document.getElementById('overlay').addEventListener('click', () => {
+        const popup = document.getElementById('popup');
+        clearInterval(Number(popup.dataset.intervalId));
+        popup.style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    });
+
 
     async function initPage() {
-        if (!userType) {
-            createTypeButtons();
-            showTypePopup();
-            return;
-        }
+        // Scroll to top on page load
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         const mbtiData = await fetchMbtiData();
-        if (!mbtiData) {
-            return;
-        }
+        if (mbtiData) {
+            currentMbtiData = mbtiData;
+            updateCenterType(userType || 'INFP');
+            createTopics(mbtiData);
 
-        currentMbtiData = mbtiData;
-        updateCenterType(mbtiData);
-        createTopics(mbtiData);
+            // Observe all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                observer.observe(section);
+            });
+        }
     }
-
-    document.getElementById('overlay').addEventListener('click', () => {
-        if (userType) {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('popup').style.display = 'none';
-        }
-    });
 
     createTypeButtons();
     initPage();
