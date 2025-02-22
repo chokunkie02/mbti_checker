@@ -109,10 +109,10 @@
     }
 
     .center-type img {
-        width: 150px;
-        height: 150px;
+        width: 280px;
+        height: 280px;
         object-fit: contain;
-        margin-bottom: 1.5rem;
+        margin-bottom:2rem 0 1.5rem;
         transition: transform 0.3s ease;
     }
 
@@ -450,20 +450,47 @@
     }
 
     .summary-section {
-        margin-top: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg,
-            rgba(var(--mbti-color-rgb), 0.05) 0%,
-            rgba(var(--mbti-color-rgb), 0.02) 100%
-        );
+        background: rgba(255, 255, 255, 0.8);
         border-radius: 20px;
+        padding: 2rem 1.5rem;
+        margin: 2rem auto;
         box-shadow: var(--mbti-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        max-width: 800px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInSlideUp 1s ease forwards;
     }
 
     .summary-section h2 {
         color: var(--mbti-color);
         text-align: center;
         margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid currentColor;
+        position: relative;
+        font-size: 1.8rem;
+    }
+
+    .summary-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg,
+            rgba(var(--mbti-color-rgb), 0.05) 0%,
+            rgba(var(--mbti-color-rgb), 0.1) 50%,
+            rgba(var(--mbti-color-rgb), 0.05) 100%
+        );
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .summary-section:hover::before {
+        opacity: 1;
     }
 
     @keyframes fadeInUp {
@@ -692,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
 
         centerType.innerHTML = `
-            <img src="/static/mbti/${type}.png" alt="${type}">
+            <img src="/static/Human_MBTI/${type}.png" alt="${type}">
             <h2>${type}</h2>
             <div class="mbti-nickname">${nickname}<br>(${thaiName})</div>
             <button class="change-type-btn" onclick="showTypePopup()">
