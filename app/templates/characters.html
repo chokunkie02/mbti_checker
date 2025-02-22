@@ -15,70 +15,45 @@
         --mbti-bg: #f5f5f5;
         --mbti-text: #333333;
         --box-size: 120px;
+        --card-width: 280px;
     }
 
     .page-header {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
+        padding: 2rem 0;
+        background: white;
+        box-shadow: var(--mbti-shadow);
     }
 
     h1 {
         text-align: center;
         font-size: 2.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         font-weight: 700;
-        position: relative;
-        padding-bottom: 1rem;
-    }
-
-    h1::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 4px;
-        background: var(--mbti-gradient);
     }
 
     .subtitle {
         text-align: center;
         color: var(--mbti-text);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         font-weight: 300;
     }
 
     /* User Type Display */
-    .user-type-display {
-        background: white;
-        border-radius: 12px;
-        box-shadow: var(--mbti-shadow);
-        padding: 2rem;
-        margin-bottom: 2rem;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .user-type-container {
-        display: flex;
-        flex-direction: row;
-        gap: 40px;
-    }
-
     .user-type-section {
-        position: relative;
-        flex: 0 0 200px;
         display: flex;
-        flex-direction: column;
         align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 0 auto;
+        max-width: 400px;
     }
 
     .user-type-title {
         font-size: 1.2rem;
-        margin-bottom: 1.5rem;
         font-weight: 600;
+        margin: 0;
     }
 
     .user-type-box {
@@ -96,33 +71,38 @@
     }
 
     .change-type-btn {
-        position: absolute;
-        top: -30px;
-        left: 50%;
-        transform: translateX(-50%);
         background: var(--mbti-gradient);
         color: white;
         border: none;
         padding: 0.5rem 1rem;
         border-radius: 20px;
         cursor: pointer;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         font-weight: 500;
         transition: all 0.3s ease;
         white-space: nowrap;
     }
 
     .change-type-btn:hover {
-        transform: translateX(-50%) translateY(-2px);
+        transform: translateY(-2px);
         box-shadow: var(--mbti-shadow);
     }
 
-    /* Character Grid */
+    /* Character Grid Container */
+    .characters-container {
+        max-width: calc(4 * var(--card-width) + 60px);
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--mbti-shadow);
+    }
+
     .character-grid {
-        flex: 1;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
+        margin: 0 auto;
     }
 
     .character-card {
@@ -136,6 +116,24 @@
         flex-direction: column;
         align-items: center;
         position: relative;
+        gap: 1rem;
+    }
+
+    .character-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .character-image.error {
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #999;
     }
 
     .character-card:hover {
@@ -163,15 +161,18 @@
     .character-name {
         font-size: 1.25rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
+        margin: 0;
+        text-align: center;
     }
 
     .anime-title {
         color: #666;
         font-size: 0.9rem;
+        text-align: center;
+        margin: 0;
     }
 
-    /* Popup Styles */
+    /* Rest of the styles remain unchanged */
     .popup, .overlay {
         display: none;
         position: fixed;
@@ -256,16 +257,6 @@
         animation: fadeIn 0.3s ease;
     }
 
-    @keyframes scaleIn {
-        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
     /* Modal Styles */
     .modal-overlay {
         display: none;
@@ -342,36 +333,92 @@
         font-style: italic;
     }
 
+    @media (max-width: 1200px) {
+        .character-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .characters-container {
+            max-width: calc(2 * var(--card-width) + 40px);
+        }
+    }
+
     @media (max-width: 768px) {
         :root {
             --box-size: 80px;
+            --card-width: 240px;
         }
 
-        .user-type-container {
-            flex-direction: column;
-            align-items: center;
+        .page-header {
+            padding: 1rem;
         }
 
         .user-type-section {
-            margin-bottom: 2rem;
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+            padding: 0 1rem;
         }
 
         .character-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .characters-container {
+            padding: 1rem;
+            margin: 1rem;
+            max-width: var(--card-width);
+        }
+
+        .character-card {
+            padding: 1rem;
+        }
+
+        .character-image {
+            width: 180px;
+            height: 180px;
         }
 
         .popup {
-            min-width: 90vw;
+            width: 90vw;
+            min-width: auto;
             padding: 1rem;
         }
 
         .type-grid {
             grid-template-columns: repeat(2, var(--box-size));
+            gap: 8px;
+        }
+
+        .modal {
+            width: 95%;
+            padding: 1.5rem;
         }
 
         .trait-list {
             grid-template-columns: 1fr;
         }
+    }
+
+    @media (max-width: 480px) {
+        .character-image {
+            width: 160px;
+            height: 160px;
+        }
+
+        .character-name {
+            font-size: 1.1rem;
+        }
+    }
+
+    @keyframes scaleIn {
+        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 </style>
 {% endblock %}
@@ -380,19 +427,17 @@
 <div class="page-header">
     <h1>Anime Characters</h1>
     <div class="subtitle">ตัวละครอนิเมะที่มี MBTI Type เดียวกับคุณ</div>
+    <div class="user-type-section">
+        <h2 class="user-type-title">MBTI Type ของคุณ:</h2>
+        <div class="user-type-box" id="user-type-box">
+            <span id="user-type-value">-</span>
+        </div>
+        <button id="change-type-btn" class="change-type-btn">เปลี่ยน Type</button>
+    </div>
 </div>
 
-<div class="user-type-display">
-    <div class="user-type-container">
-        <div class="user-type-section">
-            <h2 class="user-type-title">MBTI Type ของคุณ</h2>
-            <div class="user-type-box" id="user-type-box">
-                <span id="user-type-value">-</span>
-            </div>
-            <button id="change-type-btn" class="change-type-btn">เปลี่ยน Type</button>
-        </div>
-        <div class="character-grid" id="character-grid"></div>
-    </div>
+<div class="characters-container">
+    <div class="character-grid" id="character-grid"></div>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -454,6 +499,16 @@
         return houseMapping[houseClass] || '';
     }
 
+    function convertNameToFileName(name) {
+        return name.replace(/\s+/g, '_');
+    }
+
+    function handleImageError(img) {
+        img.onerror = null; // Prevent infinite loop
+        img.classList.add('error');
+        img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23f0f0f0"/><text x="50%" y="50%" font-size="24" fill="%23999" text-anchor="middle" dy=".3em">No Image</text></svg>';
+    }
+
     function renderPopupTypeGrid() {
         const popupTypeGrid = document.getElementById('popup-type-grid');
         popupTypeGrid.innerHTML = types.map(type => `
@@ -506,12 +561,24 @@
             return;
         }
 
-        characterGrid.innerHTML = typeData.characters.map(character => `
-            <div class="character-card" onclick="showCharacterDetails('${character.name}', '${character.anime}', ${JSON.stringify(character.traits).replace(/"/g, '&quot;')})">
-                <h3 class="character-name">${character.name}</h3>
-                <p class="anime-title">${character.anime}</p>
-            </div>
-        `).join('');
+        // Take only the first 4 characters
+        const characters = typeData.characters.slice(0, 4);
+
+        characterGrid.innerHTML = characters.map(character => {
+            const imageFileName = convertNameToFileName(character.name);
+            return `
+                <div class="character-card" onclick="showCharacterDetails('${character.name}', '${character.anime}', ${JSON.stringify(character.traits).replace(/"/g, '&quot;')})">
+                    <img 
+                        src="/static/Anime_MBTI/${imageFileName}.jpg" 
+                        alt="${character.name}"
+                        class="character-image"
+                        onerror="handleImageError(this)"
+                    >
+                    <h3 class="character-name">${character.name}</h3>
+                    <p class="anime-title">${character.anime}</p>
+                </div>
+            `;
+        }).join('');
     }
 
     function showCharacterDetails(name, anime, traits) {
@@ -519,9 +586,17 @@
         const modalOverlay = document.getElementById('modal-overlay');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
+        const imageFileName = convertNameToFileName(name);
 
         modalTitle.textContent = name;
         modalContent.innerHTML = `
+            <img 
+                src="/static/Anime_MBTI/${imageFileName}.jpg" 
+                alt="${name}"
+                class="character-image"
+                style="margin: 0 auto 1.5rem; display: block;"
+                onerror="handleImageError(this)"
+            >
             <p class="anime-title" style="font-size: 1.2rem; margin-bottom: 1.5rem;">${anime}</p>
             <div class="trait-list">
                 ${traits.I ? `<div class="trait-item"><span class="trait-label">I:</span> ${traits.I}</div>` : ''}
@@ -564,21 +639,21 @@
     async function fetchCharacterData() {
         try {
             const response = await fetch(characterDataUrl, { cache: 'no-store' });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const text = await response.text();
-            
+
             try {
                 characterData = JSON.parse(text);
-                
+
                 if (!characterData.purpleHouse && !characterData.greenHouse && 
                     !characterData.blueHouse && !characterData.yellowHouse) {
                     throw new Error('Data format incorrect - missing expected house types');
                 }
-                
+
                 renderCharacters();
             } catch (parseError) {
                 console.error("JSON parsing error:", parseError);
