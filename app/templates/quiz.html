@@ -1,6 +1,248 @@
+
 {% extends "base.html" %}
 
 {% block title %}แบบทดสอบ MBTI ที่แม่นยำ{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1>แบบทดสอบ MBTI</h1>
+    <div class="instructions">
+        <h3>คำแนะนำ</h3>
+        <ul>
+            <li>แบบทดสอบมีทั้งหมด 32 ข้อ แบ่งเป็น 4 ส่วน</li>
+            <li>แต่ละข้อมีตัวเลือก 5 ระดับ ให้เลือกตามความเป็นจริง</li>
+            <li>ไม่มีคำตอบที่ถูกหรือผิด ตอบตามความรู้สึกของคุณ</li>
+            <li>อย่าคิดนานเกินไป ให้ตอบตามสัญชาตญาณแรก</li>
+        </ul>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <form id="mbtiForm" method="POST">
+        <div class="question-section" id="section-1">
+            <h2><span class="section-icon">👥</span> ส่วนที่ 1: พลังงานและการมีปฏิสัมพันธ์</h2>
+            <div id="ei-questions"></div>
+            <div class="section-nav">
+                <button type="button" class="nav-button next" id="next-section-1">ถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-2">
+            <h2><span class="section-icon">🔍</span> ส่วนที่ 2: การรับข้อมูลและการตีความ</h2>
+            <div id="sn-questions"></div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-2">ก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-2">ถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-3">
+            <h2><span class="section-icon">🧠</span> ส่วนที่ 3: การตัดสินใจและการประเมินค่า</h2>
+            <div id="tf-questions"></div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-3">ก่อนหน้า</button>
+                <button type="button" class="nav-button next" id="next-section-3">ถัดไป</button>
+            </div>
+        </div>
+
+        <div class="question-section" id="section-4">
+            <h2><span class="section-icon">⏱️</span> ส่วนที่ 4: ไลฟ์สไตล์และการวางแผน</h2>
+            <div id="jp-questions"></div>
+            <div class="section-nav">
+                <button type="button" class="nav-button prev" id="prev-section-4">ก่อนหน้า</button>
+            </div>
+        </div>
+
+        <div class="answer-validation" id="section-validation">กรุณาตอบทุกข้อก่อนไปส่วนถัดไป</div>
+
+        <input type="hidden" name="mbti_result" id="mbti_result">
+        <button type="submit" id="submit-button" style="display: none;">ดูผลการทดสอบ</button>
+    </form>
+</div>
+
+<script>
+    const questions = {
+        ei: [
+            "ฉันมักจะรู้สึกมีพลังเมื่อได้พูดคุยกับคนหลายๆ คน",
+            "ฉันมักเป็นคนเริ่มต้นบทสนทนากับคนที่เพิ่งรู้จัก",
+            "ฉันชอบทำกิจกรรมกลุ่มมากกว่าอยู่คนเดียว",
+            "ฉันรู้สึกเหนื่อยล้าหลังจากเข้าสังคมหรืองานที่มีคนเยอะ (คำถามแบบกลับ)",
+            "ฉันชอบแสดงความคิดเห็นในที่สาธารณะ",
+            "ฉันต้องการเวลาอยู่คนเดียวเพื่อชาร์จพลังให้ตัวเอง (คำถามแบบกลับ)",
+            "ฉันรู้สึกสนุกเมื่อได้อยู่ในที่ที่มีกิจกรรมคึกคักและมีคนเยอะ",
+            "ฉันพูดออกมาก่อนที่จะคิดให้รอบคอบบ่อยครั้ง"
+        ],
+        sn: [
+            "ฉันชอบใส่ใจรายละเอียดและข้อเท็จจริงที่ชัดเจน",
+            "ฉันมักจะคิดถึงความเป็นไปได้ในอนาคตมากกว่าสนใจสิ่งที่เกิดขึ้นตอนนี้ (คำถามแบบกลับ)",
+            "ฉันเชื่อในสิ่งที่เห็นและจับต้องได้มากกว่าทฤษฎีหรือความคิดที่เป็นนามธรรม",
+            "ฉันมักจะมองเห็นแบบแผนและความเชื่อมโยงที่คนอื่นมองข้าม (คำถามแบบกลับ)",
+            "ฉันชอบทำงานที่มีขั้นตอนชัดเจน ปฏิบัติได้จริง",
+            "ฉันมักจะคิดถึงภาพรวมและความหมายที่แฝงอยู่เบื้องหลัง (คำถามแบบกลับ)",
+            "ฉันชอบเรียนรู้จากประสบการณ์จริงมากกว่าการอ่านหรือการทำความเข้าใจแนวคิด",
+            "ฉันชอบใช้จินตนาการและมองหาความเป็นไปได้ใหม่ๆ (คำถามแบบกลับ)"
+        ],
+        tf: [
+            "ฉันมักตัดสินใจโดยใช้เหตุผลและตรรกะเป็นหลัก",
+            "ฉันพิจารณาความรู้สึกของคนอื่นก่อนจะตัดสินใจเรื่องสำคัญ (คำถามแบบกลับ)",
+            "ฉันมักจะพูดความจริงตรงๆ แม้อาจทำให้คนอื่นรู้สึกไม่ดี",
+            "การรักษาความสัมพันธ์ที่ดีสำคัญกว่าการเอาชนะในการโต้แย้ง (คำถามแบบกลับ)",
+            "ฉันชอบวิเคราะห์ปัญหาอย่างเป็นเหตุเป็นผลโดยไม่ใส่ความรู้สึกส่วนตัวเข้าไป",
+            "ฉันมักจะตัดสินใจตามสิ่งที่รู้สึกว่าถูกต้องในใจมากกว่าข้อมูลเชิงตรรกะ (คำถามแบบกลับ)",
+            "คนมักบอกว่าฉันเป็นคนเย็นชาหรือไม่แสดงอารมณ์",
+            "ฉันให้ความสำคัญกับความกลมเกลียวและความเข้าใจซึ่งกันและกัน (คำถามแบบกลับ)"
+        ],
+        jp: [
+            "ฉันชอบวางแผนและเตรียมพร้อมล่วงหน้าเสมอ",
+            "ฉันชอบความยืดหยุ่นและการปรับเปลี่ยนไปตามสถานการณ์ (คำถามแบบกลับ)",
+            "ฉันทำงานอย่างเป็นระบบและมีการจัดการเวลาที่ดี",
+            "ฉันมักจะปล่อยให้สิ่งต่างๆ เกิดขึ้นตามธรรมชาติโดยไม่พยายามควบคุมมากเกินไป (คำถามแบบกลับ)",
+            "ฉันรู้สึกไม่สบายใจเมื่อมีการเปลี่ยนแปลงกะทันหัน",
+            "ฉันชอบที่จะมีตัวเลือกเปิดไว้และตัดสินใจในนาทีสุดท้าย (คำถามแบบกลับ)",
+            "ฉันเป็นคนเรียบร้อย มีระเบียบ ทุกอย่างต้องอยู่ในที่ของมัน",
+            "ฉันชอบการผจญภัยและความตื่นเต้นของสิ่งที่ไม่คาดคิด (คำถามแบบกลับ)"
+        ]
+    };
+
+    const optionValues = [2, 1, 0, -1, -2];
+    const optionLabels = ["เห็นด้วยอย่างยิ่ง", "เห็นด้วย", "เฉยๆ/ไม่แน่ใจ", "ไม่เห็นด้วย", "ไม่เห็นด้วยอย่างยิ่ง"];
+    let currentSection = 1;
+    const totalSections = 4;
+
+    function createQuestions(section, questions) {
+        const container = document.getElementById(`${section}-questions`);
+        container.innerHTML = '';
+
+        questions.forEach((question, index) => {
+            const isReversed = question.includes("(คำถามแบบกลับ)");
+            const displayQuestion = question.replace("(คำถามแบบกลับ)", "");
+            const questionNumber = index + (
+                section === 'ei' ? 1 :
+                section === 'sn' ? 9 :
+                section === 'tf' ? 17 : 25
+            );
+
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+            questionDiv.innerHTML = `
+                <div class="question-text">${questionNumber}. ${displayQuestion}</div>
+                <div class="options">
+                    ${optionValues.map((value, i) => `
+                        <label class="radio-option" data-reversed="${isReversed}">
+                            <input type="radio" name="q${questionNumber}" value="${isReversed ? optionValues[4-i] : value}" required>
+                            <span class="option-label">${optionLabels[i]}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(questionDiv);
+        });
+    }
+
+    function isSectionComplete(sectionNum) {
+        const startQ = (sectionNum - 1) * 8 + 1;
+        const endQ = sectionNum * 8;
+
+        for (let i = startQ; i <= endQ; i++) {
+            if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function switchSection(oldSection, newSection) {
+        if (oldSection > 0) {
+            const oldSectionElement = document.getElementById(`section-${oldSection}`);
+            oldSectionElement.style.display = 'none';
+            oldSectionElement.classList.remove('active');
+        }
+
+        const newSectionElement = document.getElementById(`section-${newSection}`);
+        newSectionElement.style.display = 'block';
+        newSectionElement.classList.add('active');
+
+        const progress = ((newSection - 1) / totalSections) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+
+        document.getElementById('submit-button').style.display = 
+            newSection === totalSections ? 'block' : 'none';
+
+        window.scrollTo({
+            top: document.querySelector('.page-container').offsetTop,
+            behavior: 'smooth'
+        });
+
+        currentSection = newSection;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create questions for all sections
+        Object.entries(questions).forEach(([section, questionList]) => {
+            createQuestions(section, questionList);
+        });
+
+        // Add event listeners for navigation buttons
+        document.querySelectorAll('[id^="next-section-"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentSectionNum = parseInt(this.id.split('-')[2]);
+                if (isSectionComplete(currentSectionNum)) {
+                    switchSection(currentSectionNum, currentSectionNum + 1);
+                    document.getElementById('section-validation').style.display = 'none';
+                } else {
+                    document.getElementById('section-validation').style.display = 'block';
+                }
+            });
+        });
+
+        document.querySelectorAll('[id^="prev-section-"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentSectionNum = parseInt(this.id.split('-')[2]);
+                switchSection(currentSectionNum, currentSectionNum - 1);
+                document.getElementById('section-validation').style.display = 'none';
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('mbtiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isSectionComplete(totalSections)) {
+                alert('กรุณาตอบทุกข้อคำถามก่อนส่งแบบทดสอบ');
+                return;
+            }
+
+            // Calculate MBTI result
+            const formData = new FormData(this);
+            let eiScore = 0, snScore = 0, tfScore = 0, jpScore = 0;
+
+            for (let i = 1; i <= 8; i++) eiScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 9; i <= 16; i++) snScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 17; i <= 24; i++) tfScore += parseInt(formData.get(`q${i}`) || 0);
+            for (let i = 25; i <= 32; i++) jpScore += parseInt(formData.get(`q${i}`) || 0);
+
+            const result = `${eiScore >= 0 ? 'E' : 'I'}${snScore >= 0 ? 'S' : 'N'}${tfScore >= 0 ? 'T' : 'F'}${jpScore >= 0 ? 'J' : 'P'}`;
+
+            // Store result in hidden field
+            document.getElementById('mbti_result').value = result;
+
+            // If user is not logged in, store in localStorage
+            {% if not current_user.is_authenticated %}
+                localStorage.setItem('mbti_type', result);
+                localStorage.setItem('hasTakenQuiz', 'true');
+            {% endif %}
+
+            // Submit form
+            this.submit();
+        });
+
+        // Show initial section
+        switchSection(0, 1);
+    });
+</script>
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -324,265 +566,4 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
-<div class="page-container">
-    <h1>แบบทดสอบ MBTI</h1>
-    <div class="instructions">
-        <h3>คำแนะนำ</h3>
-        <ul>
-            <li>แบบทดสอบมีทั้งหมด 32 ข้อ แบ่งเป็น 4 ส่วน</li>
-            <li>แต่ละข้อมีตัวเลือก 5 ระดับ ให้เลือกตามความเป็นจริง</li>
-            <li>ไม่มีคำตอบที่ถูกหรือผิด ตอบตามความรู้สึกของคุณ</li>
-            <li>อย่าคิดนานเกินไป ให้ตอบตามสัญชาตญาณแรก</li>
-        </ul>
-    </div>
-
-    <div class="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <form id="mbtiForm" method="POST">
-        <div class="question-section" id="section-1">
-            <h2><span class="section-icon">👥</span> ส่วนที่ 1: พลังงานและการมีปฏิสัมพันธ์</h2>
-            <div id="ei-questions"></div>
-            <div class="section-nav">
-                <button type="button" class="nav-button next" id="next-section-1">ถัดไป</button>
-            </div>
-        </div>
-
-        <div class="question-section" id="section-2">
-            <h2><span class="section-icon">🔍</span> ส่วนที่ 2: การรับข้อมูลและการตีความ</h2>
-            <div id="sn-questions"></div>
-            <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-2">ก่อนหน้า</button>
-                <button type="button" class="nav-button next" id="next-section-2">ถัดไป</button>
-            </div>
-        </div>
-
-        <div class="question-section" id="section-3">
-            <h2><span class="section-icon">🧠</span> ส่วนที่ 3: การตัดสินใจและการประเมินค่า</h2>
-            <div id="tf-questions"></div>
-            <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-3">ก่อนหน้า</button>
-                <button type="button" class="nav-button next" id="next-section-3">ถัดไป</button>
-            </div>
-        </div>
-
-        <div class="question-section" id="section-4">
-            <h2><span class="section-icon">⏱️</span> ส่วนที่ 4: ไลฟ์สไตล์และการวางแผน</h2>
-            <div id="jp-questions"></div>
-            <div class="section-nav">
-                <button type="button" class="nav-button prev" id="prev-section-4">ก่อนหน้า</button>
-            </div>
-        </div>
-
-        <div class="answer-validation" id="section-validation">กรุณาตอบทุกข้อก่อนไปส่วนถัดไป</div>
-
-        <input type="hidden" name="mbti_result" id="mbti_result">
-        <button type="submit" id="submit-button" style="display: none;">ดูผลการทดสอบ</button>
-    </form>
-</div>
-
-<script>
-    const questions = {
-        ei: [
-            "ฉันมักจะรู้สึกมีพลังเมื่อได้พูดคุยกับคนหลายๆ คน",
-            "ฉันมักเป็นคนเริ่มต้นบทสนทนากับคนที่เพิ่งรู้จัก",
-            "ฉันชอบทำกิจกรรมกลุ่มมากกว่าอยู่คนเดียว",
-            "ฉันรู้สึกเหนื่อยล้าหลังจากเข้าสังคมหรืองานที่มีคนเยอะ (คำถามแบบกลับ)",
-            "ฉันชอบแสดงความคิดเห็นในที่สาธารณะ",
-            "ฉันต้องการเวลาอยู่คนเดียวเพื่อชาร์จพลังให้ตัวเอง (คำถามแบบกลับ)",
-            "ฉันรู้สึกสนุกเมื่อได้อยู่ในที่ที่มีกิจกรรมคึกคักและมีคนเยอะ",
-            "ฉันพูดออกมาก่อนที่จะคิดให้รอบคอบบ่อยครั้ง"
-        ],
-        sn: [
-            "ฉันชอบใส่ใจรายละเอียดและข้อเท็จจริงที่ชัดเจน",
-            "ฉันมักจะคิดถึงความเป็นไปได้ในอนาคตมากกว่าสนใจสิ่งที่เกิดขึ้นตอนนี้ (คำถามแบบกลับ)",
-            "ฉันเชื่อในสิ่งที่เห็นและจับต้องได้มากกว่าทฤษฎีหรือความคิดที่เป็นนามธรรม",
-            "ฉันมักจะมองเห็นแบบแผนและความเชื่อมโยงที่คนอื่นมองข้าม (คำถามแบบกลับ)",
-            "ฉันชอบทำงานที่มีขั้นตอนชัดเจน ปฏิบัติได้จริง",
-            "ฉันมักจะคิดถึงภาพรวมและความหมายที่แฝงอยู่เบื้องหลัง (คำถามแบบกลับ)",
-            "ฉันชอบเรียนรู้จากประสบการณ์จริงมากกว่าการอ่านหรือการทำความเข้าใจแนวคิด",
-            "ฉันชอบใช้จินตนาการและมองหาความเป็นไปได้ใหม่ๆ (คำถามแบบกลับ)"
-        ],
-        tf: [
-            "ฉันมักตัดสินใจโดยใช้เหตุผลและตรรกะเป็นหลัก",
-            "ฉันพิจารณาความรู้สึกของคนอื่นก่อนจะตัดสินใจเรื่องสำคัญ (คำถามแบบกลับ)",
-            "ฉันมักจะพูดความจริงตรงๆ แม้อาจทำให้คนอื่นรู้สึกไม่ดี",
-            "การรักษาความสัมพันธ์ที่ดีสำคัญกว่าการเอาชนะในการโต้แย้ง (คำถามแบบกลับ)",
-            "ฉันชอบวิเคราะห์ปัญหาอย่างเป็นเหตุเป็นผลโดยไม่ใส่ความรู้สึกส่วนตัวเข้าไป",
-            "ฉันมักจะตัดสินใจตามสิ่งที่รู้สึกว่าถูกต้องในใจมากกว่าข้อมูลเชิงตรรกะ (คำถามแบบกลับ)",
-            "คนมักบอกว่าฉันเป็นคนเย็นชาหรือไม่แสดงอารมณ์",
-            "ฉันให้ความสำคัญกับความกลมเกลียวและความเข้าใจซึ่งกันและกัน (คำถามแบบกลับ)"
-        ],
-        jp: [
-            "ฉันชอบวางแผนและเตรียมพร้อมล่วงหน้าเสมอ",
-            "ฉันชอบความยืดหยุ่นและการปรับเปลี่ยนไปตามสถานการณ์ (คำถามแบบกลับ)",
-            "ฉันทำงานอย่างเป็นระบบและมีการจัดการเวลาที่ดี",
-            "ฉันมักจะปล่อยให้สิ่งต่างๆ เกิดขึ้นตามธรรมชาติโดยไม่พยายามควบคุมมากเกินไป (คำถามแบบกลับ)",
-            "ฉันรู้สึกไม่สบายใจเมื่อมีการเปลี่ยนแปลงกะทันหัน",
-            "ฉันชอบที่จะมีตัวเลือกเปิดไว้และตัดสินใจในนาทีสุดท้าย (คำถามแบบกลับ)",
-            "ฉันเป็นคนเรียบร้อย มีระเบียบ ทุกอย่างต้องอยู่ในที่ของมัน",
-            "ฉันชอบการผจญภัยและความตื่นเต้นของสิ่งที่ไม่คาดคิด (คำถามแบบกลับ)"
-        ]
-    };
-
-    const optionValues = [2, 1, 0, -1, -2];
-    const optionLabels = ["เห็นด้วยอย่างยิ่ง", "เห็นด้วย", "เฉยๆ/ไม่แน่ใจ", "ไม่เห็นด้วย", "ไม่เห็นด้วยอย่างยิ่ง"];
-    let currentSection = 1;
-    const totalSections = 4;
-
-    function createQuestions(section, questions) {
-        console.log(`Creating questions for section: ${section}`);
-        const container = document.getElementById(`${section}-questions`);
-        if (!container) {
-            console.error(`Container not found for section: ${section}`);
-            return;
-        }
-        container.innerHTML = '';
-
-        questions.forEach((question, index) => {
-            const isReversed = question.includes("(คำถามแบบกลับ)");
-            const displayQuestion = question.replace("(คำถามแบบกลับ)", "");
-            const questionNumber = index + (
-                section === 'ei' ? 1 :
-                section === 'sn' ? 9 :
-                section === 'tf' ? 17 : 25
-            );
-
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question-container';
-            questionDiv.innerHTML = `
-                <div class="question-text">${questionNumber}. ${displayQuestion}</div>
-                <div class="options">
-                    ${optionValues.map((value, i) => `
-                        <label class="radio-option" data-reversed="${isReversed}">
-                            <input type="radio" name="q${questionNumber}" value="${isReversed ? optionValues[4-i] : value}" required>
-                            <span class="option-label">${optionLabels[i]}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            `;
-            container.appendChild(questionDiv);
-        });
-
-        // Make sure the container is visible after creating questions
-        container.style.display = 'block';
-    }
-
-    function isSectionComplete(sectionNum) {
-        const startQ = (sectionNum - 1) * 8 + 1;
-        const endQ = sectionNum * 8;
-
-        for (let i = startQ; i <= endQ; i++) {
-            if (!document.querySelector(`input[name="q${i}"]:checked`)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function switchSection(oldSection, newSection) {
-        console.log(`Switching from section ${oldSection} to ${newSection}`);
-
-        if (oldSection > 0) {
-            const oldSectionElement = document.getElementById(`section-${oldSection}`);
-            if (oldSectionElement) {
-                oldSectionElement.style.display = 'none';
-                oldSectionElement.classList.remove('active');
-            }
-        }
-
-        const newSectionElement = document.getElementById(`section-${newSection}`);
-        if (newSectionElement) {
-            newSectionElement.style.display = 'block';
-            newSectionElement.classList.add('active');
-
-            // Update progress bar
-            const progress = ((newSection - 1) / totalSections) * 100;
-            const progressBar = document.getElementById('progress-bar');
-            if (progressBar) {
-                progressBar.style.width = `${progress}%`;
-            }
-
-            // Show/hide submit button
-            const submitButton = document.getElementById('submit-button');
-            if (submitButton) {
-                submitButton.style.display = newSection === totalSections ? 'block' : 'none';
-            }
-
-            // Scroll to top
-            window.scrollTo({
-                top: document.querySelector('.page-container').offsetTop,
-                behavior: 'smooth'
-            });
-
-            currentSection = newSection;
-        } else {
-            console.error(`Section ${newSection} not found`);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM Content Loaded');
-
-        // Create questions for all sections
-        Object.entries(questions).forEach(([section, questionList]) => {
-            createQuestions(section, questionList);
-        });
-
-        // Add event listeners for navigation buttons
-        document.querySelectorAll('[id^="next-section-"]').forEach(button => {
-            button.addEventListener('click', function() {
-                const currentSectionNum = parseInt(this.id.split('-')[2]);
-                if (isSectionComplete(currentSectionNum)) {
-                    switchSection(currentSectionNum, currentSectionNum + 1);
-                    document.getElementById('section-validation').style.display = 'none';
-                } else {
-                    document.getElementById('section-validation').style.display = 'block';
-                }
-            });
-        });
-
-        document.querySelectorAll('[id^="prev-section-"]').forEach(button => {
-            button.addEventListener('click', function() {
-                const currentSectionNum = parseInt(this.id.split('-')[2]);
-                switchSection(currentSectionNum, currentSectionNum - 1);
-                document.getElementById('section-validation').style.display = 'none';
-            });
-        });
-
-        // Handle form submission
-        document.getElementById('mbtiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            if (!isSectionComplete(totalSections)) {
-                alert('กรุณาตอบทุกข้อคำถามก่อนส่งแบบทดสอบ');
-                return;
-            }
-
-            // Calculate MBTI result
-            const formData = new FormData(this);
-            let eiScore = 0, snScore = 0, tfScore = 0, jpScore = 0;
-
-            for (let i = 1; i <= 8; i++) eiScore += parseInt(formData.get(`q${i}`) || 0);
-            for (let i = 9; i <= 16; i++) snScore += parseInt(formData.get(`q${i}`) || 0);
-            for (let i = 17; i <= 24; i++) tfScore += parseInt(formData.get(`q${i}`) || 0);
-            for (let i = 25; i <= 32; i++) jpScore += parseInt(formData.get(`q${i}`) || 0);
-
-            const result = `${eiScore >= 0 ? 'E' : 'I'}${snScore >= 0 ? 'S' : 'N'}${tfScore >= 0 ? 'T' : 'F'}${jpScore >= 0 ? 'J' : 'P'}`;
-            document.getElementById('mbti_result').value = result;
-
-            // Store result and redirect
-            localStorage.setItem('mbtiType', result);
-            localStorage.setItem('hasTakenQuiz', 'true');
-            window.location.href = '/result';
-        });
-
-        // Show initial section
-        switchSection(0, 1);
-    });
-</script>
 {% endblock %}

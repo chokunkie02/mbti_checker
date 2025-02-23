@@ -566,7 +566,7 @@
     </div>
 
     <div class="center-content">
-        <div class="center-type" id="mbti-type" data-type="{% if current_user.is_authenticated %}{{ current_user.mbti_type }}{% else %}INFP{% endif %}">
+        <div class="center-type" id="mbti-type" data-type="{% if current_user.is_authenticated %}{{ current_user.mbti_type }}{% else %}None{% endif %}">
             <!-- MBTI type will be loaded here -->
         </div>
     </div>
@@ -637,8 +637,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const userTypeElement = document.getElementById('mbti-type');
     if (userTypeElement && userTypeElement.dataset.type) {
         userType = userTypeElement.dataset.type;
+        // Check if user is logged in but has no MBTI type
+        if (userType === 'None' || userType === '') {
+            // Set default type to INFP
+            userType = 'INFP';
+            // Show type selection popup after a brief delay
+            setTimeout(() => {
+                showTypePopup();
+            }, 500);
+        }
     } else {
-        userType = localStorage.getItem('mbtiType');
+        userType = localStorage.getItem('mbtiType') || 'INFP';
     }
 
     // Create type selection buttons

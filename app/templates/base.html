@@ -12,13 +12,13 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='mbti/ISFP.ico') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
       :root {
+        --analyst-color: #ba68c8; /* บ้านม่วง - นักวิเคราะห์ */
+        --diplomat-color: #81c784; /* บ้านเขียว - นักการทูต */
+        --guardian-color: #64b5f6; /* บ้านฟ้า - ผู้พิทักษ์ */
+        --explorer-color: #ffeb3b; /* บ้านเหลือง - นักสำรวจ */
+        --mbti-text: #2d3436;
+        --mbti-light-bg: #f7f7ff;
         --mbti-yellow: #ffd93d;
         --mbti-green: #4caf50;
         --mbti-blue: #2196f3;
@@ -26,7 +26,6 @@
         --mbti-gradient: linear-gradient(135deg, var(--mbti-yellow) 0%, var(--mbti-green) 33%, var(--mbti-blue) 66%, var(--mbti-purple) 100%);
         --mbti-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         --mbti-bg: #f8f9fa;
-        --mbti-text: #2c3e50;
         --sidebar-collapsed-width: 70px;
         --sidebar-expanded-width: 250px;
         --transition-speed: 0.3s;
@@ -36,17 +35,17 @@
       
       body {
         font-family: 'Kanit', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--mbti-light-bg);
         font-size: var(--base-font-size);
         line-height: 1.6;
-        background: var(--mbti-bg);
         min-height: 100vh;
         color: var(--mbti-text);
-        padding: 0;
         display: flex;
         position: relative;
       }
       
-      /* Auth Popup Styles */
       .auth-toggle {
         position: fixed;
         top: 20px;
@@ -119,7 +118,6 @@
         font-size: 1.1rem;
       }
       
-      /* Sidebar Styles */
       .sidebar {
         background: white;
         box-shadow: var(--mbti-shadow);
@@ -145,6 +143,89 @@
         padding: 20px 15px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 1));
+      }
+      
+      .header-profile {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        margin-right: auto;
+        padding: 8px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+      
+      .sidebar.expanded .header-profile {
+        display: flex;
+      }
+      
+      .header-profile:hover {
+        background: rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+      }
+      
+      .profile-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #000;
+        transition: all 0.3s ease;
+        background: #000;
+      }
+      
+      .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      
+      .profile-image img.guest-image {
+        filter: brightness(0) invert(1);
+      }
+      
+      .analyst .profile-image {
+        border-color: var(--analyst-color);
+      }
+      .diplomat .profile-image {
+        border-color: var(--diplomat-color);
+      }
+      .guardian .profile-image {
+        border-color: var(--guardian-color);
+      }
+      .explorer .profile-image {
+        border-color: var(--explorer-color);
+      }
+      
+      .analyst:hover .profile-image {
+        box-shadow: 0 0 15px rgba(186, 104, 200, 0.3);
+      }
+      .diplomat:hover .profile-image {
+        box-shadow: 0 0 15px rgba(129, 199, 132, 0.3);
+      }
+      .guardian:hover .profile-image {
+        box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+      }
+      .explorer:hover .profile-image {
+        box-shadow: 0 0 15px rgba(255, 235, 59, 0.3);
+      }
+      
+      .profile-info {
+        display: none;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+      
+      .sidebar.expanded .profile-info {
+        display: block;
+        opacity: 1;
+      }
+      
+      .profile-type {
+        font-weight: 600;
+        color: var(--mbti-text);
+        font-size: 0.9rem;
       }
       
       .toggle-btn {
@@ -242,40 +323,6 @@
         transform: translateX(0);
       }
       
-      /* Scroll to top button */
-      .scroll-to-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: white;
-        color: var(--mbti-text);
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: var(--mbti-shadow);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s var(--transition-timing);
-        z-index: 1000;
-        border: none;
-      }
-      
-      .scroll-to-top.visible {
-        opacity: 1;
-        visibility: visible;
-      }
-      
-      .scroll-to-top:hover {
-        transform: translateY(-5px);
-        background: var(--mbti-gradient);
-        color: white;
-      }
-      
-      /* Main Content */
       .main-content {
         flex-grow: 1;
         margin-left: var(--sidebar-collapsed-width);
@@ -291,7 +338,41 @@
         width: calc(100% - var(--sidebar-expanded-width));
       }
       
-      /* Mobile Styles */
+      /* Back to Top Button */
+      .back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: var(--mbti-gradient);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--mbti-shadow);
+        font-size: 20px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s var(--transition-timing);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px);
+      }
+      
+      .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      
+      .back-to-top:hover {
+        transform: scale(1.1) translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      }
+      
       @media (max-width: 768px) {
         .sidebar {
           width: 0;
@@ -369,19 +450,9 @@
           display: none;
         }
       }
-      
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
     </style>
     {% block extra_css %}
+
     {% endblock %}
   </head>
   <body>
@@ -413,9 +484,6 @@
       {% endif %}
     </div>
 
-    <!-- Scroll to top button -->
-    <button class="scroll-to-top" id="scrollToTop"><i class="fas fa-arrow-up"></i></button>
-
     <!-- Mobile Menu Toggle -->
     <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
     <div class="mobile-menu-overlay" id="mobileOverlay"></div>
@@ -423,6 +491,24 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <div class="sidebar-header">
+        <div class="header-profile">
+          <div class="profile-image">
+            {% if current_user.is_authenticated and current_user.mbti_type %}
+              <img src="{{ url_for('static', filename='Head_MBTI/' + current_user.mbti_type + '.png') }}" alt="{{ current_user.mbti_type }}" />
+            {% else %}
+              <img src="{{ url_for('static', filename='Head_MBTI/ISFP.png') }}" alt="Default" class="guest-image" id="profileImage" />
+            {% endif %}
+          </div>
+          <div class="profile-info">
+            <div class="profile-type" id="profileType">
+              {% if current_user.is_authenticated and current_user.mbti_type %}
+                {{ current_user.mbti_type }}
+              {% else %}
+                Guest
+              {% endif %}
+            </div>
+          </div>
+        </div>
         <button class="toggle-btn" id="toggleBtn"><i class="fas fa-bars"></i></button>
       </div>
       <div class="sidebar-content">
@@ -482,102 +568,136 @@
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
       {% block content %}
+
       {% endblock %}
     </div>
 
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop"><i class="fas fa-chevron-up"></i></button>
+
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('sidebar')
-        const mainContent = document.getElementById('mainContent')
-        const toggleBtn = document.getElementById('toggleBtn')
-        const mobileToggle = document.getElementById('mobileToggle')
-        const mobileOverlay = document.getElementById('mobileOverlay')
-        const authToggle = document.getElementById('authToggle')
-        const authPopup = document.getElementById('authPopup')
-        const scrollToTopBtn = document.getElementById('scrollToTop')
-      
-        // Sidebar toggle functionality
-        function toggleSidebar() {
-          sidebar.classList.toggle('expanded')
-          mainContent.classList.toggle('sidebar-expanded')
-      
-          const icon = toggleBtn.querySelector('i')
-          if (sidebar.classList.contains('expanded')) {
-            icon.classList.remove('fa-bars')
-            icon.classList.add('fa-times')
-          } else {
-            icon.classList.remove('fa-times')
-            icon.classList.add('fa-bars')
-          }
-        }
-      
-        // Mobile menu toggle functionality
-        function toggleMobileMenu() {
-          sidebar.classList.toggle('expanded')
-          mobileOverlay.classList.toggle('active')
-      
-          const icon = mobileToggle.querySelector('i')
-          if (sidebar.classList.contains('expanded')) {
-            icon.classList.remove('fa-bars')
-            icon.classList.add('fa-times')
-          } else {
-            icon.classList.remove('fa-times')
-            icon.classList.add('fa-bars')
-          }
-        }
-      
-        // Scroll to top functionality
-        function toggleScrollBtn() {
-          if (window.pageYOffset > 300) {
-            scrollToTopBtn.classList.add('visible')
-          } else {
-            scrollToTopBtn.classList.remove('visible')
-          }
-        }
-      
-        function scrollToTop() {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          })
-        }
-      
-        // Event listeners
-        toggleBtn.addEventListener('click', toggleSidebar)
-        mobileToggle.addEventListener('click', toggleMobileMenu)
-        mobileOverlay.addEventListener('click', toggleMobileMenu)
-        window.addEventListener('scroll', toggleScrollBtn)
-        scrollToTopBtn.addEventListener('click', scrollToTop)
-      
-        // Auth popup toggle
-        authToggle.addEventListener('click', function () {
-          authPopup.classList.toggle('active')
-        })
-      
-        // Close popup when clicking outside
-        document.addEventListener('click', function (event) {
-          if (!authPopup.contains(event.target) && !authToggle.contains(event.target)) {
-            authPopup.classList.remove('active')
-          }
-        })
-      
-        // Close sidebar on mobile when clicking menu items
-        if (window.innerWidth <= 768) {
-          const menuLinks = document.querySelectorAll('.sidebar ul li a')
-          menuLinks.forEach((link) => {
-            link.addEventListener('click', function () {
-              sidebar.classList.remove('expanded')
-              mobileOverlay.classList.remove('active')
-      
-              const mobileIcon = mobileToggle.querySelector('i')
-              mobileIcon.classList.remove('fa-times')
-              mobileIcon.classList.add('fa-bars')
-            })
-          })
-        }
-      })
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const authToggle = document.getElementById('authToggle');
+            const authPopup = document.getElementById('authPopup');
+            const backToTop = document.getElementById('backToTop');
+
+            const typeHouses = {
+                INTJ: 'analyst', ENTJ: 'analyst', INTP: 'analyst', ENTP: 'analyst',
+                INFJ: 'diplomat', ENFJ: 'diplomat', INFP: 'diplomat', ENFP: 'diplomat',
+                ISTJ: 'guardian', ESTJ: 'guardian', ISFJ: 'guardian', ESFJ: 'guardian',
+                ISTP: 'explorer', ESTP: 'explorer', ISFP: 'explorer', ESFP: 'explorer'
+            };
+
+            // Add localStorage handling for MBTI type
+            {% if not current_user.is_authenticated %}
+                const storedType = localStorage.getItem('mbti_type');
+                if (storedType) {
+                    // Update profile image and type
+                    const profileImage = document.querySelector('.profile-image img');
+                    const profileType = document.querySelector('.profile-type');
+
+                    if (profileImage && profileType) {
+                        profileImage.src = `{{ url_for('static', filename='Head_MBTI/') }}${storedType}.png`;
+                        profileImage.alt = storedType;
+                        profileImage.classList.remove('guest-image');
+                        profileType.textContent = storedType;
+                    }
+
+                    // Add appropriate house class
+                    const headerProfile = document.querySelector('.header-profile');
+                    if (headerProfile && typeHouses[storedType]) {
+                        headerProfile.className = `header-profile ${typeHouses[storedType]}`;
+                    }
+                }
+
+                // Listen for storage changes from other tabs
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'mbti_type' && e.newValue) {
+                        location.reload();
+                    }
+                });
+            {% endif %}
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('expanded');
+                mainContent.classList.toggle('sidebar-expanded');
+                
+                const icon = toggleBtn.querySelector('i');
+                if (sidebar.classList.contains('expanded')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            }
+
+            function toggleMobileMenu() {
+                sidebar.classList.toggle('expanded');
+                mobileOverlay.classList.toggle('active');
+                
+                const icon = mobileToggle.querySelector('i');
+                if (sidebar.classList.contains('expanded')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            }
+
+            // Back to Top Button Logic
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    backToTop.classList.add('show');
+                } else {
+                    backToTop.classList.remove('show');
+                }
+            });
+
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            toggleBtn.addEventListener('click', toggleSidebar);
+            mobileToggle.addEventListener('click', toggleMobileMenu);
+            mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+            authToggle.addEventListener('click', function() {
+                authPopup.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!authPopup.contains(event.target) && !authToggle.contains(event.target)) {
+                    authPopup.classList.remove('active');
+                }
+            });
+
+            if (window.innerWidth <= 768) {
+                const menuLinks = document.querySelectorAll('.sidebar ul li a');
+                menuLinks.forEach((link) => {
+                    link.addEventListener('click', function() {
+                        sidebar.classList.remove('expanded');
+                        mobileOverlay.classList.remove('active');
+                        
+                        const mobileIcon = mobileToggle.querySelector('i');
+                        mobileIcon.classList.remove('fa-times');
+                        mobileIcon.classList.add('fa-bars');
+                    });
+                });
+            }
+        });
     </script>
     {% block extra_js %}
+
     {% endblock %}
   </body>
 </html>

@@ -40,7 +40,6 @@
         font-weight: 300;
     }
 
-    /* User Type Display */
     .user-type-section {
         display: flex;
         align-items: center;
@@ -88,7 +87,6 @@
         box-shadow: var(--mbti-shadow);
     }
 
-    /* Character Grid Container */
     .characters-container {
         max-width: calc(4 * var(--card-width) + 60px);
         margin: 2rem auto;
@@ -172,7 +170,6 @@
         margin: 0;
     }
 
-    /* Rest of the styles remain unchanged */
     .popup, .overlay {
         display: none;
         position: fixed;
@@ -220,7 +217,6 @@
         justify-content: center;
     }
 
-    /* House Colors */
     .analyst {
         color: var(--analyst-color);
         border-color: var(--analyst-color) !important;
@@ -257,7 +253,6 @@
         animation: fadeIn 0.3s ease;
     }
 
-    /* Modal Styles */
     .modal-overlay {
         display: none;
         position: fixed;
@@ -332,6 +327,49 @@
         color: #666;
         font-style: italic;
     }
+
+    .popup-content {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .popup-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .popup-body {
+        margin-bottom: 1rem;
+    }
+
+    .popup-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .popup-hint {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .popup-button {
+        display: inline-block;
+        background-color: var(--mbti-gradient);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+
+    .popup-button:hover {
+        background-color: darken(var(--mbti-gradient), 10%);
+    }
+
 
     @media (max-width: 1200px) {
         .character-grid {
@@ -466,7 +504,7 @@
     {% if current_user.is_authenticated and current_user.mbti_type %}
         userType = '{{ current_user.mbti_type }}';
     {% else %}
-        userType = localStorage.getItem('mbtiType');
+        userType = localStorage.getItem('mbti_type');
     {% endif %}
 
     const typeHouses = {
@@ -478,7 +516,7 @@
 
     const houseMapping = {
         'analyst': 'purpleHouse',
-        'diplomat': 'greenHouse',
+        'diplomat': 'greenHouse', 
         'guardian': 'blueHouse',
         'explorer': 'yellowHouse'
     };
@@ -504,7 +542,7 @@
     }
 
     function handleImageError(img) {
-        img.onerror = null; // Prevent infinite loop
+        img.onerror = null;
         img.classList.add('error');
         img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23f0f0f0"/><text x="50%" y="50%" font-size="24" fill="%23999" text-anchor="middle" dy=".3em">No Image</text></svg>';
     }
@@ -520,7 +558,6 @@
         popupTypeGrid.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', () => {
                 userType = button.getAttribute('data-type');
-                localStorage.setItem('mbtiType', userType);
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('popup').style.display = 'none';
                 updateUserType();
@@ -561,7 +598,6 @@
             return;
         }
 
-        // Take only the first 4 characters
         const characters = typeData.characters.slice(0, 4);
 
         characterGrid.innerHTML = characters.map(character => {
@@ -668,13 +704,51 @@
     }
 
     window.addEventListener('load', () => {
+        if (!userType) {
+            const popup = document.getElementById('popup');
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <h2 class="popup-title">เริ่มต้นค้นหาตัวละครที่เข้ากับคุณ</h2>
+                    <div class="popup-body">
+                        <p class="popup-description">
+                            เพื่อให้คุณได้รู้จักตัวละครที่มีบุคลิกภาพคล้ายคุณ 
+                            เราขอแนะนำให้ทำแบบทดสอบ MBTI สั้นๆ ก่อนนะคะ
+                        </p>
+                        <p class="popup-hint">
+                            ใช้เวลาเพียง 5-10 นาทีในการค้นพบตัวตนที่แท้จริงของคุณ
+                        </p>
+                        <a href="{{ url_for('main.quiz') }}" class="change-type-btn" style="text-decoration: none; display: inline-block; margin-top: 10px;">
+                        <i class="fas fa-tasks"></i>
+                        เริ่มทำแบบทดสอบ
+                    </a>
+                    </div>
+                </div>`;
+            document.getElementById('overlay').style.display = 'block';
+            popup.style.display = 'block';
+            return;
+        }
         updateUserType();
         fetchCharacterData();
-        if (!userType) {
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('popup').style.display = 'block';
-            renderPopupTypeGrid();
-        }
     });
+
+    // อัพเดตฟังก์ชัน renderPopupTypeGrid เพื่อไม่ให้บันทึกลง localStorage
+    function renderPopupTypeGrid() {
+        const popupTypeGrid = document.getElementById('popup-type-grid');
+        popupTypeGrid.innerHTML = types.map(type => `
+            <button class="${getTypeHouseClass(type)}" data-type="${type}">
+                <img src="/static/mbti/${type}.png" alt="${type}" style="width: 100%; height: 100%; object-fit: contain;">
+            </button>
+        `).join('');
+
+        popupTypeGrid.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                userType = button.getAttribute('data-type');
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('popup').style.display = 'none';
+                updateUserType();
+                renderCharacters();
+            });
+        });
+    }
 </script>
 {% endblock %}

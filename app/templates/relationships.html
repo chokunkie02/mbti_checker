@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block title %}MBTI Compatibility Checker{% endblock %}
@@ -48,6 +49,11 @@
         color: var(--mbti-text);
         margin-bottom: 2rem;
         font-weight: 300;
+        line-height: 1.6;
+    }
+    
+    .subtitle p {
+        margin: 0.5rem 0;
     }
     
     .grid {
@@ -123,7 +129,7 @@
         display: flex;
         align-items: center;
         gap: 20px;
-        margin-top: 4rem; /* เพิ่มระยะห่างด้านบน */
+        margin-top: 4rem;
         justify-content: center;
         position: relative;
     }
@@ -199,7 +205,7 @@
     
     .change-type-btn {
         position: absolute;
-        top: -60px;  /* Changed from -80px to -60px to move button down */
+        top: -60px;
         left: 50%;
         transform: translateX(-50%);
         background: var(--mbti-gradient);
@@ -269,10 +275,10 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: white;
-        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
         border-radius: 20px;
-        box-shadow: var(--mbti-shadow);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         min-width: 400px;
         max-width: 90vw;
         animation: scaleIn 0.3s ease;
@@ -288,7 +294,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(4px);
         z-index: 999;
         animation: fadeIn 0.3s ease;
@@ -323,7 +329,7 @@
         }
         
         .change-type-btn {
-            top: -45px;  /* Changed from -65px to -45px for mobile view */
+            top: -45px;
             padding: 0.4rem 0.8rem;
             font-size: 0.7rem;
         }
@@ -341,7 +347,10 @@
 {% block content %}
 <div class="page-header">
     <h1>MBTI Compatibility Checker</h1>
-    <div class="subtitle">เลือก MBTI Type ที่ต้องการเปรียบเทียบ</div>
+    <div class="subtitle">
+        <p>เพื่อให้คุณได้รู้จักความเข้ากันได้กับคนรอบตัว เราขอแนะนำให้ทำแบบทดสอบ MBTI สั้นๆ ก่อนนะคะ</p>
+        <p>ใช้เวลาเพียง 5-10 นาทีในการค้นพบว่าคุณเข้ากันได้ดีกับใคร</p>
+    </div>
 </div>
 
 <div class="grid" id="type-grid"></div>
@@ -382,7 +391,7 @@
         userType = '{{ current_user.mbti_type }}';
     {% else %}
         // ถ้าไม่ล็อกอิน หรือล็อกอินแต่ไม่มี MBTI Type ให้ดึงจาก localStorage
-        userType = localStorage.getItem('mbtiType');
+        userType = localStorage.getItem('mbti_type');
     {% endif %}
 
     // กำหนดประเภทและสีของแต่ละบ้าน
@@ -485,9 +494,31 @@
     }
 
     function renderPopupTypeGrid() {
+        const popup = document.getElementById('popup');
         const popupTypeGrid = document.getElementById('popup-type-grid');
         if (!popupTypeGrid) return;
 
+        if (!userType) {
+            // ถ้าไม่มี type ให้แสดงข้อความแนะนำให้ทำแบบทดสอบ
+            popup.innerHTML = `
+                <h2>ยังไม่มี MBTI Type</h2>
+                <p style="text-align: center; margin: 20px 0;">กรุณาทำแบบทดสอบก่อนเพื่อดูความเข้ากันได้</p>
+                <button onclick="window.location.href='/quiz'" style="
+                    background: var(--mbti-gradient);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    cursor: pointer;
+                    display: block;
+                    margin: 0 auto;
+                    font-weight: 500;
+                ">ทำแบบทดสอบ</button>
+            `;
+            return;
+        }
+
+        // ถ้ามี type แล้ว ให้แสดงตัวเลือกสำหรับเปลี่ยน type
         popupTypeGrid.innerHTML = types.map(type => `
             <button class="${getTypeHouseClass(type)}" data-type="${type}">
                 <img src="/static/mbti/${type}.png" alt="${type}" style="width: 100%; height: 100%; object-fit: contain;">
@@ -497,7 +528,7 @@
         popupTypeGrid.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', () => {
                 userType = button.getAttribute('data-type');
-                localStorage.setItem('mbtiType', userType);
+                // ไม่บันทึกลง localStorage ในหน้านี้
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('popup').style.display = 'none';
                 renderApp();
