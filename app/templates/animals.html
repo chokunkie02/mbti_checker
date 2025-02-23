@@ -6,13 +6,22 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.css" />
 <style>
     :root {
-        --analyst-color: #BA68C8;    /* บ้านม่วง - นักวิเคราะห์ */
-        --diplomat-color: #81C784;    /* บ้านเขียว - นักการทูต */
-        --guardian-color: #64B5F6;    /* บ้านฟ้า - ผู้พิทักษ์ */
-        --explorer-color: #FFEB3B;    /* บ้านเหลือง - นักสำรวจ */
-        --mbti-gradient: linear-gradient(135deg, var(--analyst-color), var(--diplomat-color), 
-                                            var(--guardian-color), var(--explorer-color));
-        --mbti-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        --infj-color: #2C3E50;    /* สีเทาเข้ม */
+        --intj-color: #E67E22;    /* สีส้ม */
+        --intp-color: #8B4513;    /* สีน้ำตาล */
+        --infp-color: #8B4513;    /* สีน้ำตาล */
+        --enfp-color: #3498DB;    /* สีน้ำเงิน */
+        --isfj-color: #E67E22;    /* สีส้ม */
+        --isfp-color: #2C3E50;    /* สีเทา */
+        --esfj-color: #2C3E50;    /* สีเทา */
+        --estj-color: #F1C40F;    /* สีเหลือง */
+        --estp-color: #E67E22;    /* สีส้ม */
+        --esfp-color: #8B4513;    /* สีน้ำตาล */
+        --istp-color: #27AE60;    /* สีเขียว */
+        --entp-color: #E74C3C;    /* สีแดง */
+        --enfj-color: #8B4513;    /* สีน้ำตาล */
+        --istj-color: #27AE60;    /* สีเขียว */
+        --entj-color: #E67E22;    /* สีส้ม */
     }
 
     .page-header {
@@ -24,7 +33,7 @@
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
         font-weight: 800;
-        background: var(--mbti-gradient);
+        background: linear-gradient(135deg, var(--infj-color), var(--intj-color), var(--intp-color), var(--infp-color));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -73,7 +82,7 @@
         background: white;
         border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .trait-row:hover {
@@ -112,8 +121,8 @@
         background: white;
         border-radius: 15px;
         padding: 1.5rem;
-        box-shadow: var(--mbti-shadow);
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, opacity 0.3s ease;
         opacity: 0.7;
         transform: scale(0.9);
         cursor: pointer;
@@ -122,16 +131,17 @@
     .swiper-slide-active {
         opacity: 1;
         transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
     .swiper-button-next,
     .swiper-button-prev {
-        color: var(--mbti-text);
+        color: #333;
         background: white;
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        box-shadow: var(--mbti-shadow);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .swiper-button-next:after,
@@ -141,13 +151,13 @@
     }
 
     .swiper-pagination-bullet {
-        background: var(--mbti-text);
+        background: #333;
         opacity: 0.5;
     }
 
     .swiper-pagination-bullet-active {
         opacity: 1;
-        background: var(--mbti-gradient);
+        background: linear-gradient(135deg, var(--infj-color), var(--intj-color), var(--intp-color), var(--infp-color));
     }
 
     .loading {
@@ -157,7 +167,7 @@
 
     .loading-spinner {
         border: 3px solid rgba(0, 0, 0, 0.1);
-        border-left-color: var(--mbti-purple);
+        border-left-color: var(--infj-color);
         border-radius: 50%;
         width: 30px;
         height: 30px;
@@ -219,14 +229,14 @@
         padding: 1.5rem;
         border-radius: 15px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        width: 400px;          /* กำหนดขนาดแน่นอน */
-        max-width: 90%;        /* ให้รองรับหน้าจอเล็ก */
-        max-height: 80vh;      /* จำกัดความสูงสูงสุด */
-        overflow-y: auto;      /* ให้เลื่อนได้ถ้าเนื้อหาเกิน */
-        position: fixed;       /* ให้อยู่กลางหน้าจอเสมอ */
+        width: 400px;
+        max-width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: fixed;
         animation: scaleIn 0.3s ease;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: auto; 
+        height: auto;
         gap: 1.5rem;
     }
 
@@ -269,14 +279,26 @@
         object-fit: contain;
     }
 
-    .type-button.analyst { border-color: var(--analyst-color); }
-    .type-button.diplomat { border-color: var(--diplomat-color); }
-    .type-button.guardian { border-color: var(--guardian-color); }
-    .type-button.explorer { border-color: var(--explorer-color); }
+    .type-button.infj { border-color: var(--infj-color); }
+    .type-button.intj { border-color: var(--intj-color); }
+    .type-button.intp { border-color: var(--intp-color); }
+    .type-button.infp { border-color: var(--infp-color); }
+    .type-button.enfp { border-color: var(--enfp-color); }
+    .type-button.isfj { border-color: var(--isfj-color); }
+    .type-button.isfp { border-color: var(--isfp-color); }
+    .type-button.esfj { border-color: var(--esfj-color); }
+    .type-button.estj { border-color: var(--estj-color); }
+    .type-button.estp { border-color: var(--estp-color); }
+    .type-button.esfp { border-color: var(--esfp-color); }
+    .type-button.istp { border-color: var(--istp-color); }
+    .type-button.entp { border-color: var(--entp-color); }
+    .type-button.enfj { border-color: var(--enfj-color); }
+    .type-button.istj { border-color: var(--istj-color); }
+    .type-button.entj { border-color: var(--entj-color); }
 
     .type-button:hover {
         transform: translateY(-2px);
-        box-shadow: var(--mbti-shadow);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     .popup-content {
@@ -320,7 +342,7 @@
     }
     .popup-button {
         display: inline-block;
-        background-color: var(--mbti-gradient);
+        background-color: linear-gradient(135deg, var(--infj-color), var(--intj-color), var(--intp-color), var(--infp-color));
         color: white;
         padding: 0.6rem 1.2rem;
         border-radius: 20px;
@@ -331,15 +353,14 @@
     }
 
     .popup-button:hover {
-        background-color: darken(var(--mbti-gradient), 10%);
+        background-color: darken(linear-gradient(135deg, var(--infj-color), var(--intj-color), var(--intp-color), var(--infp-color)), 10%);
         transform: translateY(-2px);
     }
 
-    /* สไตล์สำหรับปุ่มทำแบบทดสอบ */
     .change-type-btn {
         display: inline-block;
         padding: 0.75rem 1.5rem;
-        background: var(--mbti-gradient);
+        background: linear-gradient(135deg, var(--infj-color), var(--intj-color), var(--intp-color), var(--infp-color));
         color: white;
         border-radius: 25px;
         text-decoration: none;
@@ -404,11 +425,23 @@
     let userType = null;
     let swiper;
 
-    const typeHouses = {
-        'INTJ': 'analyst', 'ENTJ': 'analyst', 'INTP': 'analyst', 'ENTP': 'analyst',
-        'INFJ': 'diplomat', 'ENFJ': 'diplomat', 'INFP': 'diplomat', 'ENFP': 'diplomat',
-        'ISTJ': 'guardian', 'ESTJ': 'guardian', 'ISFJ': 'guardian', 'ESFJ': 'guardian',
-        'ISTP': 'explorer', 'ESTP': 'explorer', 'ISFP': 'explorer', 'ESFP': 'explorer'
+    const typeColors = {
+        'INFJ': '#2C3E50',
+        'INTJ': '#E67E22',
+        'INTP': '#8B4513',
+        'INFP': '#8B4513',
+        'ENFP': '#3498DB',
+        'ISFJ': '#E67E22',
+        'ISFP': '#2C3E50',
+        'ESFJ': '#2C3E50',
+        'ESTJ': '#F1C40F',
+        'ESTP': '#E67E22',
+        'ESFP': '#8B4513',
+        'ISTP': '#27AE60',
+        'ENTP': '#E74C3C',
+        'ENFJ': '#8B4513',
+        'ISTJ': '#27AE60',
+        'ENTJ': '#E67E22'
     };
 
     const types = [
@@ -421,7 +454,7 @@
     function setupTypeGrid() {
         const typeGrid = document.getElementById('type-grid');
         typeGrid.innerHTML = types.map(type => `
-            <button class="type-button ${typeHouses[type]}" data-type="${type}">
+            <button class="type-button ${type.toLowerCase()}" data-type="${type}">
                 <img src="/static/Animals_MBTI/${type}.png" alt="${type}">
             </button>
         `).join('');
@@ -474,6 +507,7 @@
     function displayCurrentType(animal) {
         const currentType = document.getElementById('current-type');
         const mbtiType = animal.title.split('=')[1].trim();
+        const typeColor = typeColors[mbtiType] || '#000';
 
         currentType.innerHTML = `
             <div class="animal-info">
@@ -485,7 +519,7 @@
             </div>
             <div class="traits-list">
                 ${animal.traits.map(trait => `
-                    <div class="trait-row">
+                    <div class="trait-row" style="border-left: 4px solid ${typeColor};">
                         <h3 class="trait-title">${trait.name}</h3>
                         <p class="trait-description">${trait.description}</p>
                     </div>
@@ -500,8 +534,9 @@
         const wrapper = document.getElementById('swiper-wrapper');
         wrapper.innerHTML = animals.map(animal => {
             const mbtiType = animal.title.split('=')[1].trim();
+            const typeColor = typeColors[mbtiType] || '#000';
             return `
-                <div class="swiper-slide">
+                <div class="swiper-slide" style="border: 2px solid ${typeColor};">
                     <img src="/static/Animals_MBTI/${mbtiType}.png" alt="${animal.title}" style="width: 100px; height: 100px; object-fit: contain; margin-bottom: 1rem;">
                     <h3>${animal.title}</h3>
                     <p>${animal.description.substring(0, 100)}...</p>
@@ -543,14 +578,19 @@
                     slidesPerView: 3,
                     spaceBetween: 40
                 }
+            },
+            on: {
+                click: (swiper, event) => {
+                    // ตรวจสอบว่ารูปที่คลิกเป็นรูปตรงกลางหรือไม่
+                    const clickedSlide = event.target.closest('.swiper-slide');
+                    if (clickedSlide && clickedSlide.classList.contains('swiper-slide-active')) {
+                        const activeIndex = swiper.activeIndex;
+                        const selectedAnimal = animals[activeIndex % animals.length];
+                        displayCurrentType(selectedAnimal);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
             }
-        });
-
-        wrapper.querySelectorAll('.swiper-slide').forEach((slide, index) => {
-            slide.addEventListener('click', () => {
-                displayCurrentType(animals[index % animals.length]);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
         });
     }
 

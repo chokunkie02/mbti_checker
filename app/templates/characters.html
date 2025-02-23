@@ -24,6 +24,7 @@
         padding: 2rem 0;
         background: white;
         box-shadow: var(--mbti-shadow);
+        animation: fadeIn 0.5s ease;
     }
 
     h1 {
@@ -31,6 +32,7 @@
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
         font-weight: 700;
+        animation: fadeIn 0.5s ease;
     }
 
     .subtitle {
@@ -38,6 +40,7 @@
         color: var(--mbti-text);
         margin-bottom: 1.5rem;
         font-weight: 300;
+        animation: fadeIn 0.6s ease;
     }
 
     .user-type-section {
@@ -47,6 +50,7 @@
         gap: 1rem;
         margin: 0 auto;
         max-width: 400px;
+        animation: fadeIn 0.7s ease;
     }
 
     .user-type-title {
@@ -67,6 +71,12 @@
         justify-content: center;
         border: 2px solid transparent;
         position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .user-type-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     }
 
     .change-type-btn {
@@ -94,6 +104,7 @@
         background: white;
         border-radius: 12px;
         box-shadow: var(--mbti-shadow);
+        animation: fadeIn 0.8s ease;
     }
 
     .character-grid {
@@ -115,6 +126,12 @@
         align-items: center;
         position: relative;
         gap: 1rem;
+        overflow: hidden;
+    }
+
+    .character-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     }
 
     .character-image {
@@ -123,6 +140,11 @@
         border-radius: 8px;
         object-fit: cover;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .character-card:hover .character-image {
+        transform: scale(1.1);
     }
 
     .character-image.error {
@@ -132,11 +154,6 @@
         justify-content: center;
         font-size: 3rem;
         color: #999;
-    }
-
-    .character-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
     }
 
     .character-card::after {
@@ -180,13 +197,14 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: white;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
         padding: 2rem;
         border-radius: 20px;
         box-shadow: var(--mbti-shadow);
         min-width: 400px;
         max-width: 90vw;
-        animation: scaleIn 0.3s ease;
+        animation: fadeIn 0.3s ease;
     }
 
     .popup h2 {
@@ -217,6 +235,11 @@
         justify-content: center;
     }
 
+    .type-grid button:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--mbti-shadow);
+    }
+
     .analyst {
         color: var(--analyst-color);
         border-color: var(--analyst-color) !important;
@@ -235,11 +258,6 @@
     .explorer {
         color: var(--explorer-color);
         border-color: var(--explorer-color) !important;
-    }
-
-    .type-grid button:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--mbti-shadow);
     }
 
     .overlay {
@@ -263,6 +281,7 @@
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(4px);
         z-index: 999;
+        animation: fadeIn 0.3s ease;
     }
 
     .modal {
@@ -271,13 +290,17 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: white;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
         padding: 2.5rem;
         border-radius: 20px;
         box-shadow: var(--mbti-shadow);
         z-index: 1000;
         max-width: 800px;
         width: 90%;
+        animation: fadeIn 0.3s ease;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
     .modal-header {
@@ -299,6 +322,10 @@
         cursor: pointer;
         color: #666;
         transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+        color: #333;
     }
 
     .trait-list {
@@ -369,7 +396,6 @@
     .popup-button:hover {
         background-color: darken(var(--mbti-gradient), 10%);
     }
-
 
     @media (max-width: 1200px) {
         .character-grid {
@@ -447,11 +473,6 @@
         .character-name {
             font-size: 1.1rem;
         }
-    }
-
-    @keyframes scaleIn {
-        from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
     @keyframes fadeIn {
@@ -646,15 +667,30 @@
             </div>
         `;
 
+        // แสดง modal และ overlay ด้วย fade in
         modal.style.display = 'block';
         modalOverlay.style.display = 'block';
+
+        // เพิ่ม fade in effect
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modalOverlay.style.opacity = '1';
+        }, 10);
     }
 
     function closeModal() {
         const modal = document.getElementById('character-modal');
         const modalOverlay = document.getElementById('modal-overlay');
-        modal.style.display = 'none';
-        modalOverlay.style.display = 'none';
+
+        // เพิ่ม fade out effect
+        modal.style.opacity = '0';
+        modalOverlay.style.opacity = '0';
+
+        // ซ่อน modal และ overlay หลังจาก fade out เสร็จสิ้น
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modalOverlay.style.display = 'none';
+        }, 300); // ตรงกับระยะเวลาของ animation
     }
 
     document.getElementById('change-type-btn').addEventListener('click', () => {
